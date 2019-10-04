@@ -3,13 +3,9 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "itinerary-manager-ta": {
+    "itinerary-manager-pa": {
       "projectType": "application",
-      "schematics": {
-        "@schematics/angular:component": {
-          "style": "scss"
-        }
-      },
+      "schematics": {},
       "root": "",
       "sourceRoot": "src",
       "prefix": "app",
@@ -17,7 +13,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/itinerary-manager-ta",
+            "outputPath": "dist/itinerary-manager-pa",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
@@ -28,7 +24,7 @@
               "src/assets"
             ],
             "styles": [
-              "src/styles.scss"
+              "src/styles.css"
             ],
             "scripts": []
           },
@@ -67,18 +63,18 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "itinerary-manager-ta:build"
+            "browserTarget": "itinerary-manager-pa:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "itinerary-manager-ta:build:production"
+              "browserTarget": "itinerary-manager-pa:build:production"
             }
           }
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "itinerary-manager-ta:build"
+            "browserTarget": "itinerary-manager-pa:build"
           }
         },
         "test": {
@@ -115,15 +111,15 @@
           "builder": "@angular-devkit/build-angular:protractor",
           "options": {
             "protractorConfig": "e2e/protractor.conf.js",
-            "devServerTarget": "itinerary-manager-ta:serve"
+            "devServerTarget": "itinerary-manager-pa:serve"
           },
           "configurations": {
             "production": {
-              "devServerTarget": "itinerary-manager-ta:serve:production"
+              "devServerTarget": "itinerary-manager-pa:serve:production"
             }
           }
         }
       }
     }},
-  "defaultProject": "itinerary-manager-ta"
+  "defaultProject": "itinerary-manager-pa"
 }

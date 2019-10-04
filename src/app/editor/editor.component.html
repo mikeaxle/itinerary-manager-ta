@@ -1,0 +1,128 @@
+<br>
+<!-- save button -->
+<button
+  color="primary"
+  (click)="addItinerary()"
+  [disabled]="!itineraryForm.valid"
+  class="full-input"
+  mat-raised-button>
+  Save
+</button>
+<br><br>
+<!-- title -->
+<mat-card-title>Add Itinerary</mat-card-title>
+<br><br>
+<form [formGroup]="itineraryForm">
+  <!-- agent -->
+  <!--  todo: put back condition <span *ngIf="(user | async)?.$key === agent.$key" [style.color]="data.color">(You)</span>  -->
+  <mat-select
+    placeholder="Agent"
+    formControlName="agent"
+    required>
+    <mat-option
+      *ngFor="let agent of agents"
+      [value]="agent">
+      {{agent.firstname }} {{agent.lastname}}
+    </mat-option>
+  </mat-select>
+
+
+  <!-- client -->
+  <mat-select
+    placeholder="Client"
+    formControlName="client"
+    required>
+    <mat-option
+      *ngFor="let client of clients"
+      [value]="client">
+      {{client.firstname}} {{client.lastname}}
+    </mat-option>
+  </mat-select>
+
+  <!-- Adults and Children -->
+  <div class="double-items">
+    <mat-select
+      placeholder="Number of Adults"
+      formControlName="adults"
+      class="half-input"
+      required>
+      <mat-option
+        *ngFor="let number of numbers"
+        [value]="number">
+        {{number}}
+      </mat-option>
+    </mat-select>
+
+    <mat-select
+      placeholder="Number of Children"
+      formControlName="children"
+      class="half-input"
+      required>
+      <mat-option
+        *ngFor="let number of numbers"
+        [value]="number">
+        {{number}}
+      </mat-option>
+    </mat-select>
+
+  </div>
+
+  <!-- childrens ages -->
+  <mat-form-field *ngIf="itineraryForm.value.children > 0">
+    <label>
+      <input
+        type="text"
+        placeholder="Children's ages"
+        formControlName="children_ages"
+        matInput/>
+    </label>
+  </mat-form-field>
+
+  <!-- name of itinerary -->
+  <mat-form-field>
+    <input
+      type="text"
+      placeholder="Name of itinerary"
+      formControlName="title"
+      matInput
+      required/>
+  </mat-form-field>
+
+
+  <div
+    fxLayout="row"
+    fxLayoutGap="10px"
+    fxLayoutAlign="space-between center">
+
+    <!-- start date -->
+    <mat-form-field class="half-input">
+      <label>
+        <input
+          matInput
+          [matDatepicker]="picker"
+          placeholder="Start Date"
+          formControlName="startdate"
+          required>
+      </label>
+      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+      <!--<button matSuffix [matDatepickerToggle]="picker"></button>-->
+    </mat-form-field>
+    <mat-datepicker touchUi="true" #picker></mat-datepicker>
+
+    <!-- end date -->
+    <mat-form-field class="half-input">
+      <input
+        matInput
+        [matDatepicker]="picker2"
+        placeholder="End Date"
+        formControlName="enddate"
+        required>
+      <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+      <!--<button matSuffix [matDatepickerToggle]="picker2"></button>-->
+    </mat-form-field>
+    <mat-datepicker touchUi="true" #picker2></mat-datepicker>
+  </div>
+
+  <span *ngIf="error">{{error}}</span>
+</form>
+<br>

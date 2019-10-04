@@ -1,0 +1,455 @@
+/* You can add global styles to this file, and also import other style files */
+@import '@angular/material/prebuilt-themes/deeppurple-amber.css';
+
+body {
+  font-family: 'Roboto', serif;
+  margin: 0px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  color: #373737;
+  font-size: 14px;
+  background-color: #fafafa;
+}
+
+a:visited {
+  text-decoration: none;
+  cursor: pointer;
+  font-weight: bold;
+  color: white;
+
+}
+
+/* mouse over link */
+a:hover {
+  text-decoration: none;
+  color: #efcd00;
+  font-weight: bold;
+}
+
+a:link {
+  text-decoration: none;
+  font-weight: bold;
+  color: white;
+  padding: 0 15px;
+}
+
+h1 {
+
+  font-size: 28px;
+  font-weight: 400;
+  margin: 0;
+
+}
+
+h2 {
+  font-size: 22px;
+  font-weight: 400;
+  margin: 0;
+}
+
+
+h5 {
+  margin:0;
+  padding:0;
+  font-weight: 500;
+}
+
+table, td, th {
+  border: none;
+  padding: 10px;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+
+}
+
+th {
+  text-align: left;
+
+}
+
+.header-wrapper {
+  height: 80px;
+  width: 100%;
+  background-color: #373737;
+  overflow: hidden;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.main-header {
+  width: 85%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  color: white;
+  text-transform: uppercase;
+}
+
+.menu-logo {
+  display: inline-flex;
+  justify-content: space-between;
+}
+
+.nav {
+  padding-left: 50px;
+}
+
+.company-name {
+  /*width: 20%;*/
+  font-weight: bold;
+}
+
+.company-name-circle {
+  /*width: 40px;
+    height: 40px;*/
+  margin-left: 10px;
+  margin-right: 10px;
+  padding: 10px;
+  border-radius: 100px;
+  display: inline-flex;
+  align-content: center;
+  justify-content: center;
+  color: black;
+  background-color: white;
+  font-weight: bold;
+  font-size: 10px;
+}
+
+.router-wrapper {
+  padding-top: 20px;
+  display: flex;
+  flex-direction: column;
+  width: 85%;
+  margin: 0 auto;
+  overflow: hidden;
+}
+
+.page-title {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  margin: 10px
+}
+
+.filter-options {
+  width: 100%;
+  /*margin-bottom: 20px;*/
+  display: inline-flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.filters {
+  min-width: 240px !important;
+  max-width: 240px !important;
+  font-size: 16px !important;
+
+}
+.mat-select {
+  line-height: 1.3 !important;
+  padding: 6px 0px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.42);
+}
+
+.search {
+  min-width: 240px !important;
+  max-width: 240px !important;
+  font-size: 16px !important;
+  line-height: 1.3 !important
+}
+
+.list-header {
+  background: #373737;
+  width: 100%;
+  display: inline-flex;
+  color: white;
+  font-weight: bold;
+  padding: 5px
+}
+
+.list-item {
+  border-bottom: 1px #A1A1A1 solid;
+}
+
+.list-item-entry {
+  width: 33%;
+  font-size: 14px;
+  font-weight: bold;
+  color: #373737;
+}
+
+.all-forms {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.label {
+  font-size: small;
+  margin-bottom: 5px
+}
+
+.form-item {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 10px;
+  width: 100%
+}
+
+.double-items {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between
+}
+
+.full-input {
+  width: 100%
+}
+
+.half-input {
+  width: 48% !important;
+}
+
+/* itinerary classes */
+
+.itin-toolbar {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 50px;
+}
+
+.itin-number {
+  display: inline-flex;
+  align-items: center;
+}
+
+.itin-toolbar-buttons {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 50%;
+}
+
+.itin-exceed {
+  background-color:red;
+  color: white;
+  font-weight: bold;
+  padding: 5px;
+  text-align:center
+}
+
+.itin-page {
+  /*width: 70%;*/
+  /* display: flex;
+   flex-direction: column;
+   -webkit-box-shadow: 1px 1px 5px 2px rgba(0,0,0,0.51);
+   -moz-box-shadow: 1px 1px 5px 2px rgba(0,0,0,0.51);
+   box-shadow: 1px 1px 5px 2px rgba(0,0,0,0.51);
+   margin-left: auto;
+   margin-right: auto;
+   padding:40px*/
+}
+
+.itin-page-header {
+  /*    display: flex;
+      flex-direction: column;*/
+  border-bottom: 1px #bdbdbd solid;
+  padding-bottom: 20px;
+}
+
+.itin-booking-details {
+  border-bottom: 1px #bdbdbd solid;
+}
+
+.itin-border-top {
+  border-top: 1px #bdbdbd solid;
+  margin-top: 20px;
+  padding-top: 20px;
+}
+
+.itin-days {
+  padding: 20px 0;
+}
+
+.itin-add-buttons {
+  padding: 20px 0;
+  display: flex;
+  justify-content: flex-end;
+  border-bottom: 1px #bdbdbd solid;
+}
+
+.itin-pricing-totals {
+  padding: 20px 0;
+  display: flex;
+  justify-content: flex-end;
+  flex-direction: column;
+  border-bottom: 1px #bdbdbd solid;
+}
+
+.itn-items {
+  display: flex;
+  flex-direction: row
+}
+
+md-toolbar-row {
+  justify-content: space-between;
+}
+
+mat-card {
+  max-width: 65%;
+  margin: 1em auto;
+  /* text-align: center; */
+}
+
+mat-input-container, mat-select {
+  margin: 10px 0
+}
+
+.input-no-margin {
+  margin:0
+}
+
+
+.fill-remaining-space {
+  flex: 1 1 auto;
+}
+
+.day {
+  border-bottom: 1px #bdbdbd solid;
+  margin-bottom: 10px;
+  padding-bottom: 10px;
+}
+
+.loaded-image {
+  border-radius: 10px;
+  padding: 20px;
+  background-color: aliceblue;
+}
+
+.spinner-padding {
+  margin:0 auto;
+  padding-top: 10%
+}
+
+.object-fit_fill { object-fit: fill }
+.object-fit_contain { object-fit: contain }
+.object-fit_cover { object-fit: cover }
+.object-fit_none { object-fit: none }
+.object-fit_scale-down { object-fit: scale-down }
+
+mat-grid-tile  {
+  border-radius: 5px;
+  cursor: pointer !important;
+}
+
+.spacer {
+  padding: 10px;
+}
+
+.editor {
+  max-width: 480px !important;
+}
+
+.price-average {
+  padding-bottom: 5px;
+  border-bottom: dotted 1px grey;
+  text-align: left;
+}
+
+.mat-datepicker-content-touch .mat-calendar {
+  height: 70vh !important;
+}
+/********** Data Table Styles ***********/
+
+.example-container {
+  display: flex;
+  flex-direction: column;
+  min-width: 300px;
+  margin: 10px;
+  cursor:pointer;
+}
+
+.example-header {
+  min-height: 64px;
+  display: flex;
+  align-items: baseline;
+  padding: 8px 24px 0;
+  font-size: 20px;
+  justify-content: start;
+}
+
+.mat-form-field {
+  font-size: 12px;
+  /*line-height: 0.9 !important;*/
+  width: 100% !important;
+}
+
+.mat-table {
+  overflow: auto;
+}
+.planet-africa-theme .mat-row:hover {
+  background-color: rgba(172, 70, 47, 0.39);
+}
+.mat-row:hover {
+  background-color: beige;
+}
+
+.mat-row {
+  outline: none;
+}
+
+.quote-field {
+  height: 30px;
+  margin: 10px;
+}
+
+mat-cell {
+  outline: none;
+}
+
+/*****************************************/
+
+.lesser-button-ta {
+  border: solid 2px #B18C51 !important;
+  color: #B18C51 !important;
+}
+
+.lesser-button-pa {
+  border: solid 2px #AC452F !important;
+  color: #AC452F !important;
+}
+
+.greater-button-pa {
+  background-color:  #AC452F !important;
+  color: white !important;
+}
+.greater-button-ta {
+  background-color:  #B18C51 !important;
+  color: white !important;
+}
+
+.mat-elevation-z8 {
+  margin-bottom: 30px;
+}
+
+.mat-menu-panel {
+  max-width: fit-content !important;
+}
+
+/******* Theme styles ******/
+
+.planet-africa-theme .mat-toolbar.mat-primary {
+  background: #ac452f !important;
+  color: white !important;
+}
+
+.planet-africa-theme .mat-raised-button.mat-primary, .planet-africa-theme .mat-fab.mat-primary, .planet-africa-theme .mat-mini-fab.mat-primary {
+  color: white !important;
+}
