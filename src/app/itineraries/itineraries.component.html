@@ -1,8 +1,13 @@
-<div>
-  <button mat-button mat-button-raised color="primary" (click)="addNew()">Add New Itinerary</button>
+<!-- title + add new button -->
+<div class="page-title">
+  <h1>Itineraries</h1>
+  <button mat-raised-button color="primary" (click)="addNew()">Add New Itinerary</button>
 </div>
-<table mat-table [dataSource]="dataSource" class="mat-elevation-z8" matSort>
+<span style="padding: 20px"></span>
 
+<!-- todo: add filters -->
+<!-- data table-->
+<table mat-table [dataSource]="dataSource" class="mat-elevation-z8" matSort>
   <!-- Invoice Number Column -->
   <ng-container matColumnDef="#">
     <th mat-header-cell *matHeaderCellDef> #</th>
@@ -42,5 +47,4 @@
   <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
   <tr mat-row *matRowDef="let row; columns: displayedColumns" (click)="editItinerary(row)"></tr>
 </table>
-
-<mat-paginator [pageSizeOptions]="[25, 50, 100]"></mat-paginator>
+<mat-paginator [pageSizeOptions]="[15, 30, 60]"></mat-paginator>

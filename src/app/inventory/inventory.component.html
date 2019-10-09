@@ -1,0 +1,82 @@
+<!-- title + button -->
+<div class="page-title">
+  <h1>Inventory</h1>
+  <button mat-raised-button color="primary" [routerLink]="['../add-inventory']">Add New Inventory Item</button>
+</div>
+<span style="padding: 20px"></span>
+
+<!-- table -->
+<!-- todo: add filters -->
+<!--  <div class="example-header" fxLayoutGap="20px">-->
+
+<!--    &lt;!&ndash; filter options &ndash;&gt;-->
+<!--    <mat-select [formControl]="destinationFilter" placeholder="Destination" class="filters">-->
+<!--      <mat-option value="">All</mat-option>-->
+<!--      <mat-option *ngFor="let country of countries" [value]="country.id">-->
+<!--        {{ country.name }}-->
+<!--      </mat-option>-->
+<!--    </mat-select>-->
+
+<!--    &lt;!&ndash; search &ndash;&gt;-->
+<!--    <mat-input-container class="search">-->
+<!--      <mat-icon matSuffix color="primary">search</mat-icon>-->
+<!--      <input [formControl]="searchFilter" matInput placeholder="Search">-->
+<!--    </mat-input-container>-->
+
+<!--  </div>-->
+
+  <mat-table #table [dataSource]="dataSource" matSort class="example-container mat-elevation-z8">
+
+    <!--- Note that these columns can be defined in any order.
+    The actual rendered columns are set as a property on the row definition" -->
+
+    <!-- Country Column -->
+    <ng-container matColumnDef="Country">
+      <mat-header-cell *matHeaderCellDef fxFlex="15"> Destination</mat-header-cell>
+      <mat-cell *matCellDef="let row" fxFlex="15" [routerLink]="['../edit-inventory']" [queryParams]="{ inventoryId: row.$key }"> {{ showDestination(row.destination) }}</mat-cell>
+    </ng-container>
+
+    <!-- Region Column -->
+    <ng-container matColumnDef="Region">
+      <mat-header-cell *matHeaderCellDef fxFlex="20"> Region</mat-header-cell>
+      <mat-cell *matCellDef="let row" fxFlex="20" [routerLink]="['../edit-inventory']" [queryParams]="{ inventoryId: row.$key }"> {{ showRegion(row.region) }}</mat-cell>
+    </ng-container>
+
+    <!-- Type Column -->
+    <ng-container matColumnDef="Type">
+      <mat-header-cell *matHeaderCellDef fxFlex="15"> Type</mat-header-cell>
+      <mat-cell *matCellDef="let row" fxFlex="15" [routerLink]="['../edit-inventory']" [queryParams]="{ inventoryId: row.$key }"> {{row.type}}</mat-cell>
+    </ng-container>
+
+    <!-- Title Column -->
+    <ng-container matColumnDef="Title">
+      <mat-header-cell *matHeaderCellDef fxFlex> Title</mat-header-cell>
+      <mat-cell *matCellDef="let row" fxFlex [routerLink]="['../edit-inventory']" [queryParams]="{ inventoryId: row.$key }"> {{row.name}}</mat-cell>
+    </ng-container>
+
+    <!-- attachment  Column -->
+    <ng-container matColumnDef="Image">
+      <mat-header-cell *matHeaderCellDef fxFlex="5"> Image</mat-header-cell>
+      <mat-cell *matCellDef="let row" fxFlex="5" [routerLink]="['../edit-inventory']" [queryParams]="{ inventoryId: row.$key }"> &nbsp; <svg-icon *ngIf="row.image" src="../assets/icons/attachment.svg" [style.fill]="color"></svg-icon> </mat-cell>
+    </ng-container>
+
+    <!-- edit and delete options -->
+    <ng-container matColumnDef="Actions">
+      <mat-header-cell *matHeaderCellDef fxFlex="10"> </mat-header-cell>
+      <mat-cell *matCellDef="let row" fxLayoutAlign="end center" fxFlex="10">
+
+        <button mat-icon-button (click)="openEdit(row)">
+          <svg-icon src="../assets/icons/edit.svg" [style.fill]="color"></svg-icon>
+        </button>
+
+        <button mat-icon-button (click)="openDelete(row)">
+          <svg-icon src="../assets/icons/trash.svg" [style.fill]="color"></svg-icon>
+        </button>
+
+      </mat-cell>
+    </ng-container>
+
+    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+    <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+  </mat-table>
+  <mat-paginator [pageSizeOptions]="[15, 30, 60]"></mat-paginator>

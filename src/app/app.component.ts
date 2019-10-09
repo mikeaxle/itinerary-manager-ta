@@ -1,5 +1,5 @@
 import {Component, Injectable, OnInit} from '@angular/core';
-import {DataService} from './data.service';
+import {DataService} from './services/data.service';
 import {MatSnackBar} from '@angular/material';
 import {Router} from '@angular/router';
 

@@ -57,15 +57,15 @@
       true,
       "ignore-params"
     ],
-    "no-non-null-assertion": true,
+    "no-non-null-assertion": false,
     "no-redundant-jsdoc": true,
     "no-switch-case-fall-through": true,
     "no-var-requires": false,
     "object-literal-key-quotes": [
       false,
-      "as-needed"
+      "always"
     ],
-    "object-literal-sort-keys": false,
+    "object-literal-sort-keys": true,
     "ordered-imports": false,
     "quotemark": [
       true,
@@ -86,6 +86,6 @@
     "use-pipe-transform-interface": true
   },
   "rulesDirectory": [
-    "codelyzer"
+    "node_modules/codelyzer"
   ]
 }

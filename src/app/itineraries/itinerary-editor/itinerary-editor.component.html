@@ -1,0 +1,523 @@
+<div>
+  <!-- tool bar -->
+  <section fxLayout="row"
+           fxLayoutAlign="space-around center"
+           fxLayout.xs="column"
+           fxLayout.sm="column"
+           fxLayoutGap.xs="10px"
+           fxLayoutGap.sm="10px">
+
+    <!-- back button -->
+    <span fxLayout="row" fxLayoutGap="20px" fxLayoutAlign=" center">
+      <button mat-icon-button [routerLink]="['../itineraries']" style="padding-top:5px">
+          <svg-icon src="../assets/icons/back.svg" [style.fill]=color></svg-icon>
+      </button>
+
+      <h2>Itinerary {{ itinerary$.invoice_number }}</h2>
+    </span>
+
+
+    <span class="fill-remaining-space"></span>
+    <mat-select
+      fxFlex="10"
+      [(ngModel)]="itinerary$.status"
+      (ngModelChange)="onSelect($event)"
+      placeholder="Itinerary Status">
+      <mat-option *ngFor="let status of statuses" [value]="status">
+        {{ status }}
+      </mat-option>
+    </mat-select>
+
+    <!-- buttons -->
+    <span fxLayoutGap="10px">
+        <span class="fill-remaining-space"></span>
+
+      <button
+        [ngClass]="data.getButtonStyle()"
+        mat-button
+        mat-raised-button
+        (click)="duplicateItinerary()">
+        Duplicate
+      </button>
+
+        <button
+          [ngClass]="data.getButtonStyle()"
+          mat-button
+          mat-raised-button
+          (click)="openEditItinerary()">
+          Edit
+        </button>
+
+        <button
+          [ngClass]="data.getButtonStyle()"
+          mat-button
+          mat-raised-button
+          (click)="openDelete()">
+          Delete
+        </button>
+
+        <button
+          mat-button
+          mat-raised-button
+          [matMenuTriggerFor]="menu"
+          [ngClass]="data.getButtonStyleMain()">
+          Save as PDF
+        </button>
+
+      <!-- print pdf menu -->
+        <mat-menu #menu="matMenu">
+          <button mat-menu-item (click)="saveAsPdfPartial()">Itinerary & Costs</button>
+          <button mat-menu-item (click)="saveAsPdf(true)">Full Itinerary</button>
+          <button mat-menu-item (click)="saveAsPdf(false)">Full Itinerary - No Costs</button>
+        </mat-menu>
+  </span>
+  </section>
+
+
+  <!-- page -->
+  <mat-spinner
+    class="spinner-padding"
+    *ngIf="itinerary$ === null"></mat-spinner>
+
+  <mat-card
+    class="mat-elevation-z8"
+    style="max-width: 800px !important;"
+    fxLayout="column"
+    *ngIf="itinerary$!== null">
+
+    <!-- header -->
+    <div class="itin-page-header">
+      <h2>{{ getName(itinerary$.client, 'clients') }}</h2>
+      <h1>{{ itinerary$.title}}</h1>
+    </div>
+
+    <!-- booking details -->
+    <div class="itin-booking-details">
+      <table>
+        <tr>
+          <td>
+            <h5>Itinerary</h5>
+            <b>{{ itinerary$.invoice_number }}</b>
+          </td>
+          <td>
+            <h5>Safari Specialist</h5>
+            <b>{{ getName( itinerary$.agent,'users') }}</b>
+          </td>
+          <td>
+            <h5>Status</h5>
+            <b>{{ itinerary$.status }}</b>
+          </td>
+
+        </tr>
+        <tr>
+          <td>
+            <h5>Adults</h5>
+            <b>{{ itinerary$.adults }}</b>
+          </td>
+          <td>
+            <h5>Children</h5>
+            <b>{{ itinerary$.children }}</b>
+          </td>
+          <td>
+            <h5>Travel dates</h5>
+            <b>{{itinerary$.startdate}} - {{itinerary$.enddate}}</b>
+          </td>
+        </tr>
+      </table>
+    </div>
+
+    <!--days remaining heading-->
+    <div class="itin-days" fxLayout="row">
+      <h2 fxFlex>{{usedDays}} / {{ totalDays }} Day Itinerary</h2>
+      <span *ngIf="usedDays > totalDays" fxFlex=70 class="itin-exceed">You have exceeded the allocated days for this itinerary by {{ usedDays - totalDays }} day(s)</span>
+    </div>
+
+    <!-- days come here -->
+<!--  todo: put back dragula  [dragula]="'days'" [dragulaModel]="_days"  -->
+<!--    <div *ngIf="days">-->
+
+<!--      <div *ngFor="let day of days; let i=index">-->
+
+<!--        &lt;!&ndash; editor-components items added from modal &ndash;&gt;-->
+<!--        <div-->
+<!--          fxLayout="row"-->
+<!--          fxFlexAlign="space-between base-line"-->
+<!--          class="day">-->
+
+<!--          &lt;!&ndash; left column &ndash;&gt;-->
+<!--          <span-->
+<!--            fxLayout="column"-->
+<!--            fxLayoutAlign="start center"-->
+<!--            fxFlex="18"-->
+<!--            fxLayoutGap="10px">-->
+<!--            <mat-chip-list>-->
+<!--              &lt;!&ndash; color hack: AM2 seems to be broken &ndash;&gt;-->
+<!--              <mat-chip fxLayoutAlign="center center" [selected]="true" [style.background-color]=color  style="padding: 5px; max-width: 18% !important; min-width: 90px !important; color: white; box-sizing: border-box;" >{{ getDayTitle('title', day) }}</mat-chip>-->
+<!--            </mat-chip-list>-->
+<!--            <span style="font-size:12px" >{{ getDayTitle('dates', day) }}</span>-->
+<!--          </span>-->
+
+<!--          &lt;!&ndash; middle column &ndash;&gt;-->
+<!--          <span fxFlex="80" fxFlexAlign="center start">-->
+<!--            {{getItineraryDescriptions(day)}}-->
+<!--          </span>-->
+
+<!--          &lt;!&ndash; right column &ndash;&gt;-->
+<!--          <span-->
+<!--            fxLayout="row"-->
+<!--            fxLayoutAlign="space-between center"-->
+<!--            fxFlex-->
+<!--            fxLayout.xs="column"-->
+<!--            fxLayout.sm="column">-->
+
+<!--            &lt;!&ndash; edit button &ndash;&gt;-->
+<!--            <button mat-icon-button (click)="openDayDialog('edit', day)">-->
+<!--              <svg-icon src="../assets/icons/edit.svg" [style.fill]=color></svg-icon>-->
+<!--            </button>-->
+
+<!--            &lt;!&ndash; drag handle &ndash;&gt;-->
+<!--            <button mat-icon-button style="cursor: move !important;">-->
+<!--              <svg-icon  src="../assets/icons/move.svg" [style.fill]=color></svg-icon>-->
+<!--            </button>-->
+
+<!--            &lt;!&ndash; delete button &ndash;&gt;-->
+<!--            <button mat-icon-button (click)="removeDay(day.$key)">-->
+<!--                <svg-icon src="../assets/icons/trash.svg" [style.fill]=color></svg-icon>-->
+<!--            </button>-->
+<!--          </span>-->
+<!--        </div>-->
+
+<!--        &lt;!&ndash; comments added from modal &ndash;&gt;-->
+<!--        <div-->
+<!--          *ngIf="comments"-->
+<!--          fxLayout="column"-->
+<!--          fxFlexAlign="space-between base-line">-->
+
+<!--          &lt;!&ndash; iterate comments array &ndash;&gt;-->
+<!--          <div *ngFor="let comment of comments; let co=index; let last = last"-->
+<!--               fxLayout="row"-->
+<!--               class="day">-->
+<!--            &lt;!&ndash; left column &ndash;&gt;-->
+<!--            <span-->
+<!--              fxLayoutAlign="space-around center"-->
+<!--              fxFlex="18"-->
+<!--              fxLayoutGap="5px">-->
+
+<!--              <img [src]="getCommentIcon(comment.type)" />-->
+
+<!--            </span>-->
+
+<!--            &lt;!&ndash; middle column &ndash;&gt;-->
+<!--            <span fxFlex="80" fxFlexAlign="start">-->
+<!--              <p> {{comment.comment}}</p>-->
+<!--            </span>-->
+
+<!--            &lt;!&ndash; right column &ndash;&gt;-->
+<!--            <span-->
+<!--              fxLayout="row"-->
+<!--              fxLayoutAlign="space-between center"-->
+<!--              fxFlex-->
+<!--              fxLayout.xs="column"-->
+<!--              fxLayout.sm="column">-->
+<!--              <span style="width:40px"></span>-->
+<!--              <button mat-icon-button (click)="openCommentDialog('edit', comment)">-->
+<!--                  <svg-icon src="../assets/icons/edit.svg" [style.fill]=color></svg-icon>-->
+<!--              </button>-->
+
+<!--              <button mat-icon-button (click)="removeComment(comment.$key)">-->
+<!--                  <svg-icon src="../assets/icons/trash.svg" [style.fill]=color></svg-icon>-->
+<!--              </button>-->
+<!--          </span>-->
+<!--          </div>-->
+
+<!--        </div>-->
+<!--      </div>-->
+<!--    </div>-->
+
+<!--    &lt;!&ndash; editor-components editor button &ndash;&gt;-->
+<!--    <div-->
+<!--      fxLayout-->
+<!--      fxLayoutAlign="end center"-->
+<!--      fxLayoutGap="10px">-->
+
+<!--      <button-->
+<!--        [ngClass]="data.getButtonStyle()"-->
+<!--        mat-raised-button-->
+<!--        [disabled]="_days.length < 1"-->
+<!--        (click)="openCommentDialog('add')">-->
+<!--        Add Comment-->
+<!--      </button>-->
+
+<!--      <button-->
+<!--        mat-raised-button-->
+<!--        [ngClass]="data.getButtonStyleMain()"-->
+<!--        (click)="openDayDialog('add')">-->
+<!--        Add Day-->
+<!--      </button>-->
+<!--    </div>-->
+
+<!--    &lt;!&ndash; inclusions &ndash;&gt;-->
+<!--    <div *ngIf="inclusions?.length > 0" class="itin-border-top">-->
+<!--      <h2>Inclusions</h2>-->
+<!--      &lt;!&ndash; inclusion &ndash;&gt;-->
+<!--      <div-->
+<!--        *ngFor="let accommodation of inclusions; let a=index"-->
+<!--        fxLayout="column">-->
+
+<!--        &lt;!&ndash; inclusions input &ndash;&gt;-->
+<!--        <mat-form-field>-->
+<!--          <label>-->
+<!--<textarea-->
+<!--  rows="4"-->
+<!--  matInput-->
+<!--  (keyup.enter)="onKeyUpInclusions($event, accommodation)"-->
+<!--  (blur)="onKeyUpInclusions($event, accommodation)"-->
+<!--  placeholder="{{accommodation.name}}"-->
+<!--  [value]="accommodation.inclusions">-->
+<!--</textarea>-->
+<!--          </label>-->
+<!--        </mat-form-field>-->
+<!--      </div>-->
+<!--    </div>-->
+
+<!--    &lt;!&ndash; exclusions &ndash;&gt;-->
+<!--    <div *ngIf="inclusions?.length > 0" class="itin-border-top">-->
+<!--      <h2>Exlusions</h2>-->
+
+<!--      &lt;!&ndash; exclusions input &ndash;&gt;-->
+<!--      <mat-form-field>-->
+<!--        <label>-->
+<!--<textarea-->
+<!--  [(ngModel)]="exclusions"-->
+<!--  rows="4"-->
+<!--  type="text"-->
+<!--  matInput-->
+<!--  (keyup.enter)="onKeyUpQuote('exclusions')"-->
+<!--  (blur)="onKeyUpQuote('exclusions')"-->
+<!--  placeholder="Exclusions">-->
+<!--</textarea>-->
+<!--        </label>-->
+<!--      </mat-form-field>-->
+<!--    </div>-->
+
+<!--    &lt;!&ndash; Quote &ndash;&gt;-->
+<!--    <div fxLayout="column" class="itin-border-top">-->
+<!--      <h2>Quote</h2>-->
+<!--      <div fxLayout="column">-->
+
+<!--        &lt;!&ndash; Total &ndash;&gt;-->
+<!--        <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px" class="quote-field">-->
+<!--          <span fxFlex="50">Total</span>-->
+<!--          <span>USD</span>-->
+<!--          <mat-form-field fxFlex="30">-->
+<!--            <label>-->
+<!--              <input-->
+<!--                currencyMask-->
+<!--                [(ngModel)]="total"-->
+<!--                (keyup.enter)="onKeyUpQuote('total')"-->
+<!--                (blur)="onKeyUpQuote('total')"-->
+<!--                matInput/>-->
+<!--            </label>-->
+<!--          </mat-form-field>-->
+<!--          <span fxFlex></span>-->
+<!--        </div>-->
+
+<!--        &lt;!&ndash; price per person &ndash;&gt;-->
+<!--        <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px" class="quote-field">-->
+<!--          <span fxFlex="50">Price Per Person</span>-->
+<!--          <span>USD</span>-->
+<!--          <mat-form-field fxFlex="30" style="text-align:right !important;">-->
+<!--            <label>-->
+<!--              <input disabled matInput/>-->
+<!--              {{ total/(children + adults) | number: '1.0-2'}}-->
+<!--            </label>-->
+<!--          </mat-form-field>-->
+<!--          <span fxFlex></span>-->
+<!--        </div>-->
+
+
+<!--        &lt;!&ndash; average price per person per day &ndash;&gt;-->
+<!--        <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px" class="quote-field">-->
+<!--          <span fxFlex="50">Ave. per person per day</span>-->
+<!--          <span>USD</span>-->
+<!--          <mat-form-field fxFlex="30" style="text-align:right !important;">-->
+<!--            <label>-->
+<!--              <input disabled matInput/>-->
+<!--              {{ (total/(children + adults))/usedDays | number: '1.0-2' }}-->
+<!--            </label>-->
+<!--          </mat-form-field>-->
+<!--          <span fxFlex></span>-->
+<!--        </div>-->
+
+<!--        &lt;!&ndash; Discount &ndash;&gt;-->
+<!--        <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px" class="quote-field">-->
+<!--          <span fxFlex="50">Discount</span>-->
+<!--          <span>USD</span>-->
+<!--          <mat-form-field fxFlex="30">-->
+<!--            <label>-->
+<!--              <input-->
+<!--                currencyMask-->
+<!--                [(ngModel)]="discount"-->
+<!--                (keyup.enter)="onKeyUpQuote('discount')"-->
+<!--                (blur)="onKeyUpQuote('discount')"-->
+<!--                matInput/>-->
+<!--            </label>-->
+<!--          </mat-form-field>-->
+<!--          <span fxFlex></span>-->
+<!--        </div>-->
+
+<!--        &lt;!&ndash; Deposit Required &ndash;&gt;-->
+<!--        <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px" class="quote-field">-->
+<!--          <span fxFlex="50">Deposit Required</span>-->
+<!--          <span>USD</span>-->
+<!--          <mat-form-field fxFlex="30">-->
+<!--            <label>-->
+<!--              <input-->
+<!--                color="primary"-->
+<!--                currencyMask-->
+<!--                [(ngModel)]="deposit"-->
+<!--                (keyup.enter)="onKeyUpQuote('deposit')"-->
+<!--                (blur)="onKeyUpQuote('deposit')"-->
+<!--                matInput/>-->
+<!--            </label>-->
+<!--          </mat-form-field>-->
+<!--          <span fxFlex></span>-->
+<!--        </div>-->
+
+<!--        &lt;!&ndash; payments made &ndash;&gt;-->
+<!--        <div fxLayout="column" fxFill *ngIf="payments | async">-->
+<!--          <div fxLayout="row" *ngFor="let p of ( payments | async )" fxLayoutAlign="start center" fxLayoutGap="10px" class="quote-field">-->
+<!--            <span fxFlex="50">Payment Received {{ p.date }}</span>-->
+<!--            <span>USD</span>-->
+
+<!--            <mat-form-field fxFlex="30" style="text-align: right !important;">-->
+<!--              <label>-->
+<!--                <input disabled matInput/>-->
+<!--                {{p.amount | number: '1.0-2'}}-->
+<!--              </label>-->
+
+<!--            </mat-form-field>-->
+
+<!--            <span fxFlex>-->
+<!--                    &lt;!&ndash; edit button &ndash;&gt;-->
+<!--                    <button mat-icon-button (click)="openPaymentDialog('edit', p)">-->
+<!--                      <mat-icon src="../assets/icons/edit.svg"  [style.fill]=color></mat-icon>-->
+<!--                    </button>-->
+
+<!--              &lt;!&ndash; delete button &ndash;&gt;-->
+<!--                    <button mat-icon-button (click)="removePayment(p.$key)">-->
+<!--                      <mat-icon src="../assets/icons/trash.svg" [style.fill]=color></mat-icon>-->
+<!--                    </button>-->
+<!--                  </span>-->
+<!--          </div>-->
+<!--        </div>-->
+
+<!--        &lt;!&ndash; add payment button &ndash;&gt;-->
+<!--        <div fxLayout="row" xLayoutAlign="start center" fxLayoutGap="10px" style="height: 40px; margin-top: 10px">-->
+<!--          <span fxFlex="50"></span>-->
+<!--          <button-->
+<!--            mat-raised-button-->
+<!--            [ngClass]="data.getButtonStyle()"-->
+<!--            fxFlex="30"-->
+<!--            (click)="openPaymentDialog('add')">Add Payment-->
+<!--          </button>-->
+<!--        </div>-->
+<!--      </div>-->
+
+
+<!--      <span class="spacer"></span>-->
+<!--      &lt;!&ndash; sub totals &ndash;&gt;-->
+<!--      <div fxLayout="row" fxFill class="balance">-->
+<!--        <span  fxFlex="50"><b>Balance Due</b></span>-->
+<!--        <span fxFlex="36" style="text-align: right !important"><b>USD {{ getBalance() | number: '1.0-2'}}</b></span>-->
+<!--        <span fxFlex fxLayout></span>-->
+<!--      </div>-->
+<!--      <span class="spacer"></span>-->
+
+
+<!--    </div>-->
+<!--    &lt;!&ndash; Contact Numbers &ndash;&gt;-->
+<!--    <h2>Contact Numbers</h2>-->
+<!--    <div fxLayout>-->
+<!--      <div fxFlex="50"></div>-->
+<!--      <div *ngIf="countries | async" fxFlex fxLayout="Column">-->
+<!--        <div *ngFor="let c of (countries | async )" fxLayoutAlign="start center" fxLayoutGap="10px" class="quote-field">-->
+
+<!--          <mat-form-field fxFlex="72">-->
+<!--            <label>-->
+<!--              <input disabled matInput>-->
+<!--              {{ countryservice.getDestination(c.country_id).name }}-->
+<!--            </label>-->
+<!--          </mat-form-field>-->
+<!--          <span fxFlex fxLayout>-->
+<!--              &lt;!&ndash; edit button &ndash;&gt;-->
+<!--              <button mat-icon-button (click)="openCountryDialog('edit', c)">-->
+<!--                <svg-icon src="../assets/icons/edit.svg"  [style.fill]=color></svg-icon>-->
+<!--              </button>-->
+
+<!--            &lt;!&ndash; delete button &ndash;&gt;-->
+<!--              <button mat-icon-button (click)="removeCountry(c.$key)">-->
+<!--                <svg-icon src="../assets/icons/trash.svg" [style.fill]=color></svg-icon>-->
+<!--              </button>-->
+<!--            </span>-->
+<!--        </div>-->
+<!--        &lt;!&ndash;  add country phone number button &ndash;&gt;-->
+<!--        <div fxLayout="row" xLayoutAlign="start center" fxLayoutGap="10px" style="height: 40px; margin-top: 10px; margin-left:10px">-->
+<!--          <button-->
+<!--            fxFlex="60"-->
+<!--            mat-raised-button-->
+<!--            [ngClass]="data.getButtonStyle()"-->
+<!--            (click)="openCountryDialog('add')">Add Country-->
+<!--          </button>-->
+<!--        </div>-->
+
+<!--      </div>-->
+<!--    </div>-->
+
+<!--    &lt;!&ndash; Images &ndash;&gt;-->
+<!--    <div>-->
+<!--      <h2>Images</h2>-->
+<!--      <div fxLayout fxLayoutGap="10px">-->
+<!--        &lt;!&ndash; cover image &ndash;&gt;-->
+<!--        <div fxFlex="30" fxLayoutGap="10px">-->
+<!--          <h3>Cover Image</h3>-->
+<!--          <mat-grid-list cols="1" rowHeight="1:2">-->
+<!--            <mat-grid-tile-->
+<!--              [style.background]='tileColor'-->
+<!--              (click)="openImageSelector(coverImageTile, 'coverImageTile')">-->
+<!--              <mat-grid-tile-header>-->
+<!--                <span class="fill-remaining-space"></span>-->
+<!--                <img src="../assets/icons/edit-white.svg" />-->
+<!--              </mat-grid-tile-header>-->
+<!--              <img *ngIf="coverImageTile" [src]="coverImageTile.imageUrl"  style="height:100%; border-radius: 5px; left:0; right: 0"/>-->
+<!--              <svg-icon *ngIf="!coverImageTile" src="../assets/icons/add.svg" [style.fill]=color></svg-icon>-->
+<!--            </mat-grid-tile>-->
+<!--          </mat-grid-list>-->
+<!--        </div>-->
+
+<!--        <span class="fill-remaining-space"></span>-->
+
+<!--        &lt;!&ndash; grid images &ndash;&gt;-->
+<!--        <div fxFlex="60">-->
+<!--          &lt;!&ndash; image grid selector &ndash;&gt;-->
+<!--          <h3>Grid Images</h3>-->
+<!--          <mat-grid-list cols="2" rowHeight="1.5:1">-->
+<!--            <mat-grid-tile-->
+<!--              *ngFor="let tile of gridImageTiles; let i=index"-->
+<!--              [style.background]='tileColor'-->
+<!--              (click)="openImageSelector(gridImageTiles[i], i)">-->
+<!--              <mat-grid-tile-header>-->
+<!--                <span class="fill-remaining-space"></span>-->
+<!--                <img src="../assets/icons/edit-white.svg" />-->
+<!--              </mat-grid-tile-header>-->
+<!--              <img *ngIf="tile.imageUrl !== false" [src]="tile.imageUrl" height="100%" style="border-radius: 5px"/>-->
+<!--              <svg-icon *ngIf="!tile.imageUrl !== false" src="../assets/icons/add.svg" [style.fill]=color></svg-icon>-->
+<!--            </mat-grid-tile>-->
+<!--          </mat-grid-list>-->
+
+<!--        </div>-->
+
+<!--      </div>-->
+<!--    </div>-->
+  </mat-card>
+</div>

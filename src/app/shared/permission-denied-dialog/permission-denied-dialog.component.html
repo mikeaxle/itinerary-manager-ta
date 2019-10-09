@@ -1,0 +1,20 @@
+<h2 mat-dialog-title>Request Denied</h2>
+<div fxLayout="column">
+
+  <p>{{ message }}</p>
+  <span class="spacer"></span>
+
+  <!-- save and cancel buttons -->
+  <div fxLayout="row" fxLayoutGap="10px">
+    <mat-dialog-actions>
+      <button
+        [ngClass]="data.getButtonStyleMain()"
+        (click)="onCloseCancel()"
+        mat-raised-button>
+        OK
+      </button>
+    </mat-dialog-actions>
+
+  </div>
+
+</div>

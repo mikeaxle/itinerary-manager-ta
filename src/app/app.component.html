@@ -1,21 +1,22 @@
 <!-- todo: add *ngIf="(user | async )" to mat-toolbar -->
-<mat-toolbar class="mat-elevation-z3" color="primary"> 
+<mat-toolbar class="mat-elevation-z3" color="primary">
       <button mat-button [routerLink]="['itineraries']">
         <mat-icon>home</mat-icon>
       </button>
-  
+
       <!-- normal menu -->
       <div>
         <button mat-button [routerLink]="['itineraries']">ITINERARIES</button>
         <button mat-button [routerLink]="['clients']">CLIENTS</button>
         <button mat-button [routerLink]="['inventory']">INVENTORY</button>
-        <button *ngIf="(user | async)?.role === 'admin'" mat-button  [routerLink]="['agents']">AGENTS</button>
+        <button mat-button  [routerLink]="['agents']">AGENTS</button>
+<!--        <button *ngIf="(user | async)?.role === 'admin'" mat-button  [routerLink]="['agents']">AGENTS</button>-->
         <button mat-button [routerLink]="['media']">MEDIA</button>
       </div>
-  
+
       <!-- spacer -->
       <span class="fill-remaining-space"></span>
-  
+
       <!-- company name -->
       <span
         *ngIf="user"
@@ -26,7 +27,7 @@
         <button mat-icon-button [mat-menu-trigger-for]="menu">
             <img class="avatar_icon" [src]=logo>
         </button>
-  
+
     </span>
 
 </mat-toolbar>

@@ -1,0 +1,59 @@
+<!-- title + add new button -->
+<div class="page-title">
+  <h1>Contacts</h1>
+  <button mat-raised-button color="primary" (click)="addNew()">Add New Client</button>
+</div>
+<span style="padding: 20px"></span>
+
+<!-- table -->
+<!--  <div class="example-header" fxLayoutGap="20px">-->
+
+<!--    &lt;!&ndash; filter options &ndash;&gt;-->
+<!--    <mat-select placeholder="Agent" [formControl]="agentFilter" class="filters">-->
+<!--      <mat-option value="">All</mat-option>-->
+<!--      <mat-option *ngFor="let agent of agents | async" [value]="agent.$key">-->
+<!--        {{ agent.firstname }} {{ agent.lastname }} <span *ngIf=" loggedInUser.email === agent.email" [style.color]=color>(You)</span>-->
+<!--      </mat-option>-->
+<!--    </mat-select>-->
+
+<!--    &lt;!&ndash; search &ndash;&gt;-->
+<!--    <mat-input-container class="search">-->
+<!--      <mat-icon matSuffix color="primary">search</mat-icon>-->
+<!--      <input matInput placeholder="Search" [formControl]="searchFilter">-->
+<!--    </mat-input-container>-->
+
+<!--  </div>-->
+<!-- todo: add filters -->
+  <table mat-table [dataSource]="dataSource" class="mat-elevation-z8" matSort>
+    <!-- Name Column -->
+    <ng-container matColumnDef="Name">
+      <mat-header-cell *matHeaderCellDef fxFlex="45"> Name</mat-header-cell>
+      <mat-cell *matCellDef="let row" fxFlex="45" (click)="editClient(row)"> {{ row.firstname + ' ' + row.lastname }}</mat-cell>
+    </ng-container>
+
+    <!-- Email Column -->
+    <ng-container matColumnDef="Email">
+      <mat-header-cell *matHeaderCellDef fxFlex="45"> Email</mat-header-cell>
+      <mat-cell *matCellDef="let row" fxFlex="45" (click)="editClient(row)"> {{ row.email }}</mat-cell>
+    </ng-container>
+
+    <!-- edit and delete options -->
+    <ng-container matColumnDef="Actions">
+      <mat-header-cell *matHeaderCellDef fxFlex="40"></mat-header-cell>
+      <mat-cell *matCellDef="let row" fxLayoutAlign="end center" fxLayoutGap="10px">
+
+        <button mat-icon-button (click)="editClient(row)">
+          <svg-icon src="../assets/icons/edit.svg" [style.fill]="data.color"></svg-icon>
+        </button>
+
+        <button mat-icon-button (click)="openDelete(row.$key)">
+          <svg-icon src="../assets/icons/trash.svg" [style.fill]="data.color"></svg-icon>
+        </button>
+
+      </mat-cell>
+    </ng-container>
+
+    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+    <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+  </table>
+<mat-paginator [pageSizeOptions]="[15, 30, 60]"></mat-paginator>

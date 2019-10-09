@@ -4,10 +4,10 @@ import { CdkTableModule} from '@angular/cdk/table';
 import 'hammerjs';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { AppComponent } from './app.component';
-import { SavePdfService } from './save-pdf.service';
+import { SavePdfService } from './services/save-pdf.service';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { CountryService } from './country.service';
-import { MyDateAdapter, MY_DATE_FORMATS } from './custom-date-adapter';
+import { CountryService } from './services/country.service';
+import { MyDateAdapter, MY_DATE_FORMATS } from './directives/custom-date-adapter';
 import { DragulaModule } from 'ng2-dragula';
 import { CurrencyMaskModule } from 'ng2-currency-mask';
 import { CurrencyMaskConfig, CURRENCY_MASK_CONFIG } from 'ng2-currency-mask/src/currency-mask.config';
@@ -43,33 +43,39 @@ import {
   MatHeaderCellDef,
   MatCellDef, MatSort, MatTable, MatSortHeader, MatBottomSheetModule
 } from '@angular/material';
-import { CapitalizePipe } from './capitalize.pipe';
-import { InvalidTypeDirective } from './invalid-type.directive';
-import { InvalidmessageDirective } from './invalidmessage.directive';
+import { InvalidTypeDirective } from './directives/invalid-type.directive';
+import { InvalidmessageDirective } from './directives/invalidmessage.directive';
 import { AngularSvgIconModule } from 'angular-svg-icon';
 import { OverlayContainer } from '@angular/cdk/overlay';
 import { AngularFireModule } from '@angular/fire';
 import { environment } from '../environments/environment';
 import {AngularFireStorageModule} from '@angular/fire/storage';
 import {AngularFireAuthGuard} from '@angular/fire/auth-guard';
-import {DataService} from './data.service';
+import {DataService} from './services/data.service';
 import {AngularFireAuthModule} from '@angular/fire/auth';
 import {AngularFireDatabaseModule} from '@angular/fire/database';
 import { AppRoutingModule } from './app-routing.module';
 import {ItinerariesComponent} from './itineraries/itineraries.component';
 import {MatPaginatorModule} from '@angular/material/paginator';
 import {RouterModule, ROUTES} from '@angular/router';
-import { EditorComponent } from './editor/editor.component';
+import { EditorComponent } from './shared/editor/editor.component';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
-import { ItineraryEditorComponent } from './itinerary-editor/itinerary-editor.component';
-import { DayComponent } from './day/day.component';
-import { CommentComponent } from './comment/comment.component';
-import { PaymentComponent } from './payment/payment.component';
-import { ImageSelectorComponent } from './image-selector/image-selector.component';
-import { ItineraryDetailsEditorComponent } from './itinerary-details-editor/itinerary-details-editor.component';
-import { AddCountryNumberComponent } from './add-country-number/add-country-number.component';
-import { ConfirmComponent } from './confirm/confirm.component';
+import { ItineraryEditorComponent } from './itineraries/itinerary-editor/itinerary-editor.component';
+import { DayComponent } from './itineraries/itinerary-editor/day/day.component';
+import { CommentComponent } from './itineraries/itinerary-editor/comment/comment.component';
+import { PaymentComponent } from './itineraries/itinerary-editor/payment/payment.component';
+import { ImageSelectorComponent } from './itineraries/itinerary-editor/image-selector/image-selector.component';
+import { ItineraryDetailsEditorComponent } from './itineraries/itinerary-editor/itinerary-details-editor/itinerary-details-editor.component';
+import { AddCountryNumberComponent } from './itineraries/itinerary-editor/add-country-number/add-country-number.component';
+import { ConfirmComponent } from './shared/confirm/confirm.component';
 import {HttpClientModule} from '@angular/common/http';
+import { ItinerariesModule } from './itineraries/itineraries.module';
+import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
+import { ClientsComponent } from './clients/clients.component';
+import { PermissionDeniedDialogComponent } from './shared/permission-denied-dialog/permission-denied-dialog.component';
+import { InventoryComponent } from './inventory/inventory.component';
+import { MediaComponent } from './media/media.component';
+import { AgentsComponent } from './agents/agents.component';
 
 // currency Mask settings
 // @ts-ignore
@@ -86,24 +92,42 @@ export const CustomCurrencyMaskConfig: CurrencyMaskConfig = {
 };
 
 @NgModule({
+  bootstrap: [AppComponent],
   declarations: [
     AppComponent,
     ItinerariesComponent,
-    CapitalizePipe,
     InvalidTypeDirective,
     InvalidmessageDirective,
     EditorComponent,
-    ItineraryEditorComponent,
+    DayComponent,
+    CommentComponent,
+    PaymentComponent,
+    ImageSelectorComponent,
+    AddCountryNumberComponent,
+    ConfirmComponent,
+    PageNotFoundComponent,
+    ClientsComponent,
+    PermissionDeniedDialogComponent,
+    InventoryComponent,
+    MediaComponent,
+    AgentsComponent
+  ],
+  entryComponents: [
     DayComponent,
     CommentComponent,
     PaymentComponent,
     ImageSelectorComponent,
     ItineraryDetailsEditorComponent,
     AddCountryNumberComponent,
-    ConfirmComponent
+    EditorComponent,
+    ConfirmComponent,
+    PermissionDeniedDialogComponent
+
   ],
   imports: [
     BrowserModule,
+    FormsModule,
+    ItinerariesModule,
     AppRoutingModule,
     AngularSvgIconModule,
     HttpClientModule,
@@ -139,24 +163,13 @@ export const CustomCurrencyMaskConfig: CurrencyMaskConfig = {
     MatTableModule,
     MatBottomSheetModule,
     ReactiveFormsModule,
-    MatSelectModule,
-    FormsModule
+    MatSelectModule
   ],
   providers: [],
-  entryComponents: [
-    DayComponent,
-    CommentComponent,
-    PaymentComponent,
-    ImageSelectorComponent,
-    ItineraryDetailsEditorComponent,
-    AddCountryNumberComponent,
-    EditorComponent
-  ],
-  bootstrap: [AppComponent],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class AppModule {
-  constructor(overlayContainer: OverlayContainer){
+  constructor(overlayContainer: OverlayContainer) {
     if (localStorage.getItem('currentCompany') === 'Planet Africa') {
       overlayContainer.getContainerElement().classList.add('planet-africa-theme');
     }
