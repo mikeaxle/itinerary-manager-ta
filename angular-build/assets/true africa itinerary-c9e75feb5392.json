@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "true-africa-itinerary",
+  "private_key_id": "c9e75feb5392d3a5959b221468c77ff658c8967b",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQC0tFIo0PDWJfUK\n0fumVzBMpHJMyBCg2muwzwYqblY8DUDtEjlFSfqNYXi2plkrplKI+zYoaty9Sozy\nCWPcEHaG3tmrVjvj2zH107V7Tg5KIfbw2i7+65he0enKtcEyCefUjoQV4QXWFzTm\ng+In+OawR7h1k6xkJ/pS+CmHXdXcLcJY2oDXGhdwOWasjcpXOFluE1DlPpJuixyg\nWota84vdqlP+Z2HeGHK7t9FtzezYc+/tz4CX/x/VoamtRMvCfCHXLQWTR2Jo0EUZ\niHzQuVniNyYXtfBVPcxXs1jQfa5Xe2K7p2qKsBBZUxtbnMYDfvvg4noEkiDown2N\nYag/d9bzAgMBAAECggEANoHoAIDaDLahXjSt1GSbYJsAEVIN1f9cmZYw9W6X24Bh\n88DZ/qEMj0X2DB5MaoK+haxFD1cAo6aPsliLwy9CGXeyL+EQqrANN2o3ZWzLmaf6\nHXeq0mFNclieTXOaxZXAVNjyVcktIgGZBumEN+t35neT1/+F8iYu94T8veTbpBC0\n+i4BFOOiJe21AM2xXDJnBTgO+uoSD4/NzqOwbI86jm3P1XikVrmGYz3bB2F99xTb\nD8cXhYvFu/Pc0C9vyZVNtdrlkA3bmTllwKRsKNAGiZcR7nUlVjZwta+QF8nRTHB+\nbS+ApAnlEa28S0QTBN4N70/3LLMQSBJS93oLBgPKYQKBgQDvmAsnmUORbvYNI+TO\ngWr9Q6q/zAPtpoQWrOp1Ttlw5YQ9FS8potk62rbvXASdo4zXg1NPL+gDYoKU/RBo\nabZkhjXMvMkirgLY/ZvGWfzY+AefKkDa4goMwuhIo0poSO9gkex09CKSbgpijeQe\nLdFIZApLumqiRekZ6HlaL68E0wKBgQDBE/lzqST+LDTxoVVlgfsID502RloySHxU\n4Zsa14ygUZ8Our/NEPlJkk3FA2ll4y9KCCDxtEvuHK+jFbCSSjWGkzP6PsRJVmOV\nRrpv9ieJUVl/VQREV+nCmM+FVGhBzKkYfH53VSLG4LnYls8ZviJ5DzmSF6WHnyGV\nm4F09LcRYQKBgQDHg8cWLIyVmN8QRimMxTyAtk6D9LH4vkcUUt3S3dw4JQgfjXp+\no3tdhS/81pWJZ94qwNMpB+2ek/PFeY6mRBF8WD6IxVSAqoL4iwei/uCNFM3T/u2O\n19gilFO12TRm7wVXV2yeX4ZChZvkQeAKOYEjVRs1wIB3rNvVlT8omLiXvQKBgFDD\noDcna9f+ee8RQ32Aj5dhoKuRZi1ecNO4w37I54QwYE5zA8Qt83k4/9sHgFEkZSWc\nnNs+RfzGdxnK+t9Wt2khrj5hfw4GWwWYXmhzGTqxkrRWxcAo3hmOflARbMMJbzpU\n6TnVnQSAAH1/KAZmqFjna3eW+KDwicXhFJftvZ5BAoGAMRQjqv6Ka8UFG/DC2nx3\n2RlOSrH3JAfFyIxBKRhkyqpmM9M7Q+ZkyBYCrCulnbC437BDKwZHt+CgOeXWOcsl\nWgb4UDkm2FmcbsmMFHed54em4kOTOHRSaJi08dj5j3t06uz63ZZ3tfwsmXS9hIKK\nQabhkTslLYtO21jHyyjvmDw=\n-----END PRIVATE KEY-----\n",
+  "client_email": "true-africa-itinerary@appspot.gserviceaccount.com",
+  "client_id": "101545592817354897559",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://accounts.google.com/o/oauth2/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/true-africa-itinerary%40appspot.gserviceaccount.com"
+}
