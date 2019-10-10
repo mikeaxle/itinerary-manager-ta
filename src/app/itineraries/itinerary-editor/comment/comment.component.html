@@ -1,1 +1,60 @@
-<p>comment works!</p>
+<h2 mat-dialog-title>Add Comment</h2>
+<form [formGroup]="commentForm" fxLayout="column">
+
+  <!-- days -->
+  <mat-select
+    placeholder="Day"
+    formControlName="day"
+    required>
+    <mat-option
+      *ngFor="let d of daysArray"
+      [value]="d.key">
+      {{d.title}}
+    </mat-option>
+  </mat-select>
+
+
+  <!-- types -->
+  <mat-select placeholder="Type" formControlName="type">
+    <mat-option
+      *ngFor="let t of types"
+      [value]="t">{{t}}
+    </mat-option>
+  </mat-select>
+
+  <!-- comment -->
+  <mat-form-field>
+    <label>
+<textarea
+  color="primary"
+  placeholder="Comments"
+  formControlName="comment"
+  rows="2"
+  cols="50"
+  matInput
+  required>
+</textarea>
+    </label>
+  </mat-form-field>
+
+  <span class="spacer"></span>
+  <!-- save and cancel buttons -->
+  <mat-dialog-actions>
+    <button
+      [ngClass]="data.getButtonStyleMain()"
+      [disabled]="!commentForm.valid"
+      (click)="onCloseConfirm()"
+      mat-raised-button>
+      SAVE
+    </button>
+
+    <button
+      [ngClass]="data.getButtonStyle()"
+      (click)="onCloseCancel()"
+      mat-raised-button>
+      CANCEL
+    </button>
+  </mat-dialog-actions>
+
+</form>
+<!--<p>{{commentForm.value | json }}</p>-->

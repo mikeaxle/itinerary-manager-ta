@@ -1,7 +1,7 @@
 export const environment = {
   production: true,
   firebase: {
-    production: false,
+    production: true,
     apiKey: 'AIzaSyAQVDQYifHP_BT-xCtutLKRa8aI91e_Qmc',
     authDomain: 'true-africa-itinerary.firebaseapp.com',
     databaseURL: 'https://true-africa-itinerary.firebaseio.com',

@@ -303,7 +303,7 @@ md-toolbar-row {
 }
 
 mat-card {
-  max-width: 65%;
+  /*max-width: 65%;*/
   margin: 1em auto;
   /* text-align: center; */
 }
@@ -351,6 +351,19 @@ mat-grid-tile  {
 
 .spacer {
   padding: 10px;
+}
+
+.spacer-vert {
+  padding-bottom: 10px;
+  padding-top: 10px;
+}
+.spacer-vert-50 {
+  padding-bottom: 25px;
+  padding-top: 25px;
+}
+.spacer-vert-100 {
+  padding-bottom: 50px;
+  padding-top: 50px;
 }
 
 .editor {

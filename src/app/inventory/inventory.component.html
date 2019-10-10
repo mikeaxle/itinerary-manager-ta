@@ -1,7 +1,7 @@
 <!-- title + button -->
 <div class="page-title">
   <h1>Inventory</h1>
-  <button mat-raised-button color="primary" [routerLink]="['../add-inventory']">Add New Inventory Item</button>
+  <button mat-raised-button color="primary" (click)="addNew()">Add New Inventory Item</button>
 </div>
 <span style="padding: 20px"></span>
 
@@ -25,7 +25,12 @@
 
 <!--  </div>-->
 
-  <mat-table #table [dataSource]="dataSource" matSort class="example-container mat-elevation-z8">
+<!-- spinner -->
+<div class="spacer-vert-100" *ngIf="inventory.length === 0" fxLayout="row" fxLayoutAlign="center center">
+  <mat-spinner></mat-spinner>
+</div>
+
+  <mat-table  *ngIf="inventory.length > 0" #table [dataSource]="dataSource" #sort class="example-container mat-elevation-z8" >
 
     <!--- Note that these columns can be defined in any order.
     The actual rendered columns are set as a property on the row definition" -->
@@ -65,12 +70,12 @@
       <mat-header-cell *matHeaderCellDef fxFlex="10"> </mat-header-cell>
       <mat-cell *matCellDef="let row" fxLayoutAlign="end center" fxFlex="10">
 
-        <button mat-icon-button (click)="openEdit(row)">
-          <svg-icon src="../assets/icons/edit.svg" [style.fill]="color"></svg-icon>
+        <button mat-icon-button (click)="editInventoryItem(row)">
+          <svg-icon src="../assets/icons/edit.svg" [style.fill]="data.color"></svg-icon>
         </button>
 
         <button mat-icon-button (click)="openDelete(row)">
-          <svg-icon src="../assets/icons/trash.svg" [style.fill]="color"></svg-icon>
+          <svg-icon src="../assets/icons/trash.svg" [style.fill]="data.color"></svg-icon>
         </button>
 
       </mat-cell>

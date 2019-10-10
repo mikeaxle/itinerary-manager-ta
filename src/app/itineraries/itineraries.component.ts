@@ -7,6 +7,7 @@ import {MatSort} from '@angular/material/sort';
 import {MatTableDataSource} from '@angular/material/table';
 import {Router} from '@angular/router';
 import {EditorComponent} from '../shared/editor/editor.component';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-itineraries',
@@ -20,67 +21,81 @@ export class ItinerariesComponent implements OnInit {
   itineraries;
   @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
   @ViewChild(MatSort, {static: true}) sort: MatSort;
+  private error: any;
 
   constructor(public data: DataService, private bottomSheet: MatBottomSheet, public router: Router) {
   }
 
   ngOnInit() {
-    // add dummy data
-    // todo: link to live database
-    const dummydata = [
-    this.data.sampleData.itineraries['Planet Africa']['-L6MmQF4jj7AbmUUVdua'],
-    this.data.sampleData.itineraries['Planet Africa']['-L6VmNj-yY1NiNsV4_eZ'],
-    this.data.sampleData.itineraries['Planet Africa']['-L6WvcFAHVIMplaQqKdf'],
-    this.data.sampleData.itineraries['Planet Africa']['-L745WMaomnzBEVhzN2j'],
-    this.data.sampleData.itineraries['Planet Africa']['-L7ZJtvIw5r_0FophV5V'],
-      this.data.sampleData.itineraries['Planet Africa']['-L6MmQF4jj7AbmUUVdua'],
-      this.data.sampleData.itineraries['Planet Africa']['-L6VmNj-yY1NiNsV4_eZ'],
-      this.data.sampleData.itineraries['Planet Africa']['-L6WvcFAHVIMplaQqKdf'],
-      this.data.sampleData.itineraries['Planet Africa']['-L745WMaomnzBEVhzN2j'],
-      this.data.sampleData.itineraries['Planet Africa']['-L7ZJtvIw5r_0FophV5V'],
-      this.data.sampleData.itineraries['Planet Africa']['-L6MmQF4jj7AbmUUVdua'],
-      this.data.sampleData.itineraries['Planet Africa']['-L6VmNj-yY1NiNsV4_eZ'],
-      this.data.sampleData.itineraries['Planet Africa']['-L6WvcFAHVIMplaQqKdf'],
-      this.data.sampleData.itineraries['Planet Africa']['-L745WMaomnzBEVhzN2j'],
-      this.data.sampleData.itineraries['Planet Africa']['-L7ZJtvIw5r_0FophV5V'],
-      this.data.sampleData.itineraries['Planet Africa']['-L6MmQF4jj7AbmUUVdua'],
-      this.data.sampleData.itineraries['Planet Africa']['-L6VmNj-yY1NiNsV4_eZ'],
-      this.data.sampleData.itineraries['Planet Africa']['-L6WvcFAHVIMplaQqKdf'],
-      this.data.sampleData.itineraries['Planet Africa']['-L745WMaomnzBEVhzN2j'],
-      this.data.sampleData.itineraries['Planet Africa']['-L7ZJtvIw5r_0FophV5V'],
-      this.data.sampleData.itineraries['Planet Africa']['-L6MmQF4jj7AbmUUVdua'],
-      this.data.sampleData.itineraries['Planet Africa']['-L6VmNj-yY1NiNsV4_eZ'],
-      this.data.sampleData.itineraries['Planet Africa']['-L6WvcFAHVIMplaQqKdf'],
-      this.data.sampleData.itineraries['Planet Africa']['-L745WMaomnzBEVhzN2j'],
-      this.data.sampleData.itineraries['Planet Africa']['-L7ZJtvIw5r_0FophV5V'],
-      this.data.sampleData.itineraries['Planet Africa']['-L6MmQF4jj7AbmUUVdua'],
-      this.data.sampleData.itineraries['Planet Africa']['-L6VmNj-yY1NiNsV4_eZ'],
-      this.data.sampleData.itineraries['Planet Africa']['-L6WvcFAHVIMplaQqKdf'],
-      this.data.sampleData.itineraries['Planet Africa']['-L745WMaomnzBEVhzN2j'],
-      this.data.sampleData.itineraries['Planet Africa']['-L7ZJtvIw5r_0FophV5V'],
-      this.data.sampleData.itineraries['Planet Africa']['-L6MmQF4jj7AbmUUVdua'],
-      this.data.sampleData.itineraries['Planet Africa']['-L6VmNj-yY1NiNsV4_eZ'],
-      this.data.sampleData.itineraries['Planet Africa']['-L6WvcFAHVIMplaQqKdf'],
-      this.data.sampleData.itineraries['Planet Africa']['-L745WMaomnzBEVhzN2j'],
-      this.data.sampleData.itineraries['Planet Africa']['-L7ZJtvIw5r_0FophV5V'],
-      this.data.sampleData.itineraries['Planet Africa']['-L6MmQF4jj7AbmUUVdua'],
-      this.data.sampleData.itineraries['Planet Africa']['-L6VmNj-yY1NiNsV4_eZ'],
-      this.data.sampleData.itineraries['Planet Africa']['-L6WvcFAHVIMplaQqKdf'],
-      this.data.sampleData.itineraries['Planet Africa']['-L745WMaomnzBEVhzN2j'],
-      this.data.sampleData.itineraries['Planet Africa']['-L7ZJtvIw5r_0FophV5V'],
-    ];
+    // todo: add dummy data
+    // const dummydata = [
+    //   this.data.sampleData.itineraries['Planet Africa']['-L6VmNj-yY1NiNsV4_eZ'],
+    //   this.data.sampleData.itineraries['Planet Africa']['-L6WvcFAHVIMplaQqKdf'],
+    //   this.data.sampleData.itineraries['Planet Africa']['-L745WMaomnzBEVhzN2j'],
+    //   this.data.sampleData.itineraries['Planet Africa']['-L7ZJtvIw5r_0FophV5V'],
+    // ];
 
-    // init data source
-    this.dataSource = new MatTableDataSource(dummydata);
+    // init itineraries array
+    this.itineraries = [];
 
-    // init data source
-    this.dataSource.paginator = this.paginator;
+    // get itineraries
+    this.data.af.list(`itineraries/${this.data.currentCompany}/`, ref => ref.limitToLast(200))
+    .snapshotChanges()
+      .subscribe(snapshots => {
 
-    // init sort
-    this.dataSource.sort = this.sort;
+        // iterate snapshots
+        snapshots.forEach(snapshot => {
+          // get itinerary
+          let itinerary = {};
+          itinerary = snapshot.payload.val();
+
+          // get key
+          itinerary[`key`] = snapshot.key;
+
+          // push to itineraries array
+          this.itineraries.push(itinerary);
+        });
+
+        // init data source
+        this.dataSource = new MatTableDataSource(this.itineraries);
+
+        // init data source
+        this.dataSource.paginator = this.paginator;
+
+        // init sort
+        this.dataSource.sort = this.sort;
+      });
+
   }
 
-  getName(client: any, clients: string) {
+  // function to get client name
+  getName(key: string, type: string) {
+    // client\agent name string
+    // let string = '';
+    // get from firebase
+    // this.data.getSingleItem(key, `${type}/${this.data.currentCompany}/`)
+    //   .valueChanges()
+    //   .subscribe((res) => {
+    //     const client = res;
+    //     // concat first name and last name
+    //     return client[`firstname`]  + ' ' + client[`lastname`] ;
+    //   });
+    // return full name
+    // return string;
+  }
+
+  // function to delete item
+  deleteItinerary(id: string) {
+    this.data.deleteItem(id, 'itineraries')
+      .then(() => {
+        Swal.fire('Success', 'Itinerary deleted', 'success');
+        console.log('itinerary deleted');
+      })
+      .catch((error) => {
+        this.error = error;
+
+        Swal.fire('Failed', `An error has occurred: ${error.message}`, 'error');
+      });
   }
 
   // filter function

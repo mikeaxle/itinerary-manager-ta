@@ -1,15 +1,33 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, Inject, OnInit} from '@angular/core';
+import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
+import {DataService} from '../../../services/data.service';
 
 @Component({
   selector: 'app-image-selector',
-  templateUrl: './image-selector.component.html',
-  styleUrls: ['./image-selector.component.css']
+  styleUrls: ['./image-selector.component.css'],
+  templateUrl: './image-selector.component.html'
 })
 export class ImageSelectorComponent implements OnInit {
+  mediaList: any;
+  tileBackground = '#add8e6';
 
-  constructor() { }
+  constructor(private data: DataService,
+              public dialogRef: MatDialogRef<ImageSelectorComponent>,
+              @Inject(MAT_DIALOG_DATA) public params: any) { }
 
   ngOnInit() {
+    // get image list from firebase
+    this.mediaList = this.data.getList('media');
+  }
+
+  // function to close dialog
+  onCloseConfirm(media) {
+
+    this.dialogRef.close(media);
+  }
+
+  onCloseCancel() {
+    this.dialogRef.close();
   }
 
 }

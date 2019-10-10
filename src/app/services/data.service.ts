@@ -3,7 +3,7 @@ import {Router} from '@angular/router';
 import {AngularFireDatabase} from '@angular/fire/database';
 import {AngularFireAuth} from '@angular/fire/auth';
 import {AngularFireStorage, StorageBucket} from '@angular/fire/storage';
-import { finalize } from 'rxjs/operators';
+import {finalize, map} from 'rxjs/operators';
 import {Observable} from 'rxjs';
 // @ts-ignore
 import sampleData from '../true-africa-itinerary-export.json';
@@ -57,8 +57,7 @@ export class DataService {
     this.uploadPercent = task.percentageChanges();
 
     // get notified when the download URL is available
-    return task.snapshotChanges().pipe(finalize(() => this.downloadURL = fileRef.getDownloadURL()))
-      .subscribe();
+    return task.snapshotChanges().pipe(finalize(() => this.downloadURL = fileRef.getDownloadURL()));
   }
 
   // get object
@@ -107,7 +106,7 @@ export class DataService {
     return this.storage.ref(path).delete();
   }
 
-  // get list
+  // get list and return array with data and keys
   getList(type: string) {
     return this.af.list(type);
   }
@@ -141,7 +140,7 @@ export class DataService {
     //   .catch((err) => {
     //
     //   });
-  };
+  }
 
   // log user out
   logout() {

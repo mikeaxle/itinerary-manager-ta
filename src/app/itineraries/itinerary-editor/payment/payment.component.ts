@@ -1,15 +1,96 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, Inject, OnInit} from '@angular/core';
+import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {DataService} from '../../../services/data.service';
 
 @Component({
   selector: 'app-payment',
-  templateUrl: './payment.component.html',
-  styleUrls: ['./payment.component.css']
+  styleUrls: ['./payment.component.css'],
+  templateUrl: './payment.component.html'
+
 })
 export class PaymentComponent implements OnInit {
+  public paymentForm: FormGroup;
+  itineraryId: any;
+  payment: any;
+  date: Date;
 
-  constructor() { }
+
+  constructor(private formBuilder: FormBuilder,
+              public data: DataService,
+              public dialogRed: MatDialogRef<PaymentComponent>,
+              @Inject(MAT_DIALOG_DATA) public params: any) { }
+
 
   ngOnInit() {
+
+
+    // get itinerary id
+    this.itineraryId = this.params.id;
+
+    // get payment from params if mode is edit
+    if (this.params.mode === 'edit') {
+      this.payment = this.params.payment;
+
+      this.date = new Date(this.payment.date);
+    }
+
+    // init payment form
+    this.paymentForm = this.initPayment();
   }
 
+  // function to init payment form
+  initPayment() {
+    if (this.params.mode === 'add') {
+      return this.formBuilder.group({
+        amount: [null, Validators.required],
+        date: [null, Validators.required],
+      });
+
+    } else if (this.params.mode === 'edit') {
+      return this.formBuilder.group({
+        amount: [this.payment.amount, Validators.required],
+        date: [this.date, Validators.required],
+      });
+    }
+  }
+
+  // function to close dialog
+  onCloseConfirm() {
+
+    // convert date to date string
+    if (this.params.mode === 'edit') {
+
+      // convert date object to string
+      this.paymentForm.value.date = this.paymentForm.value.date.toDateString();
+
+      // write payment to firebase
+      this.data.updateItem(this.payment.$key, 'payments/' + this.itineraryId, this.paymentForm.value)
+        .then(() => {
+          this.dialogRed.close();
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    }
+
+    if (this.params.mode === 'add') {
+      this.paymentForm.value.date = this.paymentForm.value.date.toDateString();
+      // write payment to firebase
+      this.data.saveItem('payments/' + this.itineraryId , this.paymentForm.value)
+        .then(() => {
+          // return payment key
+          this.dialogRed.close();
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    }
+
+  }
+
+  // function to cancel dialog
+  onCloseCancel() {
+    this.dialogRed.close();
+  }
 }

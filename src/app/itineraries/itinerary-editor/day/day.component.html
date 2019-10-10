@@ -1,1 +1,280 @@
-<p>day works!</p>
+<h2 mat-dialog-title>Add Item</h2>
+<form [formGroup]="dayForm" fxLayout="column">
+
+  <!-- days -->
+  <mat-select
+    placeholder="Days"
+    formControlName="days"
+    required>
+    <mat-option *ngFor="let d of remainingDays" [value]="d+1">{{d + 1}}</mat-option>
+  </mat-select>
+
+  <!-- country  -->
+  <mat-select
+    *ngIf="params.mode === 'add'"
+    placeholder="Country"
+    [(ngModel)]="params.lastUsedParams.country"
+    formControlName="country"
+    (ngModelChange)="onSelect($event)"
+    required>
+    <mat-option
+      *ngFor="let destination of destinations"
+      [value]="destination.id"
+      ng-selected>{{destination.name}}
+    </mat-option>
+  </mat-select>
+
+  <mat-select
+    *ngIf="params.mode === 'edit'"
+    placeholder="Country"
+    formControlName="country"
+    (ngModelChange)="onSelect($event)"
+    required>
+    <mat-option
+      *ngFor="let destination of destinations"
+      [value]="destination.id"
+      ng-selected>{{destination.name}}
+    </mat-option>
+  </mat-select>
+
+  <!-- region -->
+  <mat-select
+    *ngIf="params.mode === 'add'"
+    placeholder="Region"
+    [(ngModel)]="params.lastUsedParams.region"
+    formControlName="region"
+    (ngModelChange)="onSelectRegion($event)"
+    required>
+    <mat-option *ngFor="let region of regions" [value]="region.id">{{region.name}}</mat-option>
+  </mat-select>
+
+  <mat-select
+    *ngIf="params.mode === 'edit'"
+    placeholder="Region"
+    formControlName="region"
+    required>
+    <mat-option *ngFor="let region of regions" [value]="region.id">{{region.name}}</mat-option>
+  </mat-select>
+
+  <div fxLayout="column"
+       fxLayoutGap="10px"
+       *ngIf="dayForm.controls.country.value !== null && dayForm.controls.region.value !== null">
+    <!-- TODO: fix itinerary mat-select values to reduce http requests -->
+
+    <!-- service items  form array -->
+    <div
+      fxLayout="row"
+      fxFill
+      formArrayName="services"
+      *ngFor="let service of getServices(dayForm,'services'); let s=index">
+
+      <!-- item edit -->
+      <div
+        fxLayout="row"
+        fxFill
+        fxLayoutAlign="space-around center"
+        [formGroupName]="s">
+
+        <!-- text area -->
+        <mat-form-field fxFlex="90">
+          <label>
+<textarea
+  style="line-height: 1.3em !important;"
+  rows="3"
+  cols="50"
+  matInput
+  placeholder="Service"
+  formControlName="service">
+</textarea>
+          </label>
+        </mat-form-field>
+
+        <!-- delete button -->
+        <button
+          fxFlex
+          mat-icon-button
+          (click)="removeItineraryItem('services',s)">
+          <svg-icon src="../assets/icons/trash.svg" [style.fill]=color></svg-icon>
+        </button>
+
+      </div>
+    </div>
+
+
+    <!-- activity items  form array -->
+    <div
+      fxLayout="row"
+      fxFill
+      formArrayName="activities"
+      *ngFor="let activity of getServices(dayForm,'activities'); let a=index">
+
+      <!-- item edit -->
+      <div
+        fxLayout="row"
+        fxFill
+        fxLayoutAlign="space-around center"
+        [formGroupName]="a">
+
+        <!-- text area -->
+        <mat-form-field fxFlex="90">
+          <label>
+<textarea
+  rows="2"
+  cols="50"
+  matInput
+  placeholder="Activity"
+  formControlName="activity">
+</textarea>
+          </label>
+        </mat-form-field>
+
+        <!-- delete button -->
+        <button
+          fxFlex
+          mat-icon-button
+          (click)="removeItineraryItem('activities',a)">
+          <svg-icon src="../assets/icons/trash.svg" [style.fill]=color></svg-icon>
+        </button>
+
+      </div>
+    </div>
+
+    <!-- accommodation items  form array -->
+    <div
+      fxLayout="row"
+      fxFill
+      formArrayName="accommodation"
+      *ngFor="let accommodation of getServices(dayForm,'accommodation'); let ac=index">
+
+      <!-- item edit -->
+      <div
+        fxLayout="row"
+        fxFill
+        fxLayoutAlign="space-around center"
+        [formGroupName]="ac">
+
+        <!-- text area -->
+        <mat-form-field fxFlex="90">
+          <label>
+<textarea
+  rows="2"
+  cols="50"
+  matInput
+  placeholder="Accommodation"
+  formControlName="description">
+</textarea>
+          </label>
+        </mat-form-field>
+
+        <!-- delete button -->
+        <button
+          fxFlex
+          mat-icon-button
+          (click)="removeItineraryItem('accommodation',ac)">
+          <svg-icon src="../assets/icons/trash.svg" [style.fill]=color></svg-icon>
+        </button>
+
+      </div>
+    </div>
+
+  </div>
+
+  <!-- add drop downs -->
+  <div fxLayout="row" fxLayoutGap="10px">
+
+    <!-- add services drop down -->
+    <mat-select
+      *ngIf="inventory"
+      placeholder="Add Service"
+      fxFlex
+      [(ngModel)]="selectedService"
+      (ngModelChange)="addItineraryItem('services', selectedService)"
+      [ngModelOptions]="{standalone: true}"
+      [disabled]="dayForm.controls.country.value == null && dayForm.controls.region.value == null">
+
+      <mat-option
+        *ngFor="let i of inventory | async | ItineraryItemFilterPipe: 'Service': dayForm.controls.country.value: dayForm.controls.region.value"
+        [value]="i">
+        {{i.name}}
+      </mat-option>
+
+    </mat-select>
+
+
+    <!-- add activities drop down -->
+    <mat-select
+      *ngIf="inventory"
+      placeholder="Add Activity"
+      fxFlex
+      [(ngModel)]="selectedActivity"
+      (ngModelChange)="addItineraryItem('activities', selectedActivity)"
+      [ngModelOptions]="{standalone: true}"
+      [disabled]="dayForm.controls.country.value == null && dayForm.controls.region.value == null">
+
+      <mat-option
+        *ngFor="let i of inventory | async | ItineraryItemFilterPipe: 'Activity': dayForm.controls.country.value: dayForm.controls.region.value"
+        [value]="i">
+        {{i.name}}
+      </mat-option>
+
+    </mat-select>
+
+
+    <!-- add accommodation button -->
+    <mat-select
+      *ngIf="inventory"
+      placeholder="Add Accomodation"
+      fxFlex
+      [(ngModel)]="selectedAccommodation"
+      (ngModelChange)="addItineraryItem('accommodation', selectedAccommodation)"
+      [ngModelOptions]="{standalone: true}"
+      [disabled]="dayForm.controls.country.value == null && dayForm.controls.region.value == null">
+
+      <mat-option
+        *ngFor="let i of inventory | async | ItineraryItemFilterPipe: 'Accommodation': dayForm.controls.country.value: dayForm.controls.region.value"
+        [value]="i">
+        {{i.name}}
+      </mat-option>
+
+    </mat-select>
+
+  </div>
+  <span class="spacer"></span>
+  <!-- editor-components preview -->
+  <div
+    fxFlex
+    class="day-preview">
+    {{ services }} {{ activities }} {{ accommodation }}
+  </div>
+
+  <span class="spacer"></span>
+  <!-- save and cancel buttons -->
+  <mat-dialog-actions
+    fxLayout fxLayoutAlign="start center"
+    fxLayoutGap="10px">
+
+    <button
+      [ngClass]="data.getButtonStyleMain()"
+      [disabled]="validateForm(dayForm)"
+      (click)="onCloseConfirm()"
+      mat-raised-button>
+      SAVE
+    </button>
+
+    <button
+      [ngClass]="data.getButtonStyle()"
+      (click)="onCloseCancel()"
+      mat-raised-button>
+      CANCEL
+    </button>
+  </mat-dialog-actions>
+
+</form>
+<!--
+<p>
+  {{dayForm.value | json}}
+</p>
+
+-->
+
+

@@ -1,21 +1,7 @@
-<br>
-<!-- save button -->
-<button
-  color="primary"
-  (click)="addItinerary()"
-  [disabled]="!itineraryForm.valid"
-  class="full-input"
-  mat-raised-button>
-  Save
-</button>
-<br><br>
-
-
 <!-- itinerary form -->
-<div *ngIf="args.type === 'itinerary'">
+<mat-card *ngIf="args.type === 'itinerary'">
   <mat-card-title>Add Itinerary</mat-card-title>
-  <br><br>
-  <form  [formGroup]="itineraryForm">
+  <form [formGroup]="itineraryForm">
     <!-- agent -->
     <!--  todo: put back condition <span *ngIf="(user | async)?.$key === agent.$key" [style.color]="data.color">(You)</span>  -->
     <mat-select
@@ -83,12 +69,14 @@
 
     <!-- name of itinerary -->
     <mat-form-field>
-      <input
-        type="text"
-        placeholder="Name of itinerary"
-        formControlName="title"
-        matInput
-        required/>
+      <label>
+        <input
+          type="text"
+          placeholder="Name of itinerary"
+          formControlName="title"
+          matInput
+          required/>
+      </label>
     </mat-form-field>
 
 
@@ -114,20 +102,291 @@
 
       <!-- end date -->
       <mat-form-field class="half-input">
-        <input
-          matInput
-          [matDatepicker]="picker2"
-          placeholder="End Date"
-          formControlName="enddate"
-          required>
+        <label>
+          <input
+            matInput
+            [matDatepicker]="picker2"
+            placeholder="End Date"
+            formControlName="enddate"
+            required>
+        </label>
         <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
         <!--<button matSuffix [matDatepickerToggle]="picker2"></button>-->
       </mat-form-field>
       <mat-datepicker touchUi="true" #picker2></mat-datepicker>
     </div>
 
+    <span class="spacer-vert"></span>
+
+    <!-- save button -->
+    <button color="primary" (click)="addItinerary(itineraryForm.value)" [disabled]="!itineraryForm.valid"
+            class="full-input" mat-raised-button>Add
+    </button>
+
+    <span class="spacer-vert"></span>
+
+    <!--  error display  -->
     <span *ngIf="error">{{error}}</span>
   </form>
-  <br>
-</div>
+</mat-card>
+
+<!-- client form -->
+<mat-card *ngIf="args.type === 'clients'">
+  <mat-card-title>Add Client</mat-card-title>
+  <form [formGroup]="clientForm">
+    <!-- firstname -->
+    <mat-form-field>
+      <label>
+        <input type="text" placeholder="First Name" formControlName="firstName" matInput required>
+      </label>
+    </mat-form-field>
+
+    <!-- last name -->
+    <mat-form-field>
+      <label>
+        <input type="text" placeholder="Last Name" formControlName="lastName" matInput required>
+      </label>
+    </mat-form-field>
+
+    <!-- email -->
+    <mat-form-field>
+      <label>
+        <input type="email" placeholder="Email address" formControlName="email" matInput required>
+      </label>
+    </mat-form-field>
+
+    <!-- tel -->
+    <mat-form-field>
+      <label>
+        <input type="tel" placeholder="Phone Number" formControlName="phone" matInput required/>
+      </label>
+    </mat-form-field>
+
+    <!-- nationality -->
+    <mat-select placeholder="Nationality" formControlName="nationality" required>
+      <mat-option *ngFor="let country of countries" [value]="country.name">{{country.name}}</mat-option>
+    </mat-select>
+
+    <span class="spacer-vert"></span>
+
+    <!--  save button-->
+    <button type="submit" [disabled]="!clientForm.valid" mat-raised-button class="full-input" color="primary">Add
+    </button>
+
+    <span class="spacer-vert"></span>
+
+    <!--  error display  -->
+    <span *ngIf="error">{{error}}</span>
+  </form>
+</mat-card>
+
+<!-- agent form-->
+<mat-card *ngIf="args.type === 'agents'">
+  <mat-card-title>Add Agent</mat-card-title>
+  <form [formGroup]="agentForm">
+    <!-- account type -->
+    <mat-radio-group formControlName="role" required fxLayout>
+      <mat-radio-button value="admin" color="primary" fxFlex>Admin</mat-radio-button>
+      <mat-radio-button value="agent" color="primary" fxFlex>Agent</mat-radio-button>
+    </mat-radio-group>
+
+    <div></div>
+    <!-- first name -->
+    <mat-form-field>
+      <label>
+        <input type="text" placeholder="First Name" formControlName="firstName" matInput required>
+      </label>
+    </mat-form-field>
+
+    <!-- last name -->
+    <mat-form-field>
+      <label>
+        <input type="text" placeholder="Last Name" formControlName="lastName" matInput required>
+      </label>
+    </mat-form-field>
+
+    <!-- email address -->
+    <mat-form-field>
+      <label>
+        <input type="email" placeholder="Email address" formControlName="email" matInput required>
+      </label>
+    </mat-form-field>
+
+    <!-- password -->
+    <mat-form-field>
+      <label>
+        <input type="password" placeholder="Password" formControlName="password" matInput required>
+      </label>
+    </mat-form-field>
+
+    <span class="spacer-vert"></span>
+
+    <!-- save button -->
+    <button type="submit" [disabled]="!agentForm.valid" mat-raised-button class="full-input" color="primary">Add
+    </button>
+
+    <span class="spacer-vert"></span>
+
+    <!-- error display-->
+    <span *ngIf="error">{{error}}</span>
+  </form>
+</mat-card>
+
+<!-- inventory form -->
+<mat-card *ngIf="args.type === 'inventory'">
+  <mat-card-title>Add Inventory</mat-card-title>
+  <form [formGroup]="inventoryForm">
+    <!-- destination -->
+    <mat-select
+      placeholder="Destination"
+      formControlName="destination"
+      (selectionChange)="onSelect($event)"
+      required>
+      <mat-option *ngFor="let d of destinations" [value]="d.id">
+        {{d.name}}
+      </mat-option>
+    </mat-select>
+
+    <!-- region -->
+    <mat-select placeholder="Region" formControlName="region" required>
+      <mat-option *ngFor="let r of regions" [value]="r.id">
+        {{r.name}}
+      </mat-option>
+    </mat-select>
+
+    <!-- type -->
+    <mat-select placeholder="Type" formControlName="type" required>
+      <mat-option *ngFor="let t of types" [value]="t">
+        {{t}}
+      </mat-option>
+    </mat-select>
+
+    <!-- short name -->
+    <mat-form-field>
+      <label>
+        <input
+          type="text"
+          placeholder="Short name"
+          formControlName="name"
+          matInput
+          required>
+      </label>
+    </mat-form-field>
+
+    <!-- description -->
+    <mat-form-field>
+      <label>
+<textarea
+  placeholder="Short Description"
+  rows="2" cols="50"
+  formControlName="description"
+  matInput
+  required>
+</textarea>
+      </label>
+    </mat-form-field>
+
+    <!-- accommodation specific fields -->
+    <div
+      *ngIf="inventoryForm.controls.type.value === 'Accommodation'"
+      fxLayout="column">
+
+      <!-- long description -->
+      <mat-form-field>
+        <label>
+<textarea
+  placeholder="Long Description"
+  rows="2" cols="50"
+  formControlName="longDescription"
+  matInput
+  required>
+</textarea>
+        </label>
+      </mat-form-field>
+
+      <!-- inclusions -->
+      <mat-form-field>
+        <label>
+<textarea
+  placeholder="Inclusions"
+  rows="2" cols="50"
+  formControlName="inclusions"
+  matInput
+  required>
+</textarea>
+        </label>
+      </mat-form-field>
+
+      <!-- image upload -->
+      <app-file-uploader
+        (notify)="fileSelected($event)"
+        [activeColor]="'orangered'"
+        [baseColor]="'lightgray'">
+      </app-file-uploader>
+      <span class="spacer-vert"></span>
+    </div>
+
+    <!-- error -->
+    <span class="spacer-vert"></span>
+
+    <!-- save button for activity and service -->
+    <button color="primary" type="submit" [disabled]="!inventoryForm.valid" class="full-input" mat-raised-button>Save</button>
+
+    <span class="spacer-vert"></span>
+
+    <!--  error display  -->
+    <span *ngIf="error" style="color: red">{{error}}</span>
+
+  </form>
+</mat-card>
+
+<!-- media form -->
+<mat-card *ngIf="args.type === 'media'">
+  <mat-card-title>Add Image</mat-card-title>
+  <br><br>
+  <form [formGroup]="mediaForm">
+    <!-- image uploader -->
+    <app-file-uploader (notify)="fileSelectedForMedia($event)" [activeColor]="'orangered'" [baseColor]="'lightgray'"></app-file-uploader>
+
+    <span class="spacer-vert"></span>
+
+    <!-- title -->
+    <mat-form-field>
+      <label>
+        <input placeholder="Title" type="text" formControlName="title" matInput required/>
+      </label>
+    </mat-form-field>
+
+    <!-- caption -->
+    <mat-form-field>
+      <label>
+      <textarea placeholder="Caption" rows="2" cols="50" formControlName="caption" matInput required></textarea>
+      </label>
+    </mat-form-field>
+
+<!--  tags  -->
+<!--    <div formGroupName="tags">-->
+<!--      <span>-->
+<!--        <mat-form-field>-->
+<!--        <label>-->
+<!--          <textarea placeholder="Tags" rows="2" cols="50" formControlName="tag" matInput required></textarea>-->
+<!--        </label>-->
+<!--      </mat-form-field>-->
+<!--      </span>-->
+<!--    </div>-->
+
+
+    <span class="spacer-vert"></span>
+
+    <!-- save button   -->
+    <button class="full-input" color="primary" type="submit" [disabled]="!mediaForm.valid || mediaItem.image === null" mat-raised-button>Save</button>
+
+    <span class="spacer-vert"></span>
+
+    <!--  error display  -->
+    <span *ngIf="error" style="color: red">{{error}}</span>
+
+
+  </form>
+</mat-card>
 

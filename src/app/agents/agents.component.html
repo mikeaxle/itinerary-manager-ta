@@ -16,7 +16,12 @@
 
 <!--  </div>-->
 
-  <mat-table #table [dataSource]="dataSource" class="example-container mat-elevation-z8" matSort>
+<!-- spinner -->
+<div class="spacer-vert-100" *ngIf="agents.length === 0" fxLayout="row" fxLayoutAlign="center center">
+  <mat-spinner></mat-spinner>
+</div>
+
+  <mat-table *ngIf="agents.length > 0" #table [dataSource]="dataSource" class="example-container mat-elevation-z8" #matSort>
     <!-- Name Column -->
     <ng-container matColumnDef="Name">
       <mat-header-cell *matHeaderCellDef fxFlex> Name</mat-header-cell>

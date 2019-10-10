@@ -4,6 +4,11 @@
   <button mat-raised-button color="primary" (click)="addNew()">Add New</button>
 </div>
 
+<!-- spinner -->
+<div class="spacer-vert-100" *ngIf="MEDIA_LIST.length === 0" fxLayout="row" fxLayoutAlign="center center">
+  <mat-spinner></mat-spinner>
+</div>
+
 <!-- grid list -->
 <mat-paginator [length]="mediaList.length"
                [pageSize]="size"
@@ -11,24 +16,23 @@
                [pageSizeOptions]="[15, 30, 60, mediaList.length]"
                (page)="getData($event)">
 </mat-paginator>
-<mat-grid-list cols="4" rowHeight="250px">
+<mat-grid-list *ngIf="MEDIA_LIST.length > 0" cols="4" rowHeight="250px">
   <mat-grid-tile
     *ngFor="let media of MEDIA_LIST" [style.background]="tileBackground">
     <mat-grid-tile-header>
       {{media.title}}
       <span class="fill-remaining-space"></span>
       <button mat-icon-button  (click)="editMediaItem(media)">
-        <img src="../assets/icons/edit-white.svg" />
+        <img src="../assets/icons/edit-white.svg" alt="edit button"/>
       </button>
 
       <button mat-icon-button    (click)="openDelete(media)">
-        <img src="../assets/icons/trash-white.svg" />
+        <img src="../assets/icons/trash-white.svg" alt="delete button"/>'
       </button>
 
 
     </mat-grid-tile-header>
-    <img height="100%" width="100%" [src]="media.imageUrl" alt={{media.title}} style="top:0; left: 0"
-         [routerLink]="['../edit-media']" [queryParams]="{ mediaId: media.$key }">
+    <img height="100%" width="100%" [src]="media.imageUrl" alt={{media.title}} style="top:0; left: 0; object-fit: cover" (click)="editMediaItem(media)">
 
     <!-- caption + title footer -->
     <mat-grid-tile-footer>

@@ -1,4 +1,4 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {MatBottomSheet, MatDialog, MatPaginator, MatSort, MatTableDataSource} from '@angular/material';
 import {ConfirmComponent} from '../shared/confirm/confirm.component';
 import {Router} from '@angular/router';
@@ -12,7 +12,8 @@ import {EditorComponent} from '../shared/editor/editor.component';
   templateUrl: './agents.component.html',
   styleUrls: ['./agents.component.css']
 })
-export class AgentsComponent implements OnInit {
+export class AgentsComponent implements OnInit, OnDestroy {
+
   // variable to store error
   error: any;
   displayedColumns = ['Name', 'Email', 'Role', 'Actions'];
@@ -24,29 +25,50 @@ export class AgentsComponent implements OnInit {
   color: any;
   @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
   @ViewChild(MatSort, {static: true}) sort: MatSort;
+  agents: any;
+  ref: any;
 
 
   constructor(public router: Router, private data: DataService, public dialog: MatDialog, public bottomSheet: MatBottomSheet) {}
 
   ngOnInit() {
-    // todo: link to live database
-    const dummydata = [
-      this.data.sampleData.users['5oPFb9A68mgbFJm3VtdfWCn9Yoc2'],
-      this.data.sampleData.users['5oPFb9A68mgbFJm3VtdfWCn9Yoc2'],
-      this.data.sampleData.users['5oPFb9A68mgbFJm3VtdfWCn9Yoc2'],
-      this.data.sampleData.users['5oPFb9A68mgbFJm3VtdfWCn9Yoc2'],
-      this.data.sampleData.users['5oPFb9A68mgbFJm3VtdfWCn9Yoc2'],
-      this.data.sampleData.users['5oPFb9A68mgbFJm3VtdfWCn9Yoc2'],
-    ];
+    // todo: dummy data
+    // const dummydata = [
+    //   this.data.sampleData.users['5oPFb9A68mgbFJm3VtdfWCn9Yoc2'],
+    //   this.data.sampleData.users['5oPFb9A68mgbFJm3VtdfWCn9Yoc2'],
+    //   this.data.sampleData.users['5oPFb9A68mgbFJm3VtdfWCn9Yoc2'],
+    //   this.data.sampleData.users['5oPFb9A68mgbFJm3VtdfWCn9Yoc2'],
+    //   this.data.sampleData.users['5oPFb9A68mgbFJm3VtdfWCn9Yoc2'],
+    //   this.data.sampleData.users['5oPFb9A68mgbFJm3VtdfWCn9Yoc2'],
+    // ];
 
-    // init data source
-    this.dataSource = new MatTableDataSource(dummydata);
+    this.agents = [];
 
-    // init data source
-    this.dataSource.paginator = this.paginator;
+    this.ref = this.data.af.list(`users`)
+   .snapshotChanges()
+   .subscribe(snapshots => {
 
-    // init sort
-    this.dataSource.sort = this.sort;
+     snapshots.forEach((snapshot) => {
+       // get agent data
+       let agent = {};
+       agent = snapshot.payload.val();
+
+       // get key
+       agent[`key`] = snapshot.key;
+
+       // push to agents array
+       this.agents.push(agent);
+
+       // init data source
+       this.dataSource = new MatTableDataSource(this.agents);
+
+       // init data source
+       this.dataSource.paginator = this.paginator;
+
+       // init sort
+       this.dataSource.sort = this.sort;
+     });
+   });
   }
 
   // function to open confirm delete dialog
@@ -62,7 +84,7 @@ export class AgentsComponent implements OnInit {
           this.deleteAgent(id);
         }
       }
-    });
+    }).unsubscribe();
   }
 
   openPermissionDenied() {
@@ -94,17 +116,33 @@ export class AgentsComponent implements OnInit {
                 this.error = error;
               });
           }
-        });
+        }).unsubscribe();
     }
   }
 
-  // fucntion to add new agent
+  // function to add new agent
   addNew(agent) {
-    this.bottomSheet.open(EditorComponent);
+    this.bottomSheet.open(EditorComponent, {
+      data: {
+        item: null,
+        new: true,
+        type: 'agents'
+      }
+    });
   }
 
   // function to edit agent
   editAgent(agent) {
-    this.bottomSheet.open(EditorComponent);
+    this.bottomSheet.open(EditorComponent, {
+      data: {
+        item: agent,
+        new: false,
+        type: 'agents'
+      }
+    });
+  }
+
+  ngOnDestroy(): void {
+this.ref.unsubscribe();
   }
 }

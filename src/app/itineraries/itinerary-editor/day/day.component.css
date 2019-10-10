@@ -1,0 +1,8 @@
+.day-preview {
+  background-color: #efefef;
+  background-color: rgba(0, 0, 0, 0.02);
+  cursor: pointer;
+  outline: 3px dashed #ccc;
+  padding: 10px;
+  color: #848484;
+}

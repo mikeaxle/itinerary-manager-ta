@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {MatBottomSheet, MatDialog} from '@angular/material';
 import {DataService} from '../services/data.service';
 import {ConfirmComponent} from '../shared/confirm/confirm.component';
@@ -10,24 +10,40 @@ import {EditorComponent} from '../shared/editor/editor.component';
   styleUrls: ['./media.component.css'],
   templateUrl: './media.component.html'
 })
-export class MediaComponent implements OnInit {
+export class MediaComponent implements OnInit, OnDestroy {
+
   mediaList = [];
   MEDIA_LIST = [];
   error: any;
   tileBackground = '#add8e6';
   private page = 0;
   private size = 15;
+  ref;
 
   constructor(private data: DataService, public dialog: MatDialog, public bottomSheet: MatBottomSheet) { }
 
   ngOnInit() {
     // get media list
 
-     this.data.af.list('media')
+     this.ref = this.data.af.list('media')
       .snapshotChanges()
-      .subscribe((res) => {
-        this.mediaList = res;
-        this.MEDIA_LIST = [...this.mediaList] // .slice(this.mediaList.length - 15);
+      .subscribe((snapshots) => {
+        // iterate snapshots
+        snapshots.forEach(snapshot => {
+          // get media item
+          const mediaItem = snapshot.payload.val();
+
+          // get key
+          mediaItem[`$key`] = snapshot.key;
+
+          // push to media list array
+          this.mediaList.push(mediaItem);
+        });
+
+        // copy array
+        this.MEDIA_LIST = [...this.mediaList]; // .slice(this.mediaList.length - 15);
+
+        // set pagination size
         this.size = this.mediaList.length;
       });
 
@@ -84,11 +100,28 @@ export class MediaComponent implements OnInit {
 
   // function to add media
   addNew() {
-    this.bottomSheet.open(EditorComponent);
+    this.bottomSheet.open(EditorComponent, {
+      data: {
+        item: null,
+        new: true,
+        type: 'media'
+      }
+    });
   }
 
   // function to edit media
   editMediaItem(media: any) {
-    this.bottomSheet.open(EditorComponent);
+    console.log(media)
+    // this.bottomSheet.open(EditorComponent, {
+    //   data: {
+    //     item: media,
+    //     new: false,
+    //     type: 'media'
+    //   }
+    // });
+  }
+
+  ngOnDestroy(): void {
+    this.ref.unsubscribe();
   }
 }

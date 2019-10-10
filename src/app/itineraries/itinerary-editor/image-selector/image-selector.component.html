@@ -1,1 +1,21 @@
-<p>image-selector works!</p>
+<h2 mat-dialog-title>Select Image</h2>
+
+<mat-grid-list cols="3" rowHeight="150px">
+  <mat-grid-tile
+    *ngFor="let media of mediaList | async"
+    [style.background]="tileBackground"
+    (click)="onCloseConfirm(media)">
+
+    <img height="100%" [src]="media.imageUrl" alt={{media.title}}>
+
+    <!-- caption + title footer -->
+    <mat-grid-tile-footer>
+      {{media.caption}}
+    </mat-grid-tile-footer>
+  </mat-grid-tile>
+</mat-grid-list>
+
+
+
+
+

@@ -76,6 +76,14 @@ import { PermissionDeniedDialogComponent } from './shared/permission-denied-dial
 import { InventoryComponent } from './inventory/inventory.component';
 import { MediaComponent } from './media/media.component';
 import { AgentsComponent } from './agents/agents.component';
+import { FileUploaderComponent } from './shared/file-uploader/file-uploader.component';
+import { ItineraryItemFilterPipePipe } from './filter/itinerary.pipe';
+import { CommentsPipe } from './filter/comments.pipe';
+import { InclusionsPipe } from './filter/inclusions.pipe';
+import { MoneyPipe } from './filter/money.pipe';
+import { AgentPipe } from './filter/agent.pipe';
+import { StatusPipe } from './filter/status.pipe';
+import { SearchPipe } from './filter/search.pipe';
 
 // currency Mask settings
 // @ts-ignore
@@ -110,7 +118,15 @@ export const CustomCurrencyMaskConfig: CurrencyMaskConfig = {
     PermissionDeniedDialogComponent,
     InventoryComponent,
     MediaComponent,
-    AgentsComponent
+    AgentsComponent,
+    FileUploaderComponent,
+    ItineraryItemFilterPipePipe,
+    CommentsPipe,
+    InclusionsPipe,
+    MoneyPipe,
+    AgentPipe,
+    StatusPipe,
+    SearchPipe
   ],
   entryComponents: [
     DayComponent,

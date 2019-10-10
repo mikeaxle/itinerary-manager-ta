@@ -25,9 +25,6 @@ export class AppComponent implements OnInit {
     this.data.af.object(`companies/${this.data.currentCompany}`)
       .valueChanges()
     .subscribe((res) => {
-
-      console.log(res)
-
       if (res) {
       // check if planet africa is logged in
       // @ts-ignore
@@ -39,7 +36,8 @@ export class AppComponent implements OnInit {
         this.logo = 'https://firebasestorage.googleapis.com/v0/b/true-africa-itinerary.appspot.com/o/avatar-trueafrica.png?alt=media&token=6808dc76-eecb-4bdd-beee-6fd2af2868dc';
       }
       }
-    });
+    })
+      .unsubscribe();
   }
 
   // function to logout
@@ -63,4 +61,6 @@ export class AppComponent implements OnInit {
 
     });
   }
+
+
 }

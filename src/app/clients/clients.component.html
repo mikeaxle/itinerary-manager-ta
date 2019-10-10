@@ -23,8 +23,17 @@
 <!--    </mat-input-container>-->
 
 <!--  </div>-->
+
+
 <!-- todo: add filters -->
-  <table mat-table [dataSource]="dataSource" class="mat-elevation-z8" matSort>
+
+<!-- spinner -->
+<div class="spacer-vert-100" *ngIf="clients.length === 0" fxLayout="row" fxLayoutAlign="center center">
+  <mat-spinner></mat-spinner>
+</div>
+
+<!-- data table -->
+  <table mat-table *ngIf="clients.length > 0" [dataSource]="dataSource" class="mat-elevation-z8">
     <!-- Name Column -->
     <ng-container matColumnDef="Name">
       <mat-header-cell *matHeaderCellDef fxFlex="45"> Name</mat-header-cell>

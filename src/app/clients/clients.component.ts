@@ -14,106 +14,45 @@ export class ClientsComponent implements OnInit {
   displayedColumns = ['Name', 'Email', 'Actions'];
   private error: any;
   dataSource: MatTableDataSource<any>;
-  clients = [];
+  clients;
   @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
   @ViewChild(MatSort, {static: true}) sort: MatSort;
+  private ref;
 
   constructor(public data: DataService, public dialog: MatDialog, private bottomSheet: MatBottomSheet) { }
 
   ngOnInit() {
-    // todo: link to live database
-    const dummydata = [
-      this.data.sampleData.clients['Planet Africa']['-L4p6t_H3UiPg4gSXzGS'],
-      this.data.sampleData.clients['Planet Africa']['-L6Mm55Z_5R3AFZO3ghM'],
-      this.data.sampleData.clients['Planet Africa']['-L6VlsQXLu6C07ZVkJSw'],
-      this.data.sampleData.clients['Planet Africa']['-L6WvESKO4asYrQvEyZK'],
-      this.data.sampleData.clients['Planet Africa']['-L6uWhWKpQRDvGhygopI'],
-      this.data.sampleData.clients['Planet Africa']['-L4p6t_H3UiPg4gSXzGS'],
-      this.data.sampleData.clients['Planet Africa']['-L6Mm55Z_5R3AFZO3ghM'],
-      this.data.sampleData.clients['Planet Africa']['-L6VlsQXLu6C07ZVkJSw'],
-      this.data.sampleData.clients['Planet Africa']['-L6WvESKO4asYrQvEyZK'],
-      this.data.sampleData.clients['Planet Africa']['-L6uWhWKpQRDvGhygopI'],
-      this.data.sampleData.clients['Planet Africa']['-L4p6t_H3UiPg4gSXzGS'],
-      this.data.sampleData.clients['Planet Africa']['-L6Mm55Z_5R3AFZO3ghM'],
-      this.data.sampleData.clients['Planet Africa']['-L6VlsQXLu6C07ZVkJSw'],
-      this.data.sampleData.clients['Planet Africa']['-L6WvESKO4asYrQvEyZK'],
-      this.data.sampleData.clients['Planet Africa']['-L6uWhWKpQRDvGhygopI'],
-      this.data.sampleData.clients['Planet Africa']['-L4p6t_H3UiPg4gSXzGS'],
-      this.data.sampleData.clients['Planet Africa']['-L6Mm55Z_5R3AFZO3ghM'],
-      this.data.sampleData.clients['Planet Africa']['-L6VlsQXLu6C07ZVkJSw'],
-      this.data.sampleData.clients['Planet Africa']['-L6WvESKO4asYrQvEyZK'],
-      this.data.sampleData.clients['Planet Africa']['-L6uWhWKpQRDvGhygopI'],
-      this.data.sampleData.clients['Planet Africa']['-L4p6t_H3UiPg4gSXzGS'],
-      this.data.sampleData.clients['Planet Africa']['-L6Mm55Z_5R3AFZO3ghM'],
-      this.data.sampleData.clients['Planet Africa']['-L6VlsQXLu6C07ZVkJSw'],
-      this.data.sampleData.clients['Planet Africa']['-L6WvESKO4asYrQvEyZK'],
-      this.data.sampleData.clients['Planet Africa']['-L6uWhWKpQRDvGhygopI'],
-      this.data.sampleData.clients['Planet Africa']['-L4p6t_H3UiPg4gSXzGS'],
-      this.data.sampleData.clients['Planet Africa']['-L6Mm55Z_5R3AFZO3ghM'],
-      this.data.sampleData.clients['Planet Africa']['-L6VlsQXLu6C07ZVkJSw'],
-      this.data.sampleData.clients['Planet Africa']['-L6WvESKO4asYrQvEyZK'],
-      this.data.sampleData.clients['Planet Africa']['-L6uWhWKpQRDvGhygopI'],
-      this.data.sampleData.clients['Planet Africa']['-L4p6t_H3UiPg4gSXzGS'],
-      this.data.sampleData.clients['Planet Africa']['-L6Mm55Z_5R3AFZO3ghM'],
-      this.data.sampleData.clients['Planet Africa']['-L6VlsQXLu6C07ZVkJSw'],
-      this.data.sampleData.clients['Planet Africa']['-L6WvESKO4asYrQvEyZK'],
-      this.data.sampleData.clients['Planet Africa']['-L6uWhWKpQRDvGhygopI'],
-      this.data.sampleData.clients['Planet Africa']['-L4p6t_H3UiPg4gSXzGS'],
-      this.data.sampleData.clients['Planet Africa']['-L6Mm55Z_5R3AFZO3ghM'],
-      this.data.sampleData.clients['Planet Africa']['-L6VlsQXLu6C07ZVkJSw'],
-      this.data.sampleData.clients['Planet Africa']['-L6WvESKO4asYrQvEyZK'],
-      this.data.sampleData.clients['Planet Africa']['-L6uWhWKpQRDvGhygopI'],
-      this.data.sampleData.clients['Planet Africa']['-L4p6t_H3UiPg4gSXzGS'],
-      this.data.sampleData.clients['Planet Africa']['-L6Mm55Z_5R3AFZO3ghM'],
-      this.data.sampleData.clients['Planet Africa']['-L6VlsQXLu6C07ZVkJSw'],
-      this.data.sampleData.clients['Planet Africa']['-L6WvESKO4asYrQvEyZK'],
-      this.data.sampleData.clients['Planet Africa']['-L6uWhWKpQRDvGhygopI'],
-      this.data.sampleData.clients['Planet Africa']['-L4p6t_H3UiPg4gSXzGS'],
-      this.data.sampleData.clients['Planet Africa']['-L6Mm55Z_5R3AFZO3ghM'],
-      this.data.sampleData.clients['Planet Africa']['-L6VlsQXLu6C07ZVkJSw'],
-      this.data.sampleData.clients['Planet Africa']['-L6WvESKO4asYrQvEyZK'],
-      this.data.sampleData.clients['Planet Africa']['-L6uWhWKpQRDvGhygopI'],
-      this.data.sampleData.clients['Planet Africa']['-L4p6t_H3UiPg4gSXzGS'],
-      this.data.sampleData.clients['Planet Africa']['-L6Mm55Z_5R3AFZO3ghM'],
-      this.data.sampleData.clients['Planet Africa']['-L6VlsQXLu6C07ZVkJSw'],
-      this.data.sampleData.clients['Planet Africa']['-L6WvESKO4asYrQvEyZK'],
-      this.data.sampleData.clients['Planet Africa']['-L6uWhWKpQRDvGhygopI'],
-      this.data.sampleData.clients['Planet Africa']['-L4p6t_H3UiPg4gSXzGS'],
-      this.data.sampleData.clients['Planet Africa']['-L6Mm55Z_5R3AFZO3ghM'],
-      this.data.sampleData.clients['Planet Africa']['-L6VlsQXLu6C07ZVkJSw'],
-      this.data.sampleData.clients['Planet Africa']['-L6WvESKO4asYrQvEyZK'],
-      this.data.sampleData.clients['Planet Africa']['-L6uWhWKpQRDvGhygopI'],
-      this.data.sampleData.clients['Planet Africa']['-L4p6t_H3UiPg4gSXzGS'],
-      this.data.sampleData.clients['Planet Africa']['-L6Mm55Z_5R3AFZO3ghM'],
-      this.data.sampleData.clients['Planet Africa']['-L6VlsQXLu6C07ZVkJSw'],
-      this.data.sampleData.clients['Planet Africa']['-L6WvESKO4asYrQvEyZK'],
-      this.data.sampleData.clients['Planet Africa']['-L6uWhWKpQRDvGhygopI'],
-      this.data.sampleData.clients['Planet Africa']['-L4p6t_H3UiPg4gSXzGS'],
-      this.data.sampleData.clients['Planet Africa']['-L6Mm55Z_5R3AFZO3ghM'],
-      this.data.sampleData.clients['Planet Africa']['-L6VlsQXLu6C07ZVkJSw'],
-      this.data.sampleData.clients['Planet Africa']['-L6WvESKO4asYrQvEyZK'],
-      this.data.sampleData.clients['Planet Africa']['-L6uWhWKpQRDvGhygopI'],
-      this.data.sampleData.clients['Planet Africa']['-L4p6t_H3UiPg4gSXzGS'],
-      this.data.sampleData.clients['Planet Africa']['-L6Mm55Z_5R3AFZO3ghM'],
-      this.data.sampleData.clients['Planet Africa']['-L6VlsQXLu6C07ZVkJSw'],
-      this.data.sampleData.clients['Planet Africa']['-L6WvESKO4asYrQvEyZK'],
-      this.data.sampleData.clients['Planet Africa']['-L6uWhWKpQRDvGhygopI'],
-      this.data.sampleData.clients['Planet Africa']['-L4p6t_H3UiPg4gSXzGS'],
-      this.data.sampleData.clients['Planet Africa']['-L6Mm55Z_5R3AFZO3ghM'],
-      this.data.sampleData.clients['Planet Africa']['-L6VlsQXLu6C07ZVkJSw'],
-      this.data.sampleData.clients['Planet Africa']['-L6WvESKO4asYrQvEyZK'],
-      this.data.sampleData.clients['Planet Africa']['-L6uWhWKpQRDvGhygopI'],
-    ];
+    // todo: dummy data
+    // const dummydata = [
+    //   this.data.sampleData.clients['Planet Africa']['-L4p6t_H3UiPg4gSXzGS'],
+    //   this.data.sampleData.clients['Planet Africa']['-L6Mm55Z_5R3AFZO3ghM'],
+    //   this.data.sampleData.clients['Planet Africa']['-L6VlsQXLu6C07ZVkJSw'],
+    //   this.data.sampleData.clients['Planet Africa']['-L6WvESKO4asYrQvEyZK'],
+    //
+    // ];
 
-    // init data source
-    this.dataSource = new MatTableDataSource(dummydata);
+    // init clients array
+    this.clients = [];
 
+    // get clients
+    this.ref = this.data.getList('clients/' + this.data.currentCompany)
+      .snapshotChanges()
+      .subscribe(snapshots => {
 
-    // init data source
-    this.dataSource.paginator = this.paginator;
+        snapshots.forEach(snapshot => {
+          const client = snapshot.payload.val();
+          client[`key`] = snapshot.key;
+          this.clients.push(client);
+        });
+        // init data source
+        this.dataSource = new MatTableDataSource(this.clients);
 
-    // init sort
-    this.dataSource.sort = this.sort;
+        // init data source
+        this.dataSource.paginator = this.paginator;
+
+        // init sort
+        this.dataSource.sort = this.sort;
+      });
   }
 
   // filter function

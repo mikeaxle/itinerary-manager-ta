@@ -3,11 +3,18 @@
   <h1>Itineraries</h1>
   <button mat-raised-button color="primary" (click)="addNew()">Add New Itinerary</button>
 </div>
-<span style="padding: 20px"></span>
+`
+<span class="spacer-vert"></span>
 
 <!-- todo: add filters -->
+<!-- spinner -->
+<div class="spacer-vert-100" *ngIf="itineraries.length === 0" fxLayout="row" fxLayoutAlign="center center">
+  <mat-spinner></mat-spinner>
+</div>
+
+
 <!-- data table-->
-<table mat-table [dataSource]="dataSource" class="mat-elevation-z8" matSort>
+<table *ngIf="itineraries.length > 0" mat-table [dataSource]="dataSource" class="mat-elevation-z8">
   <!-- Invoice Number Column -->
   <ng-container matColumnDef="#">
     <th mat-header-cell *matHeaderCellDef> #</th>

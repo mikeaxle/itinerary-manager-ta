@@ -1,0 +1,36 @@
+<div fxLayout="row" fxLayoutGap="20px" fxLayoutAlign="space-around center">
+
+  <label class="uploader"
+         fxFlex="50"
+         fxLayoutAlign="center center"
+         ondragover="return false;"
+         [class.loaded]="loaded"
+         [style.outlineColor]="dragging ? activeColor : baseColor"
+         (dragenter)="handleDragEnter()"
+         (dragleave)="handleDragLeave()"
+         (drop)="handleDrop($event)">
+
+    <!--  <i class="icon icon-upload"
+         [style.color]="dragging
+                ? ((imageSrc.length > 0) ? overlayColor : activeColor)
+                : ((imageSrc.length > 0) ? overlayColor : baseColor)"></i>-->
+
+    <mat-icon
+      style="font-size: 50px;"
+      [style.color]="dragging
+            ? ((imageSrc.length > 0) ? overlayColor : activeColor)
+            : ((imageSrc.length > 0) ? overlayColor : baseColor)">
+      file_upload
+    </mat-icon>
+
+    <img
+      [src]="imageSrc"
+      (load)="handleImageLoad()"
+      [class.uploaded]="imageLoaded" alt="uploaded image"/>
+
+    <input type="file" name="file" accept="image/*"
+           (change)="handleInputChange($event)">
+  </label>
+
+  <h2 fxFlex>Click the drop area to select an image or drag an image into the drop area</h2>
+</div>

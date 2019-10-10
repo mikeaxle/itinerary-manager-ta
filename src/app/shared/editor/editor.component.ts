@@ -1,10 +1,19 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {Itinerary} from '../../model/itinerary';
 import {DataService} from '../../services/data.service';
-import {FormBuilder, Validators} from '@angular/forms';
+import {FormArray, FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {Router} from '@angular/router';
 import {MatBottomSheet, MatBottomSheetRef, MAT_BOTTOM_SHEET_DATA} from '@angular/material/bottom-sheet';
 import Swal from 'sweetalert2';
+import {countries} from '../../model/countries';
+import {Agent} from '../../model/agent';
+import {Client} from '../../model/client';
+import {InventoryItem} from '../../model/inventoryItem';
+import {Country} from '../../model/country';
+import {Region} from '../../model/region';
+import {CountryService} from '../../services/country.service';
+import {inventoryTypes} from '../../model/inventory-types';
+import {MediaItem} from '../../model/mediaItem';
 
 @Component({
   selector: 'app-editor',
@@ -14,18 +23,31 @@ import Swal from 'sweetalert2';
 
 export class EditorComponent implements OnInit {
   itineraryForm: any;
+  agentForm: any;
+  clientForm: any;
+  inventoryForm: any;
+  mediaForm: any;
   itinerary: Itinerary;
+  agent: Agent;
+  client: Client;
   numbers: any;
   agents: any;
   clients: any;
   error: any;
   user: any;
   invoiceDetails: any;
+  countries = countries;
+  inventoryItem: InventoryItem;
+  mediaItem: MediaItem;
+  destinations: Country[];
+  regions: Region[];
+  types = inventoryTypes;
 
   constructor(@Inject(MAT_BOTTOM_SHEET_DATA) public args: any,
               private formBuilder: FormBuilder,
               public data: DataService,
               public router: Router,
+              public countryService: CountryService,
               public bottomSheetRef: MatBottomSheetRef<EditorComponent>) {
   }
 
@@ -42,15 +64,30 @@ export class EditorComponent implements OnInit {
           break;
         case 'clients':
           console.log('clients');
+          this.initNewClient();
           break;
         case 'inventory':
           console.log('inventory');
+
+          // init inventory item
+          this.inventoryItem = new InventoryItem();
+
+          // get destinations from country service
+          this.destinations = this.countryService.getCountries();
+
+          this.initNewInventory();
           break;
         case 'agents':
           console.log('agents');
+          this.initNewAgent();
           break;
         case 'media':
           console.log('media');
+
+          // init media item
+          this.mediaItem = new MediaItem();
+
+          this.initNewMediaItem();
           break;
         default:
           return;
@@ -100,22 +137,54 @@ export class EditorComponent implements OnInit {
 
   // initialize new client form
   initNewClient() {
-
-  }
-
-  // initialize new inventory form
-  initNewInventory() {
-
+    this.clientForm = this.formBuilder.group({
+      email: [null, Validators.required],
+      firstName: [null, Validators.required],
+    lastName: [null, Validators.required],
+      nationality: [null, Validators.required],
+    phone: [null, Validators.required]
+    });
   }
 
   // initialize new agent form
   initNewAgent() {
+    this.agentForm = this.formBuilder.group({
+      email: [null, Validators.required],
+      firstName: [null, Validators.required],
+      lastName: [null, Validators.required],
+      password: [null, Validators.required],
+      role: [null, Validators.required],
+    });
+  }
 
+  // initialize new inventory form
+  initNewInventory() {
+    this.inventoryForm = this.formBuilder.group({
+      description: [null, Validators.required],
+      destination: [null, Validators.required],
+      image: [null, Validators.required],
+      inclusions: [null, Validators.required],
+      longDescription: [null, Validators.required],
+      name: [null, Validators.required],
+      region: [null, Validators.required],
+      type: [null, Validators.required],
+    });
   }
 
   // initialize new media form
   initNewMediaItem() {
+    // this.mediaItem
+    this.mediaForm = this.formBuilder.group({
+      caption: [null, Validators.required],
+      // image: [null, Validators.required],
+      title: [null, Validators.required],
+      // tags: [FormArray]
+    });
+  }
 
+  addTag(tag: string){
+    const mediaform = this.mediaForm.get('tags') as FormArray;
+    mediaform.push(new FormControl());
   }
 
   // function to validate
@@ -135,7 +204,7 @@ export class EditorComponent implements OnInit {
     return valid;
   }
 
-  // function to add new agent
+  // function to add new itinerary
   addItinerary(itinerary: any) {
     console.log(this.itineraryForm.value);
 
@@ -163,21 +232,171 @@ export class EditorComponent implements OnInit {
         .then((res) => {
           // update invoice number in firebase
           this.data.updateItem(this.data.currentCompany, 'companies', this.invoiceDetails);
+
+          this.bottomSheetRef.dismiss();
+
           // go to itinerary editor with new itinerary
           this.router.navigate(['itinerary-editor', { queryParams: {itineraryData: itinerary }} ])
             .then(() => {
-              Swal.fire('Success!', 'New Itenerary Successfully Addes', 'success');
+              Swal.fire('Success!', 'New itinerary successfully added', 'success');
               }
             );
 
-          this.bottomSheetRef.dismiss();
         })
         .catch((error) => {
           console.log(error);
-          // assign error to variable
+
+          Swal.fire('Failed!', `An error has occurred: ${error.message}`, 'error');
+
           this.error = error;
         });
 
     }
+  }
+
+  // function to add new client
+  addClient(clientForm) {
+
+    // add agent key to client
+    clientForm.value.agent = this.user.uid;
+
+    // check if form data is valid
+    if (clientForm.valid) {
+      // push to firebase
+      this.data.saveItem( `clients/${this.data.currentCompany}/`, clientForm.value)
+        .then(() => {
+          // swal
+          Swal.fire('Success', 'New client successfully added', 'success');
+
+          // close dialog
+          this.closeDialog();
+
+        })
+        .catch((error) => {
+          console.log(error);
+
+          Swal.fire('Failed!', `An error has occurred: ${error.message}`, 'error');
+
+          // assign error to variable
+          this.error = error;
+        });
+    }
+  }
+
+  // function to add new agent
+  addAgent(agentForm) {
+
+    // check if form data is valid
+    if (agentForm.valid) {
+      // write user to firebase
+      this.data.saveUser(agentForm.value)
+        .then(() => {
+          // swal
+          Swal.fire('Success', 'New agent successfully added', 'success');
+
+          // close dialog
+          this.closeDialog();
+
+        })
+        .catch((error) => {
+          this.error = error;
+
+          Swal.fire('Failed!', `An error has occurred: ${error.message}`, 'error');
+
+          console.log(error);
+        });
+    }
+  }
+
+  // function to detect when file is selected
+  fileSelected(file) {
+    if (file.size <= 1048576) {
+      this.inventoryItem.image = file;
+
+      console.log(file);
+      alert('file selected');
+    } else {
+      alert('Image size must be less than 1MB');
+      this.inventoryItem.image = null;
+      this.error = 'Please upload an image smaller than 1MB';
+    }
+
+  }
+
+  // function to deal with change in select drop downs
+  onSelect(event) {
+    this.regions = this.countryService.getRegions().filter((region) => region.countryid === event.value);
+    this.inventoryForm.get('region').setValue(null);
+    // this.inventoryForm.controls.setValue('region', null);
+  }
+
+  // function to add inventory item
+  addInventory(inventoryForm) {
+    // check if form data is valid
+    if (inventoryForm.valid) {
+      // check if image is loaded
+      if (this.inventoryItem.image === undefined) {
+
+        // call normal firebase save function
+        this.data.saveItem('inventory', inventoryForm.value)
+          .then(() => {
+            // swal
+            Swal.fire('Success', 'New inventory item successfully added', 'success');
+
+            // close dialog
+            this.closeDialog();
+
+          })
+          .catch((error) => {
+            console.log(error);
+
+            Swal.fire('Failed!', `An error has occurred: ${error.message}`, 'error');
+
+            // show error text
+            this.error = error;
+          });
+
+      } else {
+        // call firebase save with image function
+        this.data.saveItemWithImage('inventory-images', inventoryForm.value, this.inventoryItem.image, 'inventory')
+          .subscribe((res) => {
+            console.log(res);
+            // swal
+            Swal.fire('Success', 'New inventory item successfully added', 'success');
+          });
+      }
+    }
+  }
+
+
+  // function to detect when file is selected for media item
+  fileSelectedForMedia(file) {
+    if (file.size <= (1648576) ) {
+      this.mediaItem.image = file;
+
+      console.log(file);
+      alert('file selected');
+    } else {
+      alert('Image size must be less than 1.5MB');
+      this.mediaItem.image = null;
+      this.error = 'Please upload an image smaller than 1.5MB';
+    }
+  }
+
+  // function to save media to firebase
+  addMedia(mediaItemForm) {
+
+    if (mediaItemForm.valid && this.mediaItem.image !== null) {
+      this.data.saveItemWithImage('media', mediaItemForm.value, this.mediaItem.image, 'media')
+        .subscribe((res) => {
+          console.log(res);
+          Swal.fire('Success', 'New media item successfully added', 'success');
+        });
+    }
+  }
+
+  // function to close dialog
+  closeDialog() {
+    this.bottomSheetRef.dismiss();
   }
 }

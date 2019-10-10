@@ -1,4 +1,4 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {MatBottomSheet, MatDialog, MatPaginator, MatSort, MatTableDataSource} from '@angular/material';
 import {CountryService} from '../services/country.service';
 import {Router} from '@angular/router';
@@ -7,7 +7,6 @@ import {ConfirmComponent} from '../shared/confirm/confirm.component';
 import {Country} from '../model/country';
 import {Region} from '../model/region';
 import Swal from 'sweetalert2';
-import {Observable} from 'rxjs';
 import {EditorComponent} from '../shared/editor/editor.component';
 
 @Component({
@@ -15,7 +14,7 @@ import {EditorComponent} from '../shared/editor/editor.component';
   styleUrls: ['./inventory.component.css'],
   templateUrl: './inventory.component.html'
 })
-export class InventoryComponent implements OnInit {
+export class InventoryComponent implements OnInit, OnDestroy {
   inventory;
   error: any;
   countries: Country[] = [];
@@ -25,7 +24,7 @@ export class InventoryComponent implements OnInit {
   dataSource: MatTableDataSource<any>;
   @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
   @ViewChild(MatSort, {static: true}) sort: MatSort;
-
+  private ref;
 
   constructor(public router: Router, private data: DataService,
               private countryService: CountryService, public dialog: MatDialog,
@@ -38,83 +37,41 @@ export class InventoryComponent implements OnInit {
     // get regions
     this.regions = this.countryService.getRegions();
 
-    // add dummy data
-    // todo: link to live database
-    const dummydata = [
-      this.data.sampleData.inventory['-KwZJEvnHfYeFOKnQXkA'],
-      this.data.sampleData.inventory['-KwZJRJ8rDoNhLXxFbjw'],
-      this.data.sampleData.inventory['-KwZJ_f6e5Rj6CRrbhII'],
-      this.data.sampleData.inventory['-KwZK87v2uuzrVpdWIoz'],
-      this.data.sampleData.inventory['-KwZKKmBu2cq2Z2R9Ymc'],
-      this.data.sampleData.inventory['-KwepzM-invrDAVdp8z_'],
-      this.data.sampleData.inventory['-KweqGt4RfNiINpm3Ffv'],
-      this.data.sampleData.inventory['-KweqcZjCq3ubFVWdspD'],
-      this.data.sampleData.inventory['-KwZJEvnHfYeFOKnQXkA'],
-      this.data.sampleData.inventory['-KwZJRJ8rDoNhLXxFbjw'],
-      this.data.sampleData.inventory['-KwZJ_f6e5Rj6CRrbhII'],
-      this.data.sampleData.inventory['-KwZK87v2uuzrVpdWIoz'],
-      this.data.sampleData.inventory['-KwZKKmBu2cq2Z2R9Ymc'],
-      this.data.sampleData.inventory['-KwepzM-invrDAVdp8z_'],
-      this.data.sampleData.inventory['-KweqGt4RfNiINpm3Ffv'],
-      this.data.sampleData.inventory['-KweqcZjCq3ubFVWdspD'],
-      this.data.sampleData.inventory['-KwZJEvnHfYeFOKnQXkA'],
-      this.data.sampleData.inventory['-KwZJRJ8rDoNhLXxFbjw'],
-      this.data.sampleData.inventory['-KwZJ_f6e5Rj6CRrbhII'],
-      this.data.sampleData.inventory['-KwZK87v2uuzrVpdWIoz'],
-      this.data.sampleData.inventory['-KwZKKmBu2cq2Z2R9Ymc'],
-      this.data.sampleData.inventory['-KwepzM-invrDAVdp8z_'],
-      this.data.sampleData.inventory['-KweqGt4RfNiINpm3Ffv'],
-      this.data.sampleData.inventory['-KweqcZjCq3ubFVWdspD'],
-      this.data.sampleData.inventory['-KwZJEvnHfYeFOKnQXkA'],
-      this.data.sampleData.inventory['-KwZJRJ8rDoNhLXxFbjw'],
-      this.data.sampleData.inventory['-KwZJ_f6e5Rj6CRrbhII'],
-      this.data.sampleData.inventory['-KwZK87v2uuzrVpdWIoz'],
-      this.data.sampleData.inventory['-KwZKKmBu2cq2Z2R9Ymc'],
-      this.data.sampleData.inventory['-KwepzM-invrDAVdp8z_'],
-      this.data.sampleData.inventory['-KweqGt4RfNiINpm3Ffv'],
-      this.data.sampleData.inventory['-KweqcZjCq3ubFVWdspD'],
-      this.data.sampleData.inventory['-KwZJEvnHfYeFOKnQXkA'],
-      this.data.sampleData.inventory['-KwZJRJ8rDoNhLXxFbjw'],
-      this.data.sampleData.inventory['-KwZJ_f6e5Rj6CRrbhII'],
-      this.data.sampleData.inventory['-KwZK87v2uuzrVpdWIoz'],
-      this.data.sampleData.inventory['-KwZKKmBu2cq2Z2R9Ymc'],
-      this.data.sampleData.inventory['-KwepzM-invrDAVdp8z_'],
-      this.data.sampleData.inventory['-KweqGt4RfNiINpm3Ffv'],
-      this.data.sampleData.inventory['-KweqcZjCq3ubFVWdspD'],
-      this.data.sampleData.inventory['-KwZJEvnHfYeFOKnQXkA'],
-      this.data.sampleData.inventory['-KwZJRJ8rDoNhLXxFbjw'],
-      this.data.sampleData.inventory['-KwZJ_f6e5Rj6CRrbhII'],
-      this.data.sampleData.inventory['-KwZK87v2uuzrVpdWIoz'],
-      this.data.sampleData.inventory['-KwZKKmBu2cq2Z2R9Ymc'],
-      this.data.sampleData.inventory['-KwepzM-invrDAVdp8z_'],
-      this.data.sampleData.inventory['-KweqGt4RfNiINpm3Ffv'],
-      this.data.sampleData.inventory['-KweqcZjCq3ubFVWdspD'],
-      this.data.sampleData.inventory['-KwZJEvnHfYeFOKnQXkA'],
-      this.data.sampleData.inventory['-KwZJRJ8rDoNhLXxFbjw'],
-      this.data.sampleData.inventory['-KwZJ_f6e5Rj6CRrbhII'],
-      this.data.sampleData.inventory['-KwZK87v2uuzrVpdWIoz'],
-      this.data.sampleData.inventory['-KwZKKmBu2cq2Z2R9Ymc'],
-      this.data.sampleData.inventory['-KwepzM-invrDAVdp8z_'],
-      this.data.sampleData.inventory['-KweqGt4RfNiINpm3Ffv'],
-      this.data.sampleData.inventory['-KweqcZjCq3ubFVWdspD'],
-      this.data.sampleData.inventory['-KwZJEvnHfYeFOKnQXkA'],
-      this.data.sampleData.inventory['-KwZJRJ8rDoNhLXxFbjw'],
-      this.data.sampleData.inventory['-KwZJ_f6e5Rj6CRrbhII'],
-      this.data.sampleData.inventory['-KwZK87v2uuzrVpdWIoz'],
-      this.data.sampleData.inventory['-KwZKKmBu2cq2Z2R9Ymc'],
-      this.data.sampleData.inventory['-KwepzM-invrDAVdp8z_'],
-      this.data.sampleData.inventory['-KweqGt4RfNiINpm3Ffv'],
-      this.data.sampleData.inventory['-KweqcZjCq3ubFVWdspD'],
-    ];
+    // todo: dummy data
+    // const dummydata = [
+    //   this.data.sampleData.inventory['-KwZJEvnHfYeFOKnQXkA'],
+    //   this.data.sampleData.inventory['-KwZJRJ8rDoNhLXxFbjw'],
+    //   this.data.sampleData.inventory['-KwZJ_f6e5Rj6CRrbhII'],
+    //   this.data.sampleData.inventory['-KwZK87v2uuzrVpdWIoz'],
+    //   this.data.sampleData.inventory['-KwZKKmBu2cq2Z2R9Ymc'],
+    //   this.data.sampleData.inventory['-KwepzM-invrDAVdp8z_'],
+    //   this.data.sampleData.inventory['-KweqGt4RfNiINpm3Ffv'],
+    //   this.data.sampleData.inventory['-KweqcZjCq3ubFVWdspD'],
+    // ];
 
-    // init datasouce
-    this.dataSource = new MatTableDataSource(dummydata);
+    // init inventory array
+    this.inventory = [];
 
-    // init data source
-    this.dataSource.paginator = this.paginator;
+    // get inventory
+    this.ref = this.data.getList('inventory')
+      .snapshotChanges()
+      .subscribe(snapshots => {
+        snapshots.forEach(snapshot => {
+          let item = {};
+          item = snapshot.payload.val();
+          item[`key`] = snapshot.key;
+          this.inventory.push(item);
+        });
 
-    // init sort
-    this.dataSource.sort = this.sort;
+        // init data source
+        this.dataSource = new MatTableDataSource(this.inventory);
+
+        // init data source
+        this.dataSource.paginator = this.paginator;
+
+        // init sort
+        this.dataSource.sort = this.sort;
+      });
   }
 
   // function to display destination names
@@ -157,7 +114,7 @@ export class InventoryComponent implements OnInit {
           this.deleteInventory(item);
         }
       }
-    });
+    }).unsubscribe();
   }
 
   // function to delete item
@@ -201,11 +158,27 @@ export class InventoryComponent implements OnInit {
 
   // function to add new inventory item
   addNew() {
-    this.bottomSheet.open(EditorComponent);
+    this.bottomSheet.open(EditorComponent, {
+      data: {
+        item: null,
+        new: true,
+        type: 'inventory'
+      }
+    });
   }
 
 // function to edit inventory item
-  editInventoryItem(row: any) {
-    this.bottomSheet.open(EditorComponent);
+  editInventoryItem(inventoryItem) {
+    this.bottomSheet.open(EditorComponent, {
+      data: {
+        item: inventoryItem,
+        new: false,
+        type: 'inventory'
+      }
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.ref.unsubscribe();
   }
 }
