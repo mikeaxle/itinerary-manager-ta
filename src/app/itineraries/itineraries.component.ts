@@ -1,6 +1,5 @@
 import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {DataService} from '../services/data.service';
-import { Observable } from 'rxjs';
 import {MatBottomSheet, MatBottomSheetRef} from '@angular/material';
 import {MatPaginator} from '@angular/material/paginator';
 import {MatSort} from '@angular/material/sort';

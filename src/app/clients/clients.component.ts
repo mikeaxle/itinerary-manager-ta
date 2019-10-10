@@ -1,4 +1,4 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {Component, OnInit, ViewChild, OnDestroy} from '@angular/core';
 import {DataService} from '../services/data.service';
 import {MatBottomSheet, MatDialog, MatPaginator, MatSort, MatTableDataSource} from '@angular/material';
 import {ConfirmComponent} from '../shared/confirm/confirm.component';
@@ -10,11 +10,13 @@ import {EditorComponent} from '../shared/editor/editor.component';
   styleUrls: ['./clients.component.css'],
   templateUrl: './clients.component.html'
 })
-export class ClientsComponent implements OnInit {
+export class ClientsComponent implements OnInit, OnDestroy {
+
   displayedColumns = ['Name', 'Email', 'Actions'];
   private error: any;
   dataSource: MatTableDataSource<any>;
   clients;
+  
   @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
   @ViewChild(MatSort, {static: true}) sort: MatSort;
   private ref;
@@ -130,5 +132,9 @@ export class ClientsComponent implements OnInit {
         type: 'clients',
       }
     });
+  }
+
+  ngOnDestroy(): void {
+    this.ref.unsubscribe();
   }
 }

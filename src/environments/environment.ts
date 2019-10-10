@@ -3,9 +3,9 @@
 // The list of file replacements can be found in `angular.json`.
 
 export const environment = {
-  production: false,
+  production: true,
   firebase: {
-    production: false,
+    production: true,
     apiKey: 'AIzaSyAQVDQYifHP_BT-xCtutLKRa8aI91e_Qmc',
     authDomain: 'true-africa-itinerary.firebaseapp.com',
     databaseURL: 'https://true-africa-itinerary.firebaseio.com',
