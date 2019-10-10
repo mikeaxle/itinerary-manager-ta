@@ -737,7 +737,7 @@ divide by 86400000 which is the number of milliseconds equal to a editor-compone
 
   ngOnDestroy() {
     // unsubscribe from observables to remove memory leaks
-    this.days.unsubsribe();
+    // this.days.unsubsribe();
     this.comments.unsubscribe();
   }
 }
