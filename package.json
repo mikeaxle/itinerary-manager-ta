@@ -7,7 +7,7 @@
   },
   "scripts": {
     "ng": "ng",
-    "start": "ng nodemon server.js",
+    "start": "npm nodemon server.js",
     "build": "ng build --aot",
     "test": "ng test",
     "lint": "ng lint",
