@@ -2,7 +2,6 @@ import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {MatBottomSheet, MatDialog, MatPaginator, MatSort, MatTableDataSource} from '@angular/material';
 import {ConfirmComponent} from '../shared/confirm/confirm.component';
 import {Router} from '@angular/router';
-import {componentDestroyed} from 'ng2-rx-componentdestroyed';
 import {DataService} from '../services/data.service';
 import {PermissionDeniedDialogComponent} from '../shared/permission-denied-dialog/permission-denied-dialog.component';
 import {EditorComponent} from '../shared/editor/editor.component';

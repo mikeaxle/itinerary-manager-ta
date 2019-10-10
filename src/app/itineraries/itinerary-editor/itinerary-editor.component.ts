@@ -1,9 +1,9 @@
-import {Component, NgModule, OnDestroy, OnInit, ViewEncapsulation} from '@angular/core';
-import {HttpClient, HttpHeaders} from '@angular/common/http';
+import {Component, NgModule, OnDestroy, OnInit} from '@angular/core';
+import {HttpClient} from '@angular/common/http';
 import {DataService} from '../../services/data.service';
 import {CountryService} from '../../services/country.service';
-import {Router, ActivatedRoute, Params, ParamMap} from '@angular/router';
-import {Validators, FormGroup, FormArray, FormBuilder} from '@angular/forms';
+import {Router, ActivatedRoute} from '@angular/router';
+import {FormBuilder} from '@angular/forms';
 import {MatDialog, MatSnackBar} from '@angular/material';
 import {DragulaService} from 'ng2-dragula/ng2-dragula';
 import {SavePdfService} from '../../services/save-pdf.service';
@@ -16,12 +16,8 @@ import {ConfirmComponent} from '../../shared/confirm/confirm.component';
 import {MONTHS} from '../../model/months';
 import {EXCLUSIONS} from '../../model/exclusions';
 import {GridImageTiles} from '../../model/gridImageTiles';
-import {Country} from '../../model/country';
-import {ItinerariesComponent} from '../itineraries.component';
 import {CommonModule} from '@angular/common';
-import {AppRoutingModule} from '../../app-routing.module';
-import {map, switchMap} from 'rxjs/operators';
-// @ts-ignore
+import {map} from 'rxjs/operators';
 import {STATUS} from '../../model/statuses';
 import {ItineraryDetailsEditorComponent} from './itinerary-details-editor/itinerary-details-editor.component';
 

@@ -1,9 +1,9 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {Itinerary} from '../../model/itinerary';
 import {DataService} from '../../services/data.service';
-import {FormArray, FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
+import {FormArray, FormBuilder, FormControl, Validators} from '@angular/forms';
 import {Router} from '@angular/router';
-import {MatBottomSheet, MatBottomSheetRef, MAT_BOTTOM_SHEET_DATA} from '@angular/material/bottom-sheet';
+import { MatBottomSheetRef, MAT_BOTTOM_SHEET_DATA} from '@angular/material/bottom-sheet';
 import Swal from 'sweetalert2';
 import {countries} from '../../model/countries';
 import {Agent} from '../../model/agent';

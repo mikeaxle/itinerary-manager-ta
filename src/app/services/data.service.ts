@@ -1,12 +1,11 @@
-import {Injectable, NgModule} from '@angular/core';
+import {Injectable} from '@angular/core';
 import {Router} from '@angular/router';
 import {AngularFireDatabase} from '@angular/fire/database';
 import {AngularFireAuth} from '@angular/fire/auth';
-import {AngularFireStorage, StorageBucket} from '@angular/fire/storage';
-import {finalize, map} from 'rxjs/operators';
+import {AngularFireStorage} from '@angular/fire/storage';
+import {finalize} from 'rxjs/operators';
 import {Observable} from 'rxjs';
-// @ts-ignore
-import sampleData from '../true-africa-itinerary-export.json';
+
 
 @Injectable({
   providedIn: 'root',
@@ -25,7 +24,6 @@ export class DataService {
   sampleData;
 
   constructor(public afAuth: AngularFireAuth, public af: AngularFireDatabase, private storage: AngularFireStorage, private router: Router) {
-    this.sampleData = sampleData;
     this.currentCompany = localStorage.getItem('currentCompany');
     this.color = localStorage.getItem('color');
   }

@@ -4,13 +4,10 @@ import { CdkTableModule} from '@angular/cdk/table';
 import 'hammerjs';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { AppComponent } from './app.component';
-import { SavePdfService } from './services/save-pdf.service';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { CountryService } from './services/country.service';
-import { MyDateAdapter, MY_DATE_FORMATS } from './directives/custom-date-adapter';
 import { DragulaModule } from 'ng2-dragula';
 import { CurrencyMaskModule } from 'ng2-currency-mask';
-import { CurrencyMaskConfig, CURRENCY_MASK_CONFIG } from 'ng2-currency-mask/src/currency-mask.config';
+import { CurrencyMaskConfig } from 'ng2-currency-mask/src/currency-mask.config';
 import {
   MatSidenavModule,
   MatSnackBarModule,
@@ -34,14 +31,7 @@ import {
   MatGridListModule,
   MatListModule,
   MatRadioModule,
-  MatHeaderCell,
-  MatCell,
-  MatFooterCellDef,
-  MatHeaderRow,
-  MatHeaderRowDef,
-  MatRowDef,
-  MatHeaderCellDef,
-  MatCellDef, MatSort, MatTable, MatSortHeader, MatBottomSheetModule
+  MatBottomSheetModule
 } from '@angular/material';
 import { InvalidTypeDirective } from './directives/invalid-type.directive';
 import { InvalidmessageDirective } from './directives/invalidmessage.directive';
@@ -50,17 +40,13 @@ import { OverlayContainer } from '@angular/cdk/overlay';
 import { AngularFireModule } from '@angular/fire';
 import { environment } from '../environments/environment';
 import {AngularFireStorageModule} from '@angular/fire/storage';
-import {AngularFireAuthGuard} from '@angular/fire/auth-guard';
-import {DataService} from './services/data.service';
 import {AngularFireAuthModule} from '@angular/fire/auth';
 import {AngularFireDatabaseModule} from '@angular/fire/database';
 import { AppRoutingModule } from './app-routing.module';
 import {ItinerariesComponent} from './itineraries/itineraries.component';
 import {MatPaginatorModule} from '@angular/material/paginator';
-import {RouterModule, ROUTES} from '@angular/router';
 import { EditorComponent } from './shared/editor/editor.component';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
-import { ItineraryEditorComponent } from './itineraries/itinerary-editor/itinerary-editor.component';
 import { DayComponent } from './itineraries/itinerary-editor/day/day.component';
 import { CommentComponent } from './itineraries/itinerary-editor/comment/comment.component';
 import { PaymentComponent } from './itineraries/itinerary-editor/payment/payment.component';
