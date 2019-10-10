@@ -26,8 +26,8 @@ export class InventoryComponent implements OnInit, OnDestroy {
   @ViewChild(MatSort, {static: true}) sort: MatSort;
   private ref;
 
-  constructor(public router: Router, private data: DataService,
-              private countryService: CountryService, public dialog: MatDialog,
+  constructor(public router: Router, public data: DataService,
+              public countryService: CountryService, public dialog: MatDialog,
               public bottomSheet: MatBottomSheet) {}
 
   ngOnInit() {

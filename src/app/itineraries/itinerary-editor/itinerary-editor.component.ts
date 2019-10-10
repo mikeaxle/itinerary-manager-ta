@@ -66,10 +66,12 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
   itinerary$: any;
   date_months = MONTHS;
   exclusions = EXCLUSIONS;
+  discount = 0;
+  deposit = 0
 
-  constructor(private router: Router, private route: ActivatedRoute, public data: DataService, private formbuilder: FormBuilder,
-              public dialog: MatDialog, private dragula: DragulaService, private savePdfService: SavePdfService, private snackBar: MatSnackBar,
-              private http: HttpClient, private countryservice: CountryService) {
+  constructor(public router: Router, private route: ActivatedRoute, public data: DataService, public formbuilder: FormBuilder,
+              public dialog: MatDialog, private dragula: DragulaService, public savePdfService: SavePdfService, public snackBar: MatSnackBar,
+              public http: HttpClient, public countryService: CountryService) {
 
   }
 

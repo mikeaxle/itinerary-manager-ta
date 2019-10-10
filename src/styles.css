@@ -395,7 +395,7 @@ mat-grid-tile  {
   align-items: baseline;
   padding: 8px 24px 0;
   font-size: 20px;
-  justify-content: start;
+  justify-content: flex-start;
 }
 
 .mat-form-field {

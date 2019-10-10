@@ -29,7 +29,7 @@ export class AgentsComponent implements OnInit, OnDestroy {
   ref: any;
 
 
-  constructor(public router: Router, private data: DataService, public dialog: MatDialog, public bottomSheet: MatBottomSheet) {}
+  constructor(public router: Router, public data: DataService, public dialog: MatDialog, public bottomSheet: MatBottomSheet) {}
 
   ngOnInit() {
     // todo: dummy data
@@ -121,7 +121,7 @@ export class AgentsComponent implements OnInit, OnDestroy {
   }
 
   // function to add new agent
-  addNew(agent) {
+  addNew() {
     this.bottomSheet.open(EditorComponent, {
       data: {
         item: null,

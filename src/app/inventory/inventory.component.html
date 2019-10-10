@@ -62,7 +62,7 @@
     <!-- attachment  Column -->
     <ng-container matColumnDef="Image">
       <mat-header-cell *matHeaderCellDef fxFlex="5"> Image</mat-header-cell>
-      <mat-cell *matCellDef="let row" fxFlex="5" [routerLink]="['../edit-inventory']" [queryParams]="{ inventoryId: row.$key }"> &nbsp; <svg-icon *ngIf="row.image" src="../assets/icons/attachment.svg" [style.fill]="color"></svg-icon> </mat-cell>
+      <mat-cell *matCellDef="let row" fxFlex="5" [routerLink]="['../edit-inventory']" [queryParams]="{ inventoryId: row.$key }"> &nbsp; <svg-icon *ngIf="row.image" src="../assets/icons/attachment.svg" [style.fill]="this.data.color"></svg-icon> </mat-cell>
     </ng-container>
 
     <!-- edit and delete options -->

@@ -46,11 +46,11 @@
       <mat-cell *matCellDef="let row" fxFlex="10" fxLayoutAlign="end center" fxLayoutGap="10px" >
 
         <button mat-icon-button (click)="editAgent(row)">
-          <svg-icon src="../assets/icons/edit.svg" [style.fill]=color></svg-icon>
+          <svg-icon src="../assets/icons/edit.svg" [style.fill]=this.data.color></svg-icon>
         </button>
 
         <button mat-icon-button (click)="openDelete(row.$key)">
-          <svg-icon src="../assets/icons/trash.svg" [style.fill]=color></svg-icon>
+          <svg-icon src="../assets/icons/trash.svg" [style.fill]=this.data.color></svg-icon>
         </button>
 
       </mat-cell>

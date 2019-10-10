@@ -16,8 +16,8 @@ export class MediaComponent implements OnInit, OnDestroy {
   MEDIA_LIST = [];
   error: any;
   tileBackground = '#add8e6';
-  private page = 0;
-  private size = 15;
+  page = 0;
+  size = 15;
   ref;
 
   constructor(private data: DataService, public dialog: MatDialog, public bottomSheet: MatBottomSheet) { }
