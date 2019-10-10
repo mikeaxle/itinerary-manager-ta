@@ -1,4 +1,4 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {DataService} from '../services/data.service';
 import { Observable } from 'rxjs';
 import {MatBottomSheet, MatBottomSheetRef} from '@angular/material';
@@ -15,13 +15,14 @@ import Swal from 'sweetalert2';
   templateUrl: './itineraries.component.html'
 
 })
-export class ItinerariesComponent implements OnInit {
+export class ItinerariesComponent implements OnInit, OnDestroy {
   displayedColumns = ['#', 'Date', 'Client', 'Itinerary', 'Value', 'Status'];
   dataSource: MatTableDataSource<any>;
   itineraries;
   @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
   @ViewChild(MatSort, {static: true}) sort: MatSort;
-  private error: any;
+  private error: any
+  ref;
 
   constructor(public data: DataService, private bottomSheet: MatBottomSheet, public router: Router) {
   }
@@ -39,7 +40,7 @@ export class ItinerariesComponent implements OnInit {
     this.itineraries = [];
 
     // get itineraries
-    this.data.af.list(`itineraries/${this.data.currentCompany}/`, ref => ref.limitToLast(200))
+    this.ref = this.data.af.list(`itineraries/${this.data.currentCompany}/`, ref => ref.limitToLast(100))
     .snapshotChanges()
       .subscribe(snapshots => {
 
@@ -120,5 +121,9 @@ export class ItinerariesComponent implements OnInit {
   editItinerary(itinerary) {
     // stringify itinerary and send as router param
     this.router.navigate(['/itinerary-editor', JSON.stringify(itinerary)]);
+  }
+
+  ngOnDestroy(): void {
+    this.ref.unsubscribe();
   }
 }

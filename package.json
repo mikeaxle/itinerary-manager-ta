@@ -1,6 +1,7 @@
 {
   "name": "itinerary-manager-pa",
   "version": "0.9.1",
+  "bundle-report": "webpack-bundle-analyzer dist/stats.json",
   "engines": {
     "node": "12.11.1",
     "npm": "6.11.3"
@@ -8,7 +9,7 @@
   "scripts": {
     "ng": "ng",
     "start": "nodemon server.js",
-    "build": "ng build --prod --aot",
+    "build": "ng build --prod",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e"
