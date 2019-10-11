@@ -23,9 +23,9 @@
         fxLayout
         fxLayoutAlign="space-between center"
         fxLayoutGap="10px">
-        <sub>{{(user | async)?.firstname }} {{(user | async)?.lastname }}</sub>
+        <sub>{{ user.firstname }} {{ user.lastname }}</sub>
         <button mat-icon-button [mat-menu-trigger-for]="menu">
-            <img class="avatar_icon" [src]=logo>
+            <img class="avatar_icon" [src]=logo alt="company logo">
         </button>
 
     </span>
@@ -33,7 +33,7 @@
 </mat-toolbar>
 
 <!-- collapsible menu -->
-<mat-menu x-position="before" #menu="matMenu">
+<mat-menu xPosition="before" #menu="matMenu">
     <button mat-menu-item (click)="data.switchCompany()">
       <mat-icon>person_outline</mat-icon>
       <span *ngIf="data.currentCompany === 'Planet Africa'">Switch to True Africa</span>

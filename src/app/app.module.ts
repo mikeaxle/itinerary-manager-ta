@@ -70,6 +70,8 @@ import { MoneyPipe } from './filter/money.pipe';
 import { AgentPipe } from './filter/agent.pipe';
 import { StatusPipe } from './filter/status.pipe';
 import { SearchPipe } from './filter/search.pipe';
+import { PdfDialogComponent } from './shared/pdf-dialog/pdf-dialog.component';
+import { LoginComponent } from './login/login.component';
 
 // currency Mask settings
 // @ts-ignore
@@ -112,7 +114,9 @@ export const CustomCurrencyMaskConfig: CurrencyMaskConfig = {
     MoneyPipe,
     AgentPipe,
     StatusPipe,
-    SearchPipe
+    SearchPipe,
+    PdfDialogComponent,
+    LoginComponent
   ],
   entryComponents: [
     DayComponent,
@@ -123,7 +127,8 @@ export const CustomCurrencyMaskConfig: CurrencyMaskConfig = {
     AddCountryNumberComponent,
     EditorComponent,
     ConfirmComponent,
-    PermissionDeniedDialogComponent
+    PermissionDeniedDialogComponent,
+    PdfDialogComponent
 
   ],
   imports: [

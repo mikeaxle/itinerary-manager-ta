@@ -3,11 +3,12 @@ import {DataService} from './services/data.service';
 import {MatSnackBar} from '@angular/material';
 import {Router} from '@angular/router';
 
+
 @Injectable()
 @Component({
   selector: 'app-root',
+  styleUrls: ['./app.component.scss'],
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements OnInit {
   title = 'itinerary-manager-ta';
@@ -21,6 +22,8 @@ export class AppComponent implements OnInit {
     // check if user is logged in
     this.user = this.data.authenticateUser();
 
+    console.assert(this.user, 'user object');
+
     // get logo
     this.data.af.object(`companies/${this.data.currentCompany}`)
       .valueChanges()
@@ -28,12 +31,12 @@ export class AppComponent implements OnInit {
       if (res) {
       // check if planet africa is logged in
       // @ts-ignore
-      if (res['name'] === 'Planet Africa') {
+      if (res[`name`] === 'Planet Africa') {
         this.isPlanetAfrica = true;
-        this.logo = 'https://firebasestorage.googleapis.com/v0/b/true-africa-itinerary.appspot.com/o/avatar-planetafrica.png?alt=media&token=a237a250-8317-4568-baed-9cef0f27f5bc';
+        this.logo = '';
       } else {
         this.isPlanetAfrica = false;
-        this.logo = 'https://firebasestorage.googleapis.com/v0/b/true-africa-itinerary.appspot.com/o/avatar-trueafrica.png?alt=media&token=6808dc76-eecb-4bdd-beee-6fd2af2868dc';
+        this.logo = '../assets/logos/avatar-trueafrica.png';
       }
       }
     })

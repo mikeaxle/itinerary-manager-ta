@@ -60,10 +60,14 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
   color: any;
   lesserButtonStyle: any;
   itinerary$: any;
-  date_months = MONTHS;
+  DATE_MONTHS = MONTHS;
   exclusions = EXCLUSIONS;
   discount = 0;
-  deposit = 0
+  deposit = 0;
+  _COMMENTS = [];
+  _PAYMENTS = []
+  _PHONE_NUMBERS = [];
+
 
   constructor(public router: Router, private route: ActivatedRoute, public data: DataService, public formbuilder: FormBuilder,
               public dialog: MatDialog, private dragula: DragulaService, public savePdfService: SavePdfService, public snackBar: MatSnackBar,
@@ -75,6 +79,8 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
     // get itinerary
     this.itinerary$ = JSON.parse(this.route.snapshot.paramMap.get('itinerary'));
 
+    console.log(this.itinerary$);
+
     // todo: convert start date and end date on front end
     /* calculate total days by converting dates into milliseconds, subtracting and
 divide by 86400000 which is the number of milliseconds equal to a editor-components */
@@ -85,7 +91,7 @@ divide by 86400000 which is the number of milliseconds equal to a editor-compone
     // todo: show in front end from itinerary$ check if total is defined, check if deposit is defined, check if discount is defined
     // assign exclusions if not defined
     if (this.itinerary$.exclusions === null) {
-      this.itinerary$.exclusions = EXCLUSIONS;
+      this.itinerary$.exclusions = this.exclusions;
     }
 
     // todo: move to front end from itinerary$ assign children to local variable, assign adults to local variable, assign cover image, assign images
@@ -137,12 +143,20 @@ divide by 86400000 which is the number of milliseconds equal to a editor-compone
 
     // get comments related to itinerary id
     this.comments = this.data.af.list('comments/' + this.itinerary$.key)
-      .snapshotChanges();
+      .snapshotChanges()
+      .subscribe((snapshots) => {
+        snapshots.forEach(snapshot => {
+          let comment = snapshot.payload.val();
+          comment[`key`] = snapshot.key;
+          this._COMMENTS.push(comment)
+        })
+      })
 
     // get payments related to itinerary id
     this.payments = this.data.af.list('payments/' + this.itinerary$.key)
       .snapshotChanges()
       .pipe(map(items => {
+        this._PAYMENTS = items;
         return items.map(payment => {
           this.totalPayments += parseFloat(payment.payload.toJSON[`amount`]);
         });
@@ -151,7 +165,14 @@ divide by 86400000 which is the number of milliseconds equal to a editor-compone
 
     // get contact numbers associated with itinerary
     this.countries =  this.data.af.list(`phone_numbers/${this.itinerary$.key}`)
-      .snapshotChanges();
+      .snapshotChanges()
+      .subscribe(snapshots => {
+      snapshots.forEach(snapshot => {
+        let phoneNumber = snapshot.payload.val()
+        phoneNumber[`key`] = snapshot.key;
+        this._PHONE_NUMBERS.push(phoneNumber);
+      })
+    })
   }
 
   // function to remove editor-components
@@ -308,7 +329,7 @@ divide by 86400000 which is the number of milliseconds equal to a editor-compone
     start_date.setDate(start_date.getDate() + (firstDay - 1));
 
     // add start_date to date string
-    dates += `${start_date.getDate()} ${this.date_months[start_date.getMonth()]}`;
+    dates += `${start_date.getDate()} ${this.DATE_MONTHS[start_date.getMonth()]}`;
 
     // if editor-components contains more than 1 editor-components
     if (day.days > 1) {
@@ -325,7 +346,7 @@ divide by 86400000 which is the number of milliseconds equal to a editor-compone
       end_date.setDate(end_date.getDate() + day.days - 1);
 
       // add to dates string
-      dates += ` - ${end_date.getDate()} ${this.date_months[end_date.getMonth()]}`;
+      dates += ` - ${end_date.getDate()} ${this.DATE_MONTHS[end_date.getMonth()]}`;
     }
 
     // check type
@@ -698,7 +719,7 @@ divide by 86400000 which is the number of milliseconds equal to a editor-compone
   }
 
   // function to save as PDF
-  saveAsPdf(type: string) {
+  saveAsPdf(type: number) {
     // flag to determine if printing is possible
     let canPrint = false;
 
@@ -717,10 +738,23 @@ divide by 86400000 which is the number of milliseconds equal to a editor-compone
     }
 
     if (canPrint) {
-      if (type === 'costs') {
-        this.savePdfService.savePDF(this.id, 'full', this.usedDays);
-      } else if (type  === 'no costs') {
-        this.savePdfService.savePDF(this.id, 'full no cost', this.usedDays);
+      if (type === 1) {
+        this.savePdfService.savePDF({
+          comments: this._COMMENTS,
+          days: this._DAYS,
+          itinerary: this.itinerary$,
+          payments: this._PAYMENTS,
+          phoneNumbers: this._PHONE_NUMBERS,
+        }, 1, this.usedDays);
+      } else if (type  === 2) {
+        this.savePdfService.savePDF(
+          {
+            comments: this._COMMENTS,
+            days: this._DAYS,
+            itinerary: this.itinerary$,
+            payments: this._PAYMENTS,
+            phoneNumbers: this._PHONE_NUMBERS,
+          }, 2, this.usedDays);
       }
     } else {
       alert('Please add all 7 images in order to print the full pdf ');
@@ -730,8 +764,19 @@ divide by 86400000 which is the number of milliseconds equal to a editor-compone
 
   // save partial pdf
   saveAsPdfPartial() {
-    this.savePdfService.savePDF(this.id, 'partial', this.usedDays);
+    this.savePdfService.savePDF( {
+      comments: this._COMMENTS,
+      days: this._DAYS,
+      itinerary: this.itinerary$,
+      payments: this._PAYMENTS,
+      phoneNumbers: this._PHONE_NUMBERS,
+    }, 2, this.usedDays);
   }
+
+  // function to check if object is an array
+isArray(obj: any ) {
+    return Array.isArray(obj);
+ }
 
   ngOnDestroy() {
     // unsubscribe from observables to remove memory leaks

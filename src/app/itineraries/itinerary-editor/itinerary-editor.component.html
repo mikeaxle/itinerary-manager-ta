@@ -67,8 +67,8 @@
       <!-- print pdf menu -->
         <mat-menu #menu="matMenu">
           <button mat-menu-item (click)="saveAsPdfPartial()">Itinerary & Costs</button>
-          <button mat-menu-item (click)="saveAsPdf('full')">Full Itinerary</button>
-          <button mat-menu-item (click)="saveAsPdf('no costs')">Full Itinerary - No Costs</button>
+          <button mat-menu-item (click)="saveAsPdf(1)">Full Itinerary</button>
+          <button mat-menu-item (click)="saveAsPdf(2)">Full Itinerary - No Costs</button>
         </mat-menu>
   </span>
   </section>
@@ -107,16 +107,19 @@
             <h5>Status</h5>
             <b>{{ itinerary$.status }}</b>
           </td>
-
+          <!-- <td>
+            <h5>Modified</h5>
+            <b>{{ (itinerary$.updatedAt }}</b>
+          </td> -->
         </tr>
         <tr>
           <td>
             <h5>Adults</h5>
-            <b>{{ itinerary$.this.itinerary$.adults }}</b>
+            <b> {{ isArray(itinerary$.adults) ? itinerary$.adults.length : itinerary$.adults }} </b>
           </td>
           <td>
             <h5>Children</h5>
-            <b>{{ itinerary$.this.itinerary$.children }}</b>
+            <b> {{ isArray(itinerary$.children) ? itinerary$.children.length : itinerary$.children }}</b>
           </td>
           <td>
             <h5>Travel dates</h5>
@@ -187,10 +190,10 @@
         </div>
 
         <!-- comments added from modal -->
-        <div  *ngIf="comments | async" fxLayout="column" fxFlexAlign="space-between base-line">
+        <div  *ngIf="_COMMENTS" fxLayout="column" fxFlexAlign="space-between base-line">
 
           <!-- iterate comments array -->
-          <div *ngFor="let comment of comments | async; let co=index; let last = last"
+          <div *ngFor="let comment of _COMMENTS; let co=index; let last = last"
                fxLayout="row"
                class="day">
             <!-- left column -->
@@ -314,7 +317,7 @@
           <mat-form-field fxFlex="30" style="text-align:right !important;">
             <label>
               <input disabled matInput/>
-              {{ total/(this.itinerary$.this.itinerary$.children + this.itinerary$.this.itinerary$.adults) | number: '1.0-2'}}
+              {{ total/(itinerary$.children + itinerary$.adults) | number: '1.0-2'}}
             </label>
           </mat-form-field>
           <span fxFlex></span>
@@ -328,7 +331,7 @@
           <mat-form-field fxFlex="30" style="text-align:right !important;">
             <label>
               <input disabled matInput/>
-              {{ (total/(this.itinerary$.children + this.itinerary$.adults))/usedDays | number: '1.0-2' }}
+              {{ (total/(itinerary$.children + itinerary$.adults))/usedDays | number: '1.0-2' }}
             </label>
           </mat-form-field>
           <span fxFlex></span>
@@ -342,7 +345,7 @@
             <label>
               <input
                 currencyMask
-                [(ngModel)]="this.itinerary$.discount ? this.itinerary$.discount : discount"
+                [(ngModel)]="itinerary$.discount ? itinerary$.discount : discount"
                 (keyup.enter)="onKeyUpQuote('discount')"
                 (blur)="onKeyUpQuote('discount')"
                 matInput/>
@@ -359,7 +362,7 @@
             <label>
               <input
                 currencyMask
-                [(ngModel)]="this.itinerary$.deposit ? this.itinerary$.deposit : deposit"
+                [(ngModel)]="itinerary$.deposit ? itinerary$.deposit : deposit"
                 (keyup.enter)="onKeyUpQuote('deposit')"
                 (blur)="onKeyUpQuote('deposit')"
                 matInput/>
@@ -422,13 +425,12 @@
     </div>
 
 
-     Contact Numbers
+<!--     Contact Numbers-->
     <h2>Contact Numbers</h2>
     <div fxLayout>
       <div fxFlex="50"></div>
-      <div *ngIf="countries | async" fxFlex fxLayout="Column">
-        <div *ngFor="let c of (countries | async )" fxLayoutAlign="flex-start center" fxLayoutGap="10px" class="quote-field">
-
+      <div *ngIf="_PHONE_NUMBERS" fxFlex fxLayout="Column">
+        <div *ngFor="let c of _PHONE_NUMBERS" fxLayoutAlign="flex-start center" fxLayoutGap="10px" class="quote-field">
           <mat-form-field fxFlex="72">
             <label>
               <input disabled matInput>
@@ -456,8 +458,8 @@
             (click)="openCountryDialog('add', null)">Add Country
           </button>
         </div>
-
       </div>
+
     </div>
 
 <!--   Images -->

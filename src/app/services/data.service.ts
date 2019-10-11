@@ -5,6 +5,7 @@ import {AngularFireAuth} from '@angular/fire/auth';
 import {AngularFireStorage} from '@angular/fire/storage';
 import {finalize} from 'rxjs/operators';
 import {Observable} from 'rxjs';
+import 'rxjs-compat/add/observable/of';
 
 
 @Injectable({
@@ -134,10 +135,10 @@ export class DataService {
 
   // authenticate user
   authenticateUser() {
-    // return this.afAuth.auth.signInWithPopup(new GoogleAuthProvider())
-    //   .catch((err) => {
-    //
-    //   });
+    return this.afAuth.authState
+      .subscribe((auth) => {
+       return auth ? this.af.object('users/' + auth[`uid`]) : Observable.of(!!auth);
+      });
   }
 
   // log user out
