@@ -53,7 +53,7 @@ export class EditorComponent implements OnInit {
 
   ngOnInit() {
     // get logged in user
-    this.user = this.data.authenticateUser();
+    this.user = this.data.user;
 
     // check if creating new item
     if (this.args.new) {

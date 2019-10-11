@@ -1,5 +1,5 @@
-<!-- todo: add *ngIf="(user | async )" to mat-toolbar -->
-<mat-toolbar class="mat-elevation-z3" color="primary">
+<!-- toolbar -->
+<mat-toolbar *ngIf="user" class="mat-elevation-z3" color="primary">
       <button mat-button [routerLink]="['itineraries']">
         <mat-icon>home</mat-icon>
       </button>
@@ -18,26 +18,34 @@
       <span class="fill-remaining-space"></span>
 
       <!-- company name -->
-      <span
-        *ngIf="user"
-        fxLayout
-        fxLayoutAlign="space-between center"
-        fxLayoutGap="10px">
-        <sub>{{ user.firstname }} {{ user.lastname }}</sub>
-        <button mat-icon-button [mat-menu-trigger-for]="menu">
-            <img class="avatar_icon" [src]=logo alt="company logo">
+<!--      <span-->
+<!--        *ngIf="user"-->
+<!--        fxLayout-->
+<!--        fxLayoutAlign="space-between center"-->
+<!--        fxLayoutGap="10px">-->
+
+  <!-- first name + last name -->
+  <sub>{{ user.firstname }} {{ user.lastname }}</sub>
+
+  <!-- spacer -->
+  <span class="fill-remaining-space"></span>
+
+        <!-- logo button -->
+        <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
+
+
+          <!-- logo -->
+          <img   class="avatar-image" [src]=logo alt="company logo">
+
         </button>
 
-    </span>
-
-</mat-toolbar>
-
-<!-- collapsible menu -->
-<mat-menu xPosition="before" #menu="matMenu">
+<!--    </span>-->
+  <!-- collapsible menu -->
+  <mat-menu xPosition="before" #menu="matMenu">
     <button mat-menu-item (click)="data.switchCompany()">
       <mat-icon>person_outline</mat-icon>
-      <span *ngIf="data.currentCompany === 'Planet Africa'">Switch to True Africa</span>
-      <span *ngIf="data.currentCompany === 'True Africa'">Switch to Planet Africa</span>
+      <span *ngIf="getItem('company') === 'Planet Africa'">Switch to True Africa</span>
+      <span *ngIf="getItem('company') === 'True Africa'">Switch to Planet Africa</span>
     </button>
 
     <button mat-menu-item (click)="logout()">
@@ -45,8 +53,11 @@
       Logout
     </button>
   </mat-menu>
+</mat-toolbar>
 
   <!-- router outlet -->
-  <div class="router-wrapper">
-    <router-outlet></router-outlet>
-  </div>
+<div class="router-wrapper">
+  <router-outlet></router-outlet>
+</div>
+
+

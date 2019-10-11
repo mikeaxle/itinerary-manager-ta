@@ -41,7 +41,7 @@ export class ItineraryDetailsEditorComponent implements OnInit {
     this.color = localStorage.getItem('color');
 
     // authenticate user
-    this.user = this.data.authenticateUser();
+    this.user = this.data.user;
     // console.log(this.user)
 
     // subscribe to itinerary

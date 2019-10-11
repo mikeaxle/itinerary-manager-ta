@@ -72,6 +72,7 @@ import { StatusPipe } from './filter/status.pipe';
 import { SearchPipe } from './filter/search.pipe';
 import { PdfDialogComponent } from './shared/pdf-dialog/pdf-dialog.component';
 import { LoginComponent } from './login/login.component';
+import { NgxAuthFirebaseUIModule } from 'ngx-auth-firebaseui';
 
 // currency Mask settings
 // @ts-ignore
@@ -132,6 +133,7 @@ export const CustomCurrencyMaskConfig: CurrencyMaskConfig = {
 
   ],
   imports: [
+    NgxAuthFirebaseUIModule.forRoot(environment.firebase),
     BrowserModule,
     FormsModule,
     ItinerariesModule,

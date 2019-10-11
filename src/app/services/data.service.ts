@@ -23,10 +23,13 @@ export class DataService {
   };
   secondaryApp: any;
   sampleData;
-
   constructor(public afAuth: AngularFireAuth, public af: AngularFireDatabase, private storage: AngularFireStorage, private router: Router) {
     this.currentCompany = localStorage.getItem('currentCompany');
     this.color = localStorage.getItem('color');
+  }
+  get user(): any {
+    // parse user
+    return JSON.parse(localStorage.getItem('user'));
   }
 
   // save object
@@ -134,12 +137,20 @@ export class DataService {
   }
 
   // authenticate user
-  authenticateUser() {
-    return this.afAuth.authState
-      .subscribe((auth) => {
-       return auth ? this.af.object('users/' + auth[`uid`]) : Observable.of(!!auth);
-      });
-  }
+  // authenticateUser() {
+  //   return this.afAuth.authState
+  //     .subscribe((auth) => {
+  //       // check if logged in
+  //       if (auth) {
+  //         // return observable of user
+  //         return this.af.object('users/' + auth[`uid`]);
+  //       } else {
+  //         // return observabke
+  //         return Observable.of(!!auth);
+  //       }
+  //
+  //     });
+  // }
 
   // log user out
   logout() {

@@ -338,6 +338,12 @@ mat-input-container, mat-select {
   padding-top: 10%
 }
 
+.avatar-image {
+  height: 40px;
+  width: 40px;
+  border-radius: 50%;
+}
+
 .object-fit_fill { object-fit: fill }
 .object-fit_contain { object-fit: contain }
 .object-fit_cover { object-fit: cover }
@@ -465,4 +471,12 @@ mat-cell {
 
 .planet-africa-theme .mat-raised-button.mat-primary, .planet-africa-theme .mat-fab.mat-primary, .planet-africa-theme .mat-mini-fab.mat-primary {
   color: white !important;
+}
+
+ngx-auth-firebaseui-login #login-form-wrapper #login-form img {
+  height: 100%;
+  width: 100%;
+  border-radius: 50%;
+  background-color: white;
+  border: #b18c51 2px solid;
 }
