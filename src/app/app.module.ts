@@ -31,7 +31,7 @@ import {
   MatGridListModule,
   MatListModule,
   MatRadioModule,
-  MatBottomSheetModule
+  MatBottomSheetModule, MatProgressBarModule
 } from '@angular/material';
 import { InvalidTypeDirective } from './directives/invalid-type.directive';
 import { InvalidmessageDirective } from './directives/invalidmessage.directive';
@@ -172,7 +172,8 @@ export const CustomCurrencyMaskConfig: CurrencyMaskConfig = {
     MatTableModule,
     MatBottomSheetModule,
     ReactiveFormsModule,
-    MatSelectModule
+    MatSelectModule,
+    MatProgressBarModule
   ],
   providers: [],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]

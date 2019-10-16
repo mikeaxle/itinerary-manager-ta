@@ -1,5 +1,5 @@
 <!-- toolbar -->
-<mat-toolbar *ngIf="user" class="mat-elevation-z3" color="primary">
+<mat-toolbar *ngIf="getItem('user') && router.url !== '/' " class="mat-elevation-z3" color="primary">
       <button mat-button [routerLink]="['itineraries']">
         <mat-icon>home</mat-icon>
       </button>
@@ -42,7 +42,8 @@
   <mat-menu xPosition="before" #menu="matMenu">
     <button mat-menu-item (click)="data.switchCompany()">
       <mat-icon>person_outline</mat-icon>
-      <span>{{ getItem('company') }}</span>
+      <span *ngIf="getItem('company') === 'True Africa'">Switch to Planet Africa</span>
+      <span *ngIf="getItem('company') === 'Plant Africa'">Switch to True Africa</span>
     </button>
 
     <button mat-menu-item (click)="logout()">

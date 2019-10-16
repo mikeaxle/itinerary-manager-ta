@@ -12,8 +12,10 @@ import { DataService } from './services/data.service';
 export class AppComponent {
   title = 'itinerary-manager-ta';
   user = this.getItem('user')
+  url;
 
-  constructor(public router: Router, routerLink: ActivatedRoute, public data: DataService) {}
+  constructor(public router: Router, public data: DataService) {
+  }
 
   // getter
   getItem(key: string): any {

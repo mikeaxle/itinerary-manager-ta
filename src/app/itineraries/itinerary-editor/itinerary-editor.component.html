@@ -39,7 +39,7 @@
         (click)="duplicateItinerary()">
         Duplicate
       </button>
-
+<!--   edit itinerary button   -->
         <button
           [ngClass]="data.getButtonStyle()"
           mat-button
@@ -47,7 +47,7 @@
           (click)="openEditItinerary()">
           Edit
         </button>
-
+<!-- delete itinerary button -->
         <button
           [ngClass]="data.getButtonStyle()"
           mat-button
@@ -56,6 +56,7 @@
           Delete
         </button>
 
+<!--   save as pdf menu   -->
         <button
           mat-button
           mat-raised-button
@@ -68,7 +69,7 @@
         <mat-menu #menu="matMenu">
           <button mat-menu-item (click)="saveAsPdfPartial()">Itinerary & Costs</button>
           <button mat-menu-item (click)="saveAsPdf(1)">Full Itinerary</button>
-          <button mat-menu-item (click)="saveAsPdf(2)">Full Itinerary - No Costs</button>
+          <button mat-menu-item (click)="saveAsPdf(3)">Full Itinerary - No Costs</button>
         </mat-menu>
   </span>
   </section>

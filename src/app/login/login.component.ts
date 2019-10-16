@@ -38,19 +38,19 @@ export class LoginComponent implements OnDestroy  {
         }
 
                     // set logged in user
-                    this.user$ = this.data.af.object('users/' + auth[`uid`])
+        this.user$ = this.data.af.object('users/' + auth[`uid`])
                     .snapshotChanges()
                     .subscribe((user) => {
                       // set logged in user
                       localStorage.setItem('user', JSON.stringify(user.payload.val()));
                     });
-          
+
 
 
         // if user is logged in, redirect to dashboard
         this.router.navigate(['itineraries'])
           .then(() => {
-            Swal.fire('Authentication', 'You are already logged in!', 'success');
+            Swal.fire('Authentication', 'You are logged in!', 'success');
           });
       }
     });
@@ -72,26 +72,26 @@ export class LoginComponent implements OnDestroy  {
   // handle login success
   onLoginSuccess(auth) {
 
-    console.log(auth[`uid`])
+    console.log(auth[`uid`]);
     // set company
     localStorage.setItem('company', 'True Africa');
-  
+
     // set color
     localStorage.setItem('color', '#B18C51');
-  
+
     // set logo
     this.logo = '../assets/logos/avatar-trueafrica.png';
-  
+
     // set user
             // set logged in user
-            this.user$ = this.data.af.object('users/' + auth[`uid`])
+    this.user$ = this.data.af.object('users/' + auth[`uid`])
             .snapshotChanges()
             .subscribe((user) => {
               // set logged in user
               localStorage.setItem('user', JSON.stringify(user.payload.val()));
             });
-  
-  
+
+
     // show swal
     Swal.fire('Authentication', 'Log in successful!', 'success');
   }

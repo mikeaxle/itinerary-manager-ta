@@ -1,6 +1,7 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { PdfDialogComponent } from './pdf-dialog.component';
+import {MAT_DIALOG_DATA} from '@angular/material';
 
 describe('PdfDialogComponent', () => {
   let component: PdfDialogComponent;
@@ -8,7 +9,10 @@ describe('PdfDialogComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ PdfDialogComponent ]
+      declarations: [ PdfDialogComponent ],
+      // providers: [
+      //   { provide: MAT_DIALOG_DATA }
+      //   ]
     })
     .compileComponents();
   }));

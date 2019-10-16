@@ -21,8 +21,8 @@ export class SavePdfService {
   color: any;
 
   constructor(private data: DataService, private http: HttpClient, private countryService: CountryService, public dialog: MatDialog) {
-    this.currentCompany = localStorage.getItem('currentCompany');
-    this.loggedInUser = JSON.parse(localStorage.getItem('loggedInUser'));
+    this.currentCompany = localStorage.getItem('company');
+    this.loggedInUser = JSON.parse(localStorage.getItem('user'));
     this.color = localStorage.getItem('color');
     this.regions = this.countryService.getRegions();
     this.countries = this.countryService.getCountries();
@@ -79,8 +79,11 @@ export class SavePdfService {
   // https://planet-africa-print-server.herokuapp.com/print-pdf
   getPDF(html: string) {
      this.dialogRef = this.dialog.open(PdfDialogComponent, {
-      height: '500px',
-      width: '200px',
+       data: {
+        title: this.itinerary.title
+       },
+       disableClose: true,
+       width: '300px',
     });
 
      this.http.post('https://planet-africa-print-server.herokuapp.com/print-pdf', {
@@ -162,11 +165,11 @@ export class SavePdfService {
     this.getHeaderLogo();
 
     // check pdf print mode type
-    if (type === 3) {
+    if (type === 2) {
       this.html = this.getHtmlHalf();
     } else if (type === 1) {
       this.html = this.getHtmlFull();
-    } else if (type === 2) {
+    } else if (type === 3) {
       this.html = this.getHtmlFullNoCost();
     }
 
