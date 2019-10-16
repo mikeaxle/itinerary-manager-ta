@@ -1,5 +1,5 @@
 import {Component, Injectable} from '@angular/core';
-import {Router} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import Swal from 'sweetalert2';
 import { DataService } from './services/data.service';
 
@@ -13,7 +13,7 @@ export class AppComponent {
   title = 'itinerary-manager-ta';
   user = this.getItem('user')
 
-  constructor(public router: Router, public data: DataService) {}
+  constructor(public router: Router, routerLink: ActivatedRoute, public data: DataService) {}
 
   // getter
   getItem(key: string): any {
