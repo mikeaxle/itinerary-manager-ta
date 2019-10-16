@@ -41,8 +41,11 @@ export class LoginComponent implements OnDestroy  {
         this.user$ = this.data.af.object('users/' + auth[`uid`])
                     .snapshotChanges()
                     .subscribe((user) => {
+
+                      const obj = user.payload.val();
+                      obj[`key`] = user.key;
                       // set logged in user
-                      localStorage.setItem('user', JSON.stringify(user.payload.val()));
+                      localStorage.setItem('user', JSON.stringify(obj));
                     });
 
 

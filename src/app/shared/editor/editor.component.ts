@@ -253,17 +253,19 @@ export class EditorComponent implements OnInit {
   }
 
   // function to add new client
-  addClient(clientForm) {
-
-    // add agent key to client
-    clientForm.value.agent = this.user.uid;
-
+  addClient() {
     // check if form data is valid
-    if (clientForm.valid) {
+    if (this.clientForm.valid) {
+      // remove agent
+
+      // add agent key to client
+      this.clientForm.value.agent = this.user.key;
+
       // push to firebase
-      this.data.saveItem( `clients/${this.data.currentCompany}/`, clientForm.value)
+      this.data.af.object( `clients/${this.client[`key`]}`)
+        .update(this.clientForm.value)
         .then(() => {
-          // swal
+          // Swal
           Swal.fire('Success', 'New client successfully added', 'success');
 
           // close dialog

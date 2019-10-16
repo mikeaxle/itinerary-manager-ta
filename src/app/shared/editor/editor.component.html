@@ -133,8 +133,8 @@
 <!-- client form -->
 <div  *ngIf="args.type === 'clients'">
   <mat-card-title>Save Client</mat-card-title>
-  <form [formGroup]="clientForm">
-    <!-- firstname -->
+  <form [formGroup]="clientForm" (ngSubmit)="addClient()">
+    <!-- first name -->
     <mat-form-field>
       <label>
         <input type="text" placeholder="First Name" formControlName="firstname" matInput required>

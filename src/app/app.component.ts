@@ -1,5 +1,5 @@
 import {Component, Injectable} from '@angular/core';
-import {ActivatedRoute, Router} from '@angular/router';
+import { Router} from '@angular/router';
 import Swal from 'sweetalert2';
 import { DataService } from './services/data.service';
 
@@ -11,7 +11,7 @@ import { DataService } from './services/data.service';
 })
 export class AppComponent {
   title = 'itinerary-manager-ta';
-  user = this.getItem('user')
+  user = this.getItem('user');
   url;
 
   constructor(public router: Router, public data: DataService) {
@@ -24,7 +24,7 @@ export class AppComponent {
 
 
   getLogo() {
-    return localStorage.getItem('logo')
+    return localStorage.getItem('logo');
   }
 
 
@@ -36,8 +36,8 @@ export class AppComponent {
       this.router.navigate(['login'])
       .then(() => {
         // delete local storage
-        Swal.fire('Authentication', 'Logged out', 'success')
+        Swal.fire('Authentication', 'Logged out', 'success');
       });
-    })
+    });
   }
 }
