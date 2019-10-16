@@ -2,6 +2,7 @@
   (onError)="onLoginError($event)"
   [messageOnAuthError]="'Welcome to ' + data.currentCompany + ' Itinerary Manager'"
   [logoUrl]="logo"
+  (onSuccess)="onLoginSuccess($event)"
   [providers]="providers.EmailAndPassword"
   [registrationEnabled]="false">
 </ngx-auth-firebaseui-login>

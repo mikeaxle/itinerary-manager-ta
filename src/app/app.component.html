@@ -1,5 +1,5 @@
 <!-- toolbar -->
-<mat-toolbar *ngIf="user" class="mat-elevation-z3" color="primary">
+<mat-toolbar *ngIf="getItem('user')" class="mat-elevation-z3" color="primary">
       <button mat-button [routerLink]="['itineraries']">
         <mat-icon>home</mat-icon>
       </button>
@@ -25,17 +25,15 @@
 <!--        fxLayoutGap="10px">-->
 
   <!-- first name + last name -->
-  <sub>{{ user.firstname }} {{ user.lastname }}</sub>
-
-  <!-- spacer -->
-  <span class="fill-remaining-space"></span>
+  <sub>{{ getItem('user').firstname }} {{ getItem('user').lastname }}</sub>
+<div class="spacer"></div>
 
         <!-- logo button -->
         <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
 
 
           <!-- logo -->
-          <img   class="avatar-image" [src]=logo alt="company logo">
+          <img   class="avatar-image" [src]="getLogo()">
 
         </button>
 
@@ -44,8 +42,7 @@
   <mat-menu xPosition="before" #menu="matMenu">
     <button mat-menu-item (click)="data.switchCompany()">
       <mat-icon>person_outline</mat-icon>
-      <span *ngIf="getItem('company') === 'Planet Africa'">Switch to True Africa</span>
-      <span *ngIf="getItem('company') === 'True Africa'">Switch to Planet Africa</span>
+      <span>{{ getItem('company') }}</span>
     </button>
 
     <button mat-menu-item (click)="logout()">

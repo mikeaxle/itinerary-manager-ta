@@ -1,5 +1,7 @@
 import {Component, Injectable} from '@angular/core';
 import {Router} from '@angular/router';
+import Swal from 'sweetalert2';
+import { DataService } from './services/data.service';
 
 @Injectable()
 @Component({
@@ -9,20 +11,31 @@ import {Router} from '@angular/router';
 })
 export class AppComponent {
   title = 'itinerary-manager-ta';
+  user = this.getItem('user')
 
-  constructor(public router: Router) {}
+  constructor(public router: Router, public data: DataService) {}
 
   // getter
   getItem(key: string): any {
-    return JSON.parse(localStorage.getItem(key));
+    return key === 'company' ? localStorage.getItem(key) : JSON.parse(localStorage.getItem(key));
   }
+
+
+  getLogo() {
+    return localStorage.getItem('logo')
+  }
+
 
   // function to logout
   logout() {
-    this.router.navigate(['login'])
+    localStorage.clear();
+    this.data.afAuth.auth.signOut()
+    .then(() => {
+      this.router.navigate(['login'])
       .then(() => {
         // delete local storage
-        localStorage.clear();
+        Swal.fire('Authentication', 'Logged out', 'success')
       });
+    })
   }
 }
