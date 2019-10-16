@@ -1,6 +1,6 @@
 <!-- itinerary form -->
-<mat-card *ngIf="args.type === 'itinerary'">
-  <mat-card-title>Add Itinerary</mat-card-title>
+<div *ngIf="args.type === 'itinerary'">
+  <mat-card-title>Save Itinerary</mat-card-title>
   <form [formGroup]="itineraryForm">
     <!-- agent -->
     <!--  todo: put back condition <span *ngIf="(user | async)?.$key === agent.$key" [style.color]="data.color">(You)</span>  -->
@@ -120,7 +120,7 @@
 
     <!-- save button -->
     <button color="primary" (click)="addItinerary(itineraryForm.value)" [disabled]="!itineraryForm.valid"
-            class="full-input" mat-raised-button>Add
+            class="full-input" mat-raised-button>Save
     </button>
 
     <span class="spacer-vert"></span>
@@ -128,23 +128,23 @@
     <!--  error display  -->
     <span *ngIf="error">{{error}}</span>
   </form>
-</mat-card>
+</div>
 
 <!-- client form -->
-<mat-card *ngIf="args.type === 'clients'">
-  <mat-card-title>Add Client</mat-card-title>
+<div  *ngIf="args.type === 'clients'">
+  <mat-card-title>Save Client</mat-card-title>
   <form [formGroup]="clientForm">
     <!-- firstname -->
     <mat-form-field>
       <label>
-        <input type="text" placeholder="First Name" formControlName="firstName" matInput required>
+        <input type="text" placeholder="First Name" formControlName="firstname" matInput required>
       </label>
     </mat-form-field>
 
     <!-- last name -->
     <mat-form-field>
       <label>
-        <input type="text" placeholder="Last Name" formControlName="lastName" matInput required>
+        <input type="text" placeholder="Last Name" formControlName="lastname" matInput required>
       </label>
     </mat-form-field>
 
@@ -170,7 +170,7 @@
     <span class="spacer-vert"></span>
 
     <!--  save button-->
-    <button type="submit" [disabled]="!clientForm.valid" mat-raised-button class="full-input" color="primary">Add
+    <button type="submit" [disabled]="!clientForm.valid" mat-raised-button class="full-input" color="primary" >Save
     </button>
 
     <span class="spacer-vert"></span>
@@ -178,11 +178,11 @@
     <!--  error display  -->
     <span *ngIf="error">{{error}}</span>
   </form>
-</mat-card>
+</div>
 
 <!-- agent form-->
-<mat-card *ngIf="args.type === 'agents'">
-  <mat-card-title>Add Agent</mat-card-title>
+<div *ngIf="args.type === 'agents'">
+  <mat-card-title>Save Agent</mat-card-title>
   <form [formGroup]="agentForm">
     <!-- account type -->
     <mat-radio-group formControlName="role" required fxLayout>
@@ -194,14 +194,14 @@
     <!-- first name -->
     <mat-form-field>
       <label>
-        <input type="text" placeholder="First Name" formControlName="firstName" matInput required>
+        <input type="text" placeholder="First Name" formControlName="firstname" matInput required>
       </label>
     </mat-form-field>
 
     <!-- last name -->
     <mat-form-field>
       <label>
-        <input type="text" placeholder="Last Name" formControlName="lastName" matInput required>
+        <input type="text" placeholder="Last Name" formControlName="lastname" matInput required>
       </label>
     </mat-form-field>
 
@@ -222,7 +222,7 @@
     <span class="spacer-vert"></span>
 
     <!-- save button -->
-    <button type="submit" [disabled]="!agentForm.valid" mat-raised-button class="full-input" color="primary">Add
+    <button type="submit" [disabled]="!agentForm.valid" mat-raised-button class="full-input" color="primary">Save
     </button>
 
     <span class="spacer-vert"></span>
@@ -230,11 +230,11 @@
     <!-- error display-->
     <span *ngIf="error">{{error}}</span>
   </form>
-</mat-card>
+</div>
 
 <!-- inventory form -->
-<mat-card *ngIf="args.type === 'inventory'">
-  <mat-card-title>Add Inventory</mat-card-title>
+<div *ngIf="args.type === 'inventory'">
+  <mat-card-title>Save Inventory</mat-card-title>
   <form [formGroup]="inventoryForm">
     <!-- destination -->
     <mat-select
@@ -338,11 +338,11 @@
     <span *ngIf="error" style="color: red">{{error}}</span>
 
   </form>
-</mat-card>
+</div>
 
 <!-- media form -->
-<mat-card *ngIf="args.type === 'media'">
-  <mat-card-title>Add Image</mat-card-title>
+<div *ngIf="args.type === 'media'">
+  <mat-card-title>Save Image</mat-card-title>
   <br><br>
   <form [formGroup]="mediaForm">
     <!-- image uploader -->
@@ -388,5 +388,5 @@
 
 
   </form>
-</mat-card>
+</div>
 

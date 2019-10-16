@@ -55,15 +55,14 @@ export class EditorComponent implements OnInit {
     // get logged in user
     this.user = this.data.user;
 
-    // check if creating new item
-    if (this.args.new) {
-      switch (this.args.type) {
+    // check type
+    switch (this.args.type) {
         case 'itinerary':
           console.log('itinerary');
           this.initNewItinerary();
           break;
         case 'clients':
-          console.log('clients');
+          this.client = this.args.item;
           this.initNewClient();
           break;
         case 'inventory':
@@ -92,7 +91,6 @@ export class EditorComponent implements OnInit {
         default:
           return;
       }
-    }
   }
 
   // initialize new itinerary form
@@ -137,21 +135,21 @@ export class EditorComponent implements OnInit {
 
   // initialize new client form
   initNewClient() {
-    this.clientForm = this.formBuilder.group({
+    this.clientForm = this.args.new ? this.formBuilder.group({
       email: [null, Validators.required],
-      firstName: [null, Validators.required],
-    lastName: [null, Validators.required],
+      firstname: [null, Validators.required],
+      lastname: [null, Validators.required],
       nationality: [null, Validators.required],
-    phone: [null, Validators.required]
-    });
+      phone: [null, Validators.required]
+    }) : this.formBuilder.group(this.client);
   }
 
   // initialize new agent form
   initNewAgent() {
     this.agentForm = this.formBuilder.group({
       email: [null, Validators.required],
-      firstName: [null, Validators.required],
-      lastName: [null, Validators.required],
+      firstname: [null, Validators.required],
+      lastname: [null, Validators.required],
       password: [null, Validators.required],
       role: [null, Validators.required],
     });
@@ -182,7 +180,7 @@ export class EditorComponent implements OnInit {
     });
   }
 
-  addTag(tag: string){
+  addTag(tag: string) {
     const mediaform = this.mediaForm.get('tags') as FormArray;
     mediaform.push(new FormControl());
   }
