@@ -10,7 +10,7 @@
     <!-- back button -->
     <span fxLayout="row" fxLayoutGap="20px" fxLayoutAlign=" center">
       <button mat-icon-button [routerLink]="['../itineraries']" style="padding-top:5px">
-          <svg-icon src="../assets/icons/back.svg" [style.fill]=this.data.color></svg-icon>
+          <svg-icon src="../assets/icons/back.svg" [style.fill]=color></svg-icon>
       </button>
 
       <h2>Itinerary {{ itinerary$.invoice_number }}</h2>
@@ -154,7 +154,7 @@
             fxLayoutGap="10px">
             <mat-chip-list>
               <!-- color hack: AM2 seems to be broken -->
-              <mat-chip fxLayoutAlign="center center" [selected]="true" [style.background-color]=this.data.color  style="padding: 5px; max-width: 18% !important; min-width: 90px !important; color: white; box-sizing: border-box;" >{{ getDayTitle('title', day) }}</mat-chip>
+              <mat-chip fxLayoutAlign="center center" [selected]="true" [style.background-color]=color  style="padding: 5px; max-width: 18% !important; min-width: 90px !important; color: white; box-sizing: border-box;" >{{ getDayTitle('title', day) }}</mat-chip>
             </mat-chip-list>
             <span style="font-size:12px" >{{ getDayTitle('dates', day) }}</span>
           </span>
@@ -174,17 +174,17 @@
 
             <!-- edit button -->
             <button mat-icon-button (click)="openDayDialog('edit', day)">
-              <svg-icon src="../assets/icons/edit.svg" [style.fill]=this.data.color></svg-icon>
+              <svg-icon src="../assets/icons/edit.svg" [style.fill]=color></svg-icon>
             </button>
 
             <!-- drag handle -->
             <button mat-icon-button style="cursor: move !important;">
-              <svg-icon  src="../assets/icons/move.svg" [style.fill]=this.data.color></svg-icon>
+              <svg-icon  src="../assets/icons/move.svg" [style.fill]=color></svg-icon>
             </button>
 
             <!-- delete button -->
             <button mat-icon-button (click)="removeDay(day.key)">
-                <svg-icon src="../assets/icons/trash.svg" [style.fill]=this.data.color></svg-icon>
+                <svg-icon src="../assets/icons/trash.svg" [style.fill]=color></svg-icon>
             </button>
           </span>
         </div>
@@ -220,11 +220,11 @@
               fxLayout.sm="column">
               <span style="width:40px"></span>
               <button mat-icon-button (click)="openCommentDialog('edit', comment)">
-                  <svg-icon src="../assets/icons/edit.svg" [style.fill]=this.data.color></svg-icon>
+                  <svg-icon src="../assets/icons/edit.svg" [style.fill]=color> </svg-icon>
               </button>
 
               <button mat-icon-button (click)="removeComment(comment.key)">
-                  <svg-icon src="../assets/icons/trash.svg" [style.fill]=this.data.color></svg-icon>
+                  <svg-icon src="../assets/icons/trash.svg" [style.fill]=color></svg-icon>
               </button>
           </span>
           </div>
@@ -388,12 +388,12 @@
             <span fxFlex>
                     <!-- edit button -->
                     <button mat-icon-button (click)="openPaymentDialog('edit', p)">
-                      <mat-icon src="../assets/icons/edit.svg"  [style.fill]=this.data.color></mat-icon>
+                      <mat-icon src="../assets/icons/edit.svg"  [style.fill]=color></mat-icon>
                     </button>
 
               <!-- delete button -->
                     <button mat-icon-button (click)="removePayment(p.key)">
-                      <mat-icon src="../assets/icons/trash.svg" [style.fill]=this.data.color></mat-icon>
+                      <mat-icon src="../assets/icons/trash.svg" [style.fill]=color></mat-icon>
                     </button>
                   </span>
           </div>
@@ -440,12 +440,12 @@
           <span fxFlex fxLayout>
               <!-- edit button -->
               <button mat-icon-button (click)="openCountryDialog('edit', c)">
-                <svg-icon src="../assets/icons/edit.svg"  [style.fill]=this.data.color></svg-icon>
+                <svg-icon src="../assets/icons/edit.svg"  [style.fill]=color></svg-icon>
               </button>
 
             <!-- delete button -->
               <button mat-icon-button (click)="removeCountry(c.key)">
-                <svg-icon src="../assets/icons/trash.svg" [style.fill]=this.data.color></svg-icon>
+                <svg-icon src="../assets/icons/trash.svg" [style.fill]=color></svg-icon>
               </button>
             </span>
         </div>
@@ -478,7 +478,7 @@
                 <img src="../assets/icons/edit-white.svg"  alt="edit icon"/>
               </mat-grid-tile-header>
               <img *ngIf="itinerary$.coverImageTile" [src]="itinerary$.coverImageTile.imageUrl"  style="height:100%; border-radius: 5px; left:0; right: 0" alt="cover image"/>
-              <svg-icon *ngIf="!itinerary$.coverImageTile" src="../assets/icons/add.svg" [style.fill]=this.data.color></svg-icon>
+              <svg-icon *ngIf="!itinerary$.coverImageTile" src="../assets/icons/add.svg" [style.fill]=color></svg-icon>
             </mat-grid-tile>
           </mat-grid-list>
         </div>
@@ -499,7 +499,7 @@
                 <img src="../assets/icons/edit-white.svg" alt="edit icon"/>
               </mat-grid-tile-header>
               <img *ngIf="tile.imageUrl" [src]="tile.imageUrl" height="100%" style="border-radius: 5px" alt="grid image"/>
-              <svg-icon *ngIf="!tile.imageUrl" src="../assets/icons/add.svg" [style.fill]=this.data.color></svg-icon>
+              <svg-icon *ngIf="!tile.imageUrl" src="../assets/icons/add.svg" [style.fill]="color"></svg-icon>
             </mat-grid-tile>
           </mat-grid-list>
 

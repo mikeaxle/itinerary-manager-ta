@@ -1,21 +1,26 @@
 <h2 mat-dialog-title>Add Comment</h2>
-<form [formGroup]="commentForm" fxLayout="column">
+<form name="commentForm" #commentForm="ngForm" (ngSubmit)="onCloseConfirm()" fxLayout="column">
 
   <!-- days -->
   <mat-select
     placeholder="Day"
-    formControlName="day"
+    [(ngModel)]="comment.day"
+    name="day"
     required>
     <mat-option
-      *ngFor="let d of daysArray"
-      [value]="d.key">
-      {{d.title}}
+      *ngFor="let d of days"
+      [value]="d[0]">
+      {{ d[1] }}
     </mat-option>
   </mat-select>
 
 
   <!-- types -->
-  <mat-select placeholder="Type" formControlName="type">
+  <mat-select
+    placeholder="Type"
+    [(ngModel)]="comment.type"
+  name="type"
+  required>
     <mat-option
       *ngFor="let t of types"
       [value]="t">{{t}}
@@ -26,9 +31,9 @@
   <mat-form-field>
     <label>
 <textarea
-  color="primary"
-  placeholder="Comments"
-  formControlName="comment"
+  placeholder="Put your comment here"
+  [(ngModel)]="comment.comment"
+  name="comment"
   rows="2"
   cols="50"
   matInput

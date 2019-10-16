@@ -65,7 +65,7 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
   discount = 0;
   deposit = 0;
   _COMMENTS = [];
-  _PAYMENTS = []
+  _PAYMENTS = [];
   _PHONE_NUMBERS = [];
 
 
@@ -146,11 +146,11 @@ divide by 86400000 which is the number of milliseconds equal to a editor-compone
       .snapshotChanges()
       .subscribe((snapshots) => {
         snapshots.forEach(snapshot => {
-          let comment = snapshot.payload.val();
+          const comment = snapshot.payload.val();
           comment[`key`] = snapshot.key;
-          this._COMMENTS.push(comment)
-        })
-      })
+          this._COMMENTS.push(comment);
+        });
+      });
 
     // get payments related to itinerary id
     this.payments = this.data.af.list('payments/' + this.itinerary$.key)
@@ -168,11 +168,11 @@ divide by 86400000 which is the number of milliseconds equal to a editor-compone
       .snapshotChanges()
       .subscribe(snapshots => {
       snapshots.forEach(snapshot => {
-        let phoneNumber = snapshot.payload.val()
+        const phoneNumber = snapshot.payload.val();
         phoneNumber[`key`] = snapshot.key;
         this._PHONE_NUMBERS.push(phoneNumber);
-      })
-    })
+      });
+    });
   }
 
   // function to remove editor-components
@@ -352,7 +352,7 @@ divide by 86400000 which is the number of milliseconds equal to a editor-compone
     // check type
     if (type === 'title') {
       // add editor-components key and title to map
-      this.dayTitles.set(day.$key, title);
+      this.dayTitles.set(day.key, title);
 
       // return editor-components title
       return title;
@@ -381,12 +381,12 @@ divide by 86400000 which is the number of milliseconds equal to a editor-compone
     // variable to store editor-components position
     let position = 1;
 
-    this.days.map((res) => {
+    this._DAYS.forEach((day, index) => {
         // check if there are any days
-        if (res.length !== undefined) {
-          // add length of days array to posiiton to come up with position for new editor-components
-          position += res.length;
-        }
+        // if (res.length !== undefined) {
+          // add length of days array to positon to come up with position for new editor-components
+          position += index; // may have to match the pos and index before assigning the two
+        // }
       });
 
     if (mode === 'add') {
@@ -439,7 +439,7 @@ divide by 86400000 which is the number of milliseconds equal to a editor-compone
         } else if (mode === 'edit') {
           // update editor-components
           // console.log(result.dayForm)
-          this.data.updateItem(day.$key, 'days/' + this.id, result.dayForm)
+          this.data.updateItem(day.key, 'days/' + this.id, result.dayForm)
             .catch((error) => {
               console.log(error);
             });
@@ -454,12 +454,20 @@ divide by 86400000 which is the number of milliseconds equal to a editor-compone
     // check if add or edit mode
     if (mode === 'add') {
       dialogRef = this.dialog.open(CommentComponent, {
-        data: {mode: 'add', itineraryId: this.id, days: this.dayTitles},
+        data: {
+          mode: 'add',
+          itineraryId: this.itinerary$.key,
+          days: this.dayTitles,
+          comment: null},
         width: '480px'
       });
     } else if (mode === 'edit') {
       dialogRef = this.dialog.open(CommentComponent, {
-        data: {mode: 'edit', itineraryId: this.id, days: this.dayTitles, comment},
+        data: {
+          mode: 'edit',
+          itineraryId: this.id,
+          days: this.dayTitles,
+          comment},
         width: '480px'
       });
     }
@@ -691,7 +699,7 @@ divide by 86400000 which is the number of milliseconds equal to a editor-compone
                   /// check for comments
                   if (comments.length > 0) {
                     comments.forEach((c) => {
-                      if (c.day === d.$key) {
+                      if (c.day === d.key) {
                         c.day = dayDuplicate.key;
                         // write to firebase
                         this.data.af.list(`comments/${duplicateKey}`).push(c);

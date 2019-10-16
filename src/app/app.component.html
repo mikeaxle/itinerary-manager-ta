@@ -1,5 +1,5 @@
 <!-- toolbar -->
-<mat-toolbar *ngIf="getItem('user')" class="mat-elevation-z3" color="primary">
+<mat-toolbar *ngIf="router.url !== 'login'" class="mat-elevation-z3" color="primary">
       <button mat-button [routerLink]="['itineraries']">
         <mat-icon>home</mat-icon>
       </button>

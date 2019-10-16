@@ -38,7 +38,7 @@ export class DayComponent implements OnInit {
     this.destinations = this.countryService.getCountries();
 
     // get itinerary items
-    this.inventory = this.data.getList('inventory');
+    this.inventory = this.data.getList('inventory').valueChanges()
 
     // get editor-components
     if (this.params.mode === 'edit') {

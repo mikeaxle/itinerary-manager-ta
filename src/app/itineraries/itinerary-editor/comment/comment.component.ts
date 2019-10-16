@@ -1,7 +1,7 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {inventoryTypes} from '../../../model/inventory-types';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import { FormGroup } from '@angular/forms';
 import {DataService} from '../../../services/data.service';
 
 @Component({
@@ -11,55 +11,29 @@ import {DataService} from '../../../services/data.service';
 
 })
 export class CommentComponent implements OnInit {
-  public commentForm: FormGroup;
-  daysArray: any[] = [];
+  days;
   mapIterator: any;
-  comment: any;
+  commentForm: FormGroup;
+  comment: Comment;
   types = inventoryTypes;
 
-  constructor(private formBuilder: FormBuilder,
-              public data: DataService,
+  constructor(public data: DataService,
               public dialogRef: MatDialogRef<CommentComponent>,
               @Inject(MAT_DIALOG_DATA) public params: any) { }
 
   ngOnInit() {
+    // get comment from params
+    this.comment = this.params.comment ? this.params.comment : new Comment();
 
-    this.mapIterator = this.params.days.keys();
-    // init days select array from parameters
-    this.params.days.forEach(d => {
-      this.daysArray.push({key: this.mapIterator.next().value, title: d});
-    });
-
-    if (this.params.mode === 'edit') {
-      this.comment = this.params.comment;
-    }
-
-    // init comment form
-    this.commentForm = this.initComment();
-  }
-
-  // function to init comment form
-  initComment() {
-    if (this.params.mode === 'add') {
-      return this.formBuilder.group({
-        day: [null, Validators.required],
-        type: [null, Validators.required],
-        comment: [null, Validators.required]
-      });
-    } else if (this.params.mode === 'edit') {
-      return this.formBuilder.group({
-        day: [this.comment.day, Validators.required],
-        type: [this.comment.type, Validators.required],
-        comment: [this.comment.comment, Validators.required]
-      });
-    }
+    // map iterator made from keys
+    this.days = [...this.params.days];
   }
 
   // function to close dialog
   onCloseConfirm() {
     // save to firebase comments list
     if (this.params.mode === 'add') {
-      this.data.saveItem('comments/' + this.params.itineraryId, this.commentForm.value)
+      this.data.saveItem('comments/' + this.params.itineraryId, this.comment)
         .then(() => {
           // close dialog
           this.dialogRef.close();
@@ -69,7 +43,7 @@ export class CommentComponent implements OnInit {
         });
 
     } else if (this.params.mode === 'edit') {
-      this.data.updateItem(this.comment.$key, 'comments/' + this.params.itineraryId, this.commentForm.value)
+      this.data.updateItem(this.comment[`key`], 'comments/' + this.params.itineraryId, this.comment)
         .then(() => {
           this.dialogRef.close();
         })
@@ -82,6 +56,11 @@ export class CommentComponent implements OnInit {
   // function to cancel dialog
   onCloseCancel() {
     this.dialogRef.close();
+  }
+
+  // function check the form's validity
+  isValid() {
+    return this.comment[`type`] === '' || this.comment[`day`] === '' || this.comment[`comment`] === '';
   }
 
 }

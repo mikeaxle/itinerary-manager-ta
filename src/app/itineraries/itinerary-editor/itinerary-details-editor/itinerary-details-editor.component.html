@@ -1,16 +1,16 @@
 
 <h2 mat-dialog-title>Edit Itinerary Details</h2>
-<form [formGroup]="itinForm" fxLayout="column">
+<form [formGroup]="itineraryForm" fxLayout="column">
   <!-- agent -->
   <mat-select
-    *ngIf="(user | async)?.role === 'admin'"
+    *ngIf="user.role === 'admin'"
     placeholder="Agent"
     formControlName="agent"
     required>
     <mat-option
-      *ngFor="let agent of agents | async"
-      [value]="agent.$key">
-      {{agent.firstname }} {{agent.lastname}} <span *ngIf="(user | async)?.$key === agent.$key" [style.color]="data.color">(You)</span>
+      *ngFor="let agent of agents"
+      [value]="agent.key">
+      {{agent.firstname }} {{agent.lastname}} <span *ngIf="user.key === agent.key" [style.color]="data.color">(You)</span>
     </mat-option>
   </mat-select>
 
@@ -20,42 +20,41 @@
     formControlName="client"
     required>
     <mat-option
-      *ngFor="let client of clients | async"
-      [value]="client.$key">
+      *ngFor="let client of clients"
+      [value]="client.key">
       {{client.firstname}} {{client.lastname}}
     </mat-option>
   </mat-select>
 
   <!-- Adults and Children -->
   <div class="double-items">
-    <mat-select
-      placeholder="Number of Adults"
-      formControlName="adults"
-      class="half-input"
-      required>
-      <mat-option
-        *ngFor="let number of numbers"
-        [value]="number">
-        {{number}}
-      </mat-option>
-    </mat-select>
+<!--  adults  -->
+    <mat-form-field *ngIf="itineraryForm.value.children > 0">
+      <label>
+        <input
+          type="number"
+          placeholder="Number of Adults"
+          formControlName="adults"
+          class="half-input"
+          matInput/>
+      </label>
+    </mat-form-field>
 
-    <mat-select
-      placeholder="Number of Children"
-      formControlName="children"
-      class="half-input"
-      required>
-      <mat-option
-        *ngFor="let number of numbers"
-        [value]="number">
-        {{number}}
-      </mat-option>
-    </mat-select>
-
+<!--  children  -->
+    <mat-form-field *ngIf="itineraryForm.value.children > 0">
+      <label>
+        <input
+          type="number"
+          placeholder="Number of Children"
+          formControlName="children"
+          class="half-input"
+          matInput/>
+      </label>
+    </mat-form-field>
   </div>
 
   <!-- children's ages -->
-  <mat-form-field *ngIf="itinForm.value.children > 0">
+  <mat-form-field *ngIf="itineraryForm.value.children > 0">
     <label>
       <input
         type="text"
@@ -117,7 +116,7 @@
   <mat-dialog-actions>
     <button
       [ngClass]="data.getButtonStyleMain()"
-      [disabled]="!itinForm.valid"
+      [disabled]="!itineraryForm.valid"
       (click)="onCloseConfirm()"
       mat-raised-button>
       SAVE

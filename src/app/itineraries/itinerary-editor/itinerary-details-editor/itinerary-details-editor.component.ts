@@ -1,35 +1,30 @@
-import {Component, Inject, OnInit} from '@angular/core';
+import {Component, Inject, OnDestroy, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
 import {DataService} from '../../../services/data.service';
 
 // assign day in milliseconds
-const DAY_IN_MILLISECONDS = 1000 * 60 * 60 * 24
+const DAY_IN_MILLISECONDS = 1000 * 60 * 60 * 24;
 
 @Component({
   selector: 'app-itinerary-details-editor',
   styleUrls: ['./itinerary-details-editor.component.css'],
   templateUrl: './itinerary-details-editor.component.html'
 })
-export class ItineraryDetailsEditorComponent implements OnInit {
+export class ItineraryDetailsEditorComponent implements OnInit, OnDestroy {
   TODAY = new Date();
-  public itinForm: FormGroup;
-  agent: string;
-  client: string;
-  adults: number;
-  children: number;
-  title: string;
-  startdate: any;
-  enddate: any;
-  status: any;
-  numbers: any;
-  agents: any;
-  clients: any;
+  public itineraryForm: FormGroup;
+  itinerary;
+  clients = []
   error: any;
-  itinerary: any;
   user: any;
   totalDays: any;
   color: any;
+  agents = []
+  private startdate: Date;
+  private enddate: Date;
+  private agents$;
+  private clients$;
 
   constructor(private formBuilder: FormBuilder,
               public data: DataService,
@@ -40,83 +35,93 @@ export class ItineraryDetailsEditorComponent implements OnInit {
   ngOnInit() {
     this.color = localStorage.getItem('color');
 
-    // authenticate user
+    // get user
     this.user = this.data.user;
-    // console.log(this.user)
 
-    // subscribe to itinerary
-    this.params.itinerary.map((res) => {
-      // assign itinerary
-      this.itinerary = res;
+    // get itinerary
+    this.itinerary = this.params.itinerary;
 
-      // convert dates to date object for use in date picker
-      this.startdate = new Date(res.startdate);
-      this.enddate = new Date(res.enddate);
-    })
-      .subscribe();
+    // create start date and end date objects
+    this.startdate = new Date(this.itinerary.startdate);
+    this.enddate = new Date(this.itinerary.enddate);
 
     // init form
-    this.itinForm = this.initItinerary();
+    this.itineraryForm = this.initItinerary();
 
     // calculate remaining days
     this.calculateDays();
 
-    this.itinForm
+    // subscribe to changes on itinerary form. calculate number of days
+    this.itineraryForm
       .valueChanges
       .subscribe((val) => {
         this.calculateDays();
       });
 
     // get agents list
-    this.agents = this.data.af.list('users');
+    this.agents$ = this.data.af.list('users')
+      .snapshotChanges()
+      .subscribe((snaphots) => {
+        snaphots.forEach(snapshot => {
+          const agent = snapshot.payload.val();
+          agent[`key`] = snapshot.key;
+          this.agents.push(agent);
+        });
+      });
+
 
     // get client list
-    this.clients = this.data.getList(`clients/${this.data.currentCompany}/`);
-
-    // make numbers
-    this.numbers = Array.from(Array(20).keys());
+    this.clients$ = this.data.getList(`clients/${localStorage.getItem('company')}/`)
+      .snapshotChanges()
+      .subscribe(snapshots => {
+        snapshots.forEach(snapshot => {
+          const client = snapshot.payload.val();
+          client[`key`] = snapshot.key;
+          this.clients.push(client)
+        });
+      });
   }
 
   // function to init itinerary
   initItinerary() {
     return this.formBuilder.group({
-      agent: [this.itinerary.agent],
-      client: [this.itinerary.client],
       adults: [this.itinerary.adults],
+      agent: [this.itinerary.agent],
       children: [this.itinerary.children],
       children_ages: [this.itinerary.children_ages],
-      title: [this.itinerary.title],
+      client: [this.itinerary.client],
+      enddate: [this.enddate],
       startdate: [this.startdate],
-      enddate: [this.enddate]
+      title: [this.itinerary.title]
     });
   }
 
   // date filter for end date limits
   endDateFilter = (d: Date): boolean => {
     // convert to milliseconds
-    const _remainingDays = 1000 * 60 * 60 * 24 * (this.totalDays - this.params.usedDays);
+    const remainingDays = 1000 * 60 * 60 * 24 * (this.totalDays - this.params.usedDays);
 
-    const _date = this.itinForm.value.enddate.getTime() - _remainingDays;
+    const date = this.itineraryForm.value.enddate.getTime() - remainingDays;
 
     // condition for selectable dates
-    return d.getTime() >= _date;
+    return d.getTime() >= date;
   }
 
   // date filter for start date limits
   startDateFilter = (d: Date): boolean => {
     // convert to milliseconds
-    const _remainingDays = 1000 * 60 * 60 * 24 * (this.totalDays - this.params.usedDays);
+    const remainingDays = 1000 * 60 * 60 * 24 * (this.totalDays - this.params.usedDays);
 
-    const _date = this.itinForm.value.startdate.getTime() + _remainingDays;
+    const date = this.itinerary.startdate.getTime() + remainingDays;
 
     // condition for selectable dates
-    return d.getTime() < _date;
+    return d.getTime() < date;
   }
 
   // function to calculate total days
   calculateDays() {
     // calculate total days
-    this.totalDays = (this.itinForm.value.enddate.getTime() - this.itinForm.value.startdate.getTime()) / DAY_IN_MILLISECONDS;
+    this.totalDays = (this.itineraryForm.value.enddate.getTime() - this.itineraryForm.value.startdate.getTime()) / DAY_IN_MILLISECONDS;
     this.totalDays++;
   }
 
@@ -125,16 +130,16 @@ export class ItineraryDetailsEditorComponent implements OnInit {
     // console.log(this.itinForm.value.startdate.toDateString())
 
     // convert dates to date strings
-    this.itinForm.value.startdate = this.itinForm.value.startdate.toDateString();
-    this.itinForm.value.enddate = this.itinForm.value.enddate.toDateString();
+    this.itineraryForm.value.startdate = this.itineraryForm.value.startdate.toDateString();
+    this.itineraryForm.value.enddate = this.itineraryForm.value.enddate.toDateString();
 
     // if user is agent assign user id back to itinerary
     if (this.user.role === 'agent') {
-      this.itinForm.value.agent = this.itinerary.agent;
+      this.itineraryForm.value.agent = this.itinerary.agent;
     }
 
     // push to firebase
-    this.data.updateItem(this.itinerary.$key, `itineraries/${this.data.currentCompany}/`, this.itinForm.value)
+    this.data.updateItem(this.itinerary.$key, `itineraries/${this.data.currentCompany}/`, this.itineraryForm.value)
       .then(() => {
         this.dialogRef.close();
       })
@@ -146,5 +151,10 @@ export class ItineraryDetailsEditorComponent implements OnInit {
   // function to cancel dialog
   onCloseCancel() {
     this.dialogRef.close();
+  }
+
+  ngOnDestroy(): void {
+    this.agents$.unsubscribe();
+    this.clients$.unsubscribe();
   }
 }

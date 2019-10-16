@@ -41,7 +41,7 @@ export class ItinerariesComponent implements OnInit, OnDestroy {
     console.log(`itineraries/${localStorage.getItem('company')}/`)
 
     // get itineraries
-    this.ref = this.data.af.list(`itineraries/${localStorage.getItem('company')}/`, ref => ref.limitToLast(200))
+    this.ref = this.data.af.list(`itineraries/${localStorage.getItem('company')}/`, ref => ref.limitToFirst(200))
     .snapshotChanges()
       .subscribe(snapshots => {
 
