@@ -129,7 +129,6 @@ export class InventoryComponent implements OnInit, OnDestroy {
         if (item.image !== undefined && item.image !== 'undefined') {
 
           // delete image from firebase storage
-
             this.data.deleteItemWithImage(item.image)
               .then((res) => {
                 Swal.fire('Success', 'Inventory item deleted: ' + JSON.stringify(res), 'success');
@@ -139,15 +138,6 @@ export class InventoryComponent implements OnInit, OnDestroy {
                 Swal.fire('Failed', err.message, 'error');
                 console.log(err);
               });
-
-            // .then(() => {
-            //
-            //   console.log('inventory image deleted');
-            // })
-            // .catch((error) => {
-            //
-            //   console.log('image delete error: ' + error.message);
-            // });
         }
       })
       .catch((error) => {
