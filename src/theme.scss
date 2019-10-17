@@ -1,0 +1,55 @@
+@import '~@angular/material/theming';
+@include mat-core();
+
+$brand: (
+  50 : #AC452F,
+  100 : #e8ddcb,
+  200 : #d8c6a8,
+  300 : #c8af85,
+  400 : #bd9d6b,
+  500 : #b18c51,
+  600 : #aa844a,
+  700 : #a17940,
+  800 : #986f37,
+  900 : #885c27,
+  A100 : #ffe6c9,
+  A200 : #ffcd96,
+  A400 : #ffb563,
+  A700 : #ffa94a,
+  contrast: (
+    50 : #000000,
+    100 : #000000,
+    200 : #000000,
+    300 : #000000,
+    400 : #000000,
+    500 : #ffffff,
+    600 : #000000,
+    700 : #ffffff,
+    800 : #ffffff,
+    900 : #ffffff,
+    A100 : #ffffff,
+    A200 : #000000,
+    A400 : #000000,
+    A700 : #000000,
+  )
+);
+
+$my-app-primary: mat-palette($brand, 500);
+$my-app-accent:  mat-palette($brand, 500);
+$my-app-warn:    mat-palette($mat-deep-orange);
+
+$my-app-theme: mat-light-theme($my-app-primary, $my-app-accent, $my-app-warn);
+
+
+@include angular-material-theme($my-app-theme);
+
+// planet africa styles
+
+$app-dark-primary: mat-palette($brand, 50);
+$app-dark-accent: mat-palette($brand, 50);
+$app-dark-warn: mat-palette($mat-deep-orange);
+$app-light-theme: mat-light-theme($app-dark-primary, $app-dark-accent, $app-dark-warn);
+
+.planet-africa-theme {
+  @include angular-material-theme($app-light-theme);
+}

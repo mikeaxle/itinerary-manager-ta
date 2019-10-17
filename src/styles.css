@@ -480,3 +480,43 @@ ngx-auth-firebaseui-login #login-form-wrapper #login-form img {
   background-color: white;
   border: #b18c51 2px solid;
 }
+
+/*****************************************/
+
+.lesser-button-ta {
+  border: solid 2px #B18C51 !important;
+  color: #B18C51 !important;
+}
+
+.lesser-button-pa {
+  border: solid 2px #AC452F !important;
+  color: #AC452F !important;
+}
+
+.greater-button-pa {
+  background-color:  #AC452F !important;
+  color: white !important;
+}
+.greater-button-ta {
+  background-color:  #B18C51 !important;
+  color: white !important;
+}
+
+.mat-elevation-z8 {
+  margin-bottom: 30px;
+}
+
+.mat-menu-panel {
+  max-width: fit-content !important;
+}
+
+/******* Theme styles ******/
+
+.planet-africa-theme .mat-toolbar.mat-primary {
+  background: #ac452f !important;
+  color: white !important;
+}
+
+.planet-africa-theme .mat-raised-button.mat-primary, .planet-africa-theme .mat-fab.mat-primary, .planet-africa-theme .mat-mini-fab.mat-primary {
+  color: white !important;
+}
