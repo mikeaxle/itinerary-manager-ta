@@ -39,7 +39,7 @@ export class ItinerariesComponent implements OnInit, OnDestroy {
     this.itineraries = [];
 
     // get itineraries
-    this.ref = this.data.af.list(`itineraries/${localStorage.getItem('company')}/`, ref => ref.limitToFirst(200))
+    this.ref = this.data.af.list(`itineraries/${localStorage.getItem('company')}/`, ref => ref.limitToLast(250))
     .snapshotChanges()
       .subscribe(snapshots => {
 
