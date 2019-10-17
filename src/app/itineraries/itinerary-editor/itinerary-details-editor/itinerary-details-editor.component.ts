@@ -2,6 +2,8 @@ import {Component, Inject, OnDestroy, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
 import {DataService} from '../../../services/data.service';
+import Swal from 'sweetalert2';
+import { snapshotChanges } from '@angular/fire/database';
 
 // assign day in milliseconds
 const DAY_IN_MILLISECONDS = 1000 * 60 * 60 * 24;
@@ -15,12 +17,12 @@ export class ItineraryDetailsEditorComponent implements OnInit, OnDestroy {
   TODAY = new Date();
   public itineraryForm: FormGroup;
   itinerary;
-  clients = []
+  clients = [];
   error: any;
   user: any;
   totalDays: any;
   color: any;
-  agents = []
+  agents = [];
   private startdate: Date;
   private enddate: Date;
   private agents$;
@@ -77,7 +79,7 @@ export class ItineraryDetailsEditorComponent implements OnInit, OnDestroy {
         snapshots.forEach(snapshot => {
           const client = snapshot.payload.val();
           client[`key`] = snapshot.key;
-          this.clients.push(client)
+          this.clients.push(client);
         });
       });
   }
@@ -139,11 +141,13 @@ export class ItineraryDetailsEditorComponent implements OnInit, OnDestroy {
     }
 
     // push to firebase
-    this.data.updateItem(this.itinerary.$key, `itineraries/${this.data.currentCompany}/`, this.itineraryForm.value)
+    this.data.updateItem(this.itinerary[`key`], `itineraries/${localStorage.getItem('company')}/`, this.itineraryForm.value)
       .then(() => {
+        Swal.fire('Itinerary Editor', 'Itinerary details updated', 'success');
         this.dialogRef.close();
       })
       .catch((error) => {
+        Swal.fire('Itinerary Editor', error.message, 'error');
         console.log(error);
       });
   }

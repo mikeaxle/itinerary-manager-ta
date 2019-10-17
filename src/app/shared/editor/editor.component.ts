@@ -159,7 +159,7 @@ export class EditorComponent implements OnInit {
 
 
   addTag(tag: string) {
-    this.mediaItem.tags.push(tag)
+    this.mediaItem.tags.push(tag);
   }
 
   // function to validate
@@ -315,31 +315,23 @@ export class EditorComponent implements OnInit {
 
       } else {
 
-        try {
           // TODO: delete old image
-          // this.data.deleteItemWithImage(this.oldImage)
-          // .then((res) => {
+          this.data.deleteItemWithImage(this.oldImage)
+          .then((res) => {
             // update with image
-            this.data.updateItemWithImage(this.mediaItem[`key`], 'media', this.mediaItem, this.mediaItem.image, 'media')
+            this.data.updateItemWithImage(this.mediaItem[`key`], 'media', this.mediaItem, this.mediaItem.image, 'media');
+
             // console.log(res);
             Swal.fire('Success', 'Existing media item successfully updated', 'success');
-        
-          // })
-          
-        } catch (err) {
-          console.log(err)
-
-        // Swal
-        Swal.fire('Failed!', `An error has occurred: ${err.message}`, 'error');
-
-        // assign error to variable
-        this.error = err;
-        }
-
-      }
-
+          })
+            .catch((err) => {
+              console.log(err);
+              Swal.fire('Failed!', `An error has occurred: ${err.message}`, 'error');
+              this.error = err;
+            });
+          }
         // close form
-        this.closeDialog()
+    this.closeDialog();
   }
 
   // function to close dialog

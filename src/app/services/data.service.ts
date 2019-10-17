@@ -69,8 +69,8 @@ export class DataService {
 
   // update object
   updateItem(id: string, type: string, data: any) {
-    return this.af.list(type)
-      .update(id, data);
+    return this.af.object(`${type}/${id}`)
+      .update(data);
   }
 
   // save object with image

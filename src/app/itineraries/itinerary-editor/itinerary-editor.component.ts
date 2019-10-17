@@ -79,7 +79,7 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
     // get itinerary
     this.itinerary$ = JSON.parse(this.route.snapshot.paramMap.get('itinerary'));
 
-    console.log(this.itinerary$);
+    // console.log(this.itinerary$);
 
     // todo: convert start date and end date on front end
     /* calculate total days by converting dates into milliseconds, subtracting and
@@ -557,6 +557,13 @@ divide by 86400000 which is the number of milliseconds equal to a editor-compone
       },
       width: '480px',
     });
+
+
+    // after dialog is closed
+    dialogRef.afterClosed().subscribe(result => {
+      // update itinerary
+      this.updateItinerary();
+    });
   }
 
   // function to open confirm delete dialog
@@ -785,6 +792,15 @@ divide by 86400000 which is the number of milliseconds equal to a editor-compone
 isArray(obj: any ) {
     return Array.isArray(obj);
  }
+
+ updateItinerary () {
+  this.data.af.object(this.itinerary$.key)
+  .snapshotChanges()
+  .subscribe(snapshotChanges => {
+    this.itinerary$ = snapshotChanges.payload.val();
+    this.itinerary$[`key`] = snapshotChanges.key;
+  })
+}
 
   ngOnDestroy() {
     // unsubscribe from observables to remove memory leaks
