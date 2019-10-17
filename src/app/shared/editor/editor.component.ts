@@ -26,7 +26,6 @@ export class EditorComponent implements OnInit {
   agentForm: any;
   clientForm: any;
   inventoryForm: any;
-  mediaForm: any;
   itinerary: Itinerary;
   agent: Agent;
   client: Client;
@@ -42,6 +41,7 @@ export class EditorComponent implements OnInit {
   destinations: Country[];
   regions: Region[];
   types = inventoryTypes;
+  oldImage: any;
 
   constructor(@Inject(MAT_BOTTOM_SHEET_DATA) public args: any,
               private formBuilder: FormBuilder,
@@ -58,7 +58,6 @@ export class EditorComponent implements OnInit {
     // check type
     switch (this.args.type) {
         case 'itinerary':
-          console.log('itinerary');
           this.initNewItinerary();
           break;
         case 'clients':
@@ -66,27 +65,16 @@ export class EditorComponent implements OnInit {
           this.initNewClient();
           break;
         case 'inventory':
-          console.log('inventory');
-
-          // init inventory item
-          this.inventoryItem = new InventoryItem();
-
-          // get destinations from country service
+          this.inventoryItem = this.args.item;
           this.destinations = this.countryService.getCountries();
-
           this.initNewInventory();
           break;
         case 'agents':
-          console.log('agents');
+          this.agent = this.args.item;
           this.initNewAgent();
           break;
-        case 'media':
-          console.log('media');
-
-          // init media item
-          this.mediaItem = new MediaItem();
-
-          this.initNewMediaItem();
+      case 'media':
+          this.mediaItem = this.args.item ? this.args.item : new MediaItem();
           break;
         default:
           return;
@@ -146,13 +134,13 @@ export class EditorComponent implements OnInit {
 
   // initialize new agent form
   initNewAgent() {
-    this.agentForm = this.formBuilder.group({
+    this.agentForm = this.args.new ? this.formBuilder.group({
       email: [null, Validators.required],
       firstname: [null, Validators.required],
       lastname: [null, Validators.required],
       password: [null, Validators.required],
       role: [null, Validators.required],
-    });
+    }) : this.formBuilder.group(this.agent);
   }
 
   // initialize new inventory form
@@ -169,20 +157,9 @@ export class EditorComponent implements OnInit {
     });
   }
 
-  // initialize new media form
-  initNewMediaItem() {
-    // this.mediaItem
-    this.mediaForm = this.formBuilder.group({
-      caption: [null, Validators.required],
-      // image: [null, Validators.required],
-      title: [null, Validators.required],
-      // tags: [FormArray]
-    });
-  }
 
   addTag(tag: string) {
-    const mediaform = this.mediaForm.get('tags') as FormArray;
-    mediaform.push(new FormControl());
+    this.mediaItem.tags.push(tag)
   }
 
   // function to validate
@@ -252,62 +229,6 @@ export class EditorComponent implements OnInit {
     }
   }
 
-  // function to add new client
-  addClient() {
-    // check if form data is valid
-    if (this.clientForm.valid) {
-      // remove agent
-
-      // add agent key to client
-      this.clientForm.value.agent = this.user.key;
-
-      // push to firebase
-      this.data.af.object( `clients/${this.client[`key`]}`)
-        .update(this.clientForm.value)
-        .then(() => {
-          // Swal
-          Swal.fire('Success', 'New client successfully added', 'success');
-
-          // close dialog
-          this.closeDialog();
-
-        })
-        .catch((error) => {
-          console.log(error);
-
-          Swal.fire('Failed!', `An error has occurred: ${error.message}`, 'error');
-
-          // assign error to variable
-          this.error = error;
-        });
-    }
-  }
-
-  // function to add new agent
-  addAgent(agentForm) {
-
-    // check if form data is valid
-    if (agentForm.valid) {
-      // write user to firebase
-      this.data.saveUser(agentForm.value)
-        .then(() => {
-          // swal
-          Swal.fire('Success', 'New agent successfully added', 'success');
-
-          // close dialog
-          this.closeDialog();
-
-        })
-        .catch((error) => {
-          this.error = error;
-
-          Swal.fire('Failed!', `An error has occurred: ${error.message}`, 'error');
-
-          console.log(error);
-        });
-    }
-  }
-
   // function to detect when file is selected
   fileSelected(file) {
     if (file.size <= 1048576) {
@@ -373,9 +294,8 @@ export class EditorComponent implements OnInit {
   fileSelectedForMedia(file) {
     if (file.size <= (1648576) ) {
       this.mediaItem.image = file;
+      Swal.fire('Media', 'File selected!', 'info');
 
-      console.log(file);
-      alert('file selected');
     } else {
       alert('Image size must be less than 1.5MB');
       this.mediaItem.image = null;
@@ -384,19 +304,120 @@ export class EditorComponent implements OnInit {
   }
 
   // function to save media to firebase
-  addMedia(mediaItemForm) {
-
-    if (mediaItemForm.valid && this.mediaItem.image !== null) {
-      this.data.saveItemWithImage('media', mediaItemForm.value, this.mediaItem.image, 'media')
+  addMedia() {
+    // check if new media item
+    if (this.args.new) {
+      this.data.saveItemWithImage('media', { caption: this.mediaItem.caption, title: this.mediaItem.title }, this.mediaItem.image, 'media')
         .subscribe((res) => {
           console.log(res);
           Swal.fire('Success', 'New media item successfully added', 'success');
         });
-    }
+
+      } else {
+
+        try {
+          // TODO: delete old image
+          // this.data.deleteItemWithImage(this.oldImage)
+          // .then((res) => {
+            // update with image
+            this.data.updateItemWithImage(this.mediaItem[`key`], 'media', this.mediaItem, this.mediaItem.image, 'media')
+            // console.log(res);
+            Swal.fire('Success', 'Existing media item successfully updated', 'success');
+        
+          // })
+          
+        } catch (err) {
+          console.log(err)
+
+        // Swal
+        Swal.fire('Failed!', `An error has occurred: ${err.message}`, 'error');
+
+        // assign error to variable
+        this.error = err;
+        }
+
+      }
+
+        // close form
+        this.closeDialog()
   }
 
   // function to close dialog
   closeDialog() {
     this.bottomSheetRef.dismiss();
   }
+
+
+  // function to save single item to list
+  saveItem(data) {
+    let databasePath = this.args.type === 'agents' ? 'users/' : `${this.args.type}/`;
+    let itemId;
+    // check if client
+
+    switch (this.args.type) {
+      case 'itineraries':
+        // itemId = this.itinerary[`key`]
+        break;
+      case 'clients':
+        itemId = this.client ? this.client[`key`] : null;
+        data.agent = this.user[`key`];
+        databasePath += `${localStorage.getItem('company')}/`;
+        break;
+      case 'inventory':
+        itemId = this.inventoryItem ? this.inventoryItem[`key`] : null;
+        break;
+      case 'agents':
+        itemId = this.agent ? this.agent[`key`] : null;
+        break;
+      case 'media':
+        itemId = this.mediaItem ? this.mediaItem[`key`] : null;
+        break;
+    }
+
+    // check if new item
+    if (this.args.new) {
+      // write to database
+      this.data.saveItem(databasePath, data)
+      .then(_ => {
+        // Swal
+        Swal.fire('Success', `New ${this.args.type.slice(0, this.args.type.length - 1)} successfully added`, 'success');
+
+        // close dialog
+        this.closeDialog();
+      })
+      .catch((err) => {
+        console.log(err);
+
+        // Swal
+        Swal.fire('Failed!', `An error has occurred: ${err.message}`, 'error');
+
+        // assign error to variable
+        this.error = err;
+      });
+    } else {
+      // push to firebase
+      this.data.af.object( `${databasePath}${itemId}`)
+        .update(data)
+        .then(_ => {
+          // Swal
+          Swal.fire('Success', `Existing ${this.args.type.slice(0, this.args.type.length - 1)} successfully updated`, 'success');
+
+          // close dialog
+          this.closeDialog();
+
+        })
+        .catch((error) => {
+          console.log(error);
+
+          Swal.fire('Failed!', `An error has occurred: ${error.message}`, 'error');
+
+          // assign error to variable
+          this.error = error;
+        });
+    }
+
+    this.closeDialog();
+  }
+
+  // function to update single item
 }

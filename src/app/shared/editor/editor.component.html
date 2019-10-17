@@ -133,7 +133,7 @@
 <!-- client form -->
 <div  *ngIf="args.type === 'clients'">
   <mat-card-title>Save Client</mat-card-title>
-  <form [formGroup]="clientForm" (ngSubmit)="addClient()">
+  <form [formGroup]="clientForm" (ngSubmit)="saveItem(clientForm.value)">
     <!-- first name -->
     <mat-form-field>
       <label>
@@ -183,7 +183,7 @@
 <!-- agent form-->
 <div *ngIf="args.type === 'agents'">
   <mat-card-title>Save Agent</mat-card-title>
-  <form [formGroup]="agentForm">
+  <form [formGroup]="agentForm" (ngSubmit)="saveItem(agentForm.value)">
     <!-- account type -->
     <mat-radio-group formControlName="role" required fxLayout>
       <mat-radio-button value="admin" color="primary" fxFlex>Admin</mat-radio-button>
@@ -213,7 +213,7 @@
     </mat-form-field>
 
     <!-- password -->
-    <mat-form-field>
+    <mat-form-field *ngIf="args.new">
       <label>
         <input type="password" placeholder="Password" formControlName="password" matInput required>
       </label>
@@ -344,7 +344,7 @@
 <div *ngIf="args.type === 'media'">
   <mat-card-title>Save Image</mat-card-title>
   <br><br>
-  <form [formGroup]="mediaForm">
+  <form #mediaForm="ngForm" (ngSubmit)="addMedia()">
     <!-- image uploader -->
     <app-file-uploader (notify)="fileSelectedForMedia($event)" [activeColor]="'orangered'" [baseColor]="'lightgray'"></app-file-uploader>
 
@@ -353,14 +353,14 @@
     <!-- title -->
     <mat-form-field>
       <label>
-        <input placeholder="Title" type="text" formControlName="title" matInput required/>
+        <input placeholder="Title" [(ngModel)]="mediaItem.title" type="text" name="title" matInput required/>
       </label>
     </mat-form-field>
 
     <!-- caption -->
     <mat-form-field>
       <label>
-      <textarea placeholder="Caption" rows="2" cols="50" formControlName="caption" matInput required></textarea>
+      <textarea placeholder="Caption" [(ngModel)]="mediaItem.caption" rows="2" cols="50" name="caption" matInput required></textarea>
       </label>
     </mat-form-field>
 
@@ -379,7 +379,7 @@
     <span class="spacer-vert"></span>
 
     <!-- save button   -->
-    <button class="full-input" color="primary" type="submit" [disabled]="!mediaForm.valid || mediaItem.image === null" mat-raised-button>Save</button>
+    <button class="full-input" color="primary" type="submit" [disabled]="!mediaForm.valid" mat-raised-button>Save</button>
 
     <span class="spacer-vert"></span>
 

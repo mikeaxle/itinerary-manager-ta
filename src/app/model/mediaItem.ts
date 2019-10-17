@@ -1,6 +1,6 @@
 export class MediaItem {
-  image: File;
-  title: any;
-  caption: any;
+  image;
+  title = '';
+  caption = ''
   tags = [];
 }

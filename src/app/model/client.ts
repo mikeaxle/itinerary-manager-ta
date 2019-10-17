@@ -4,5 +4,4 @@ export class Client {
   email = '';
   phone = '';
   nationality = '';
-
 }

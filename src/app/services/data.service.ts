@@ -105,7 +105,7 @@ export class DataService {
 
   // delete object with image
   deleteItemWithImage(path: string) {
-    return this.storage.ref(path).delete();
+    return this.storage.storage.ref(path).delete();
   }
 
   // get list and return array with data and keys

@@ -111,14 +111,13 @@ export class MediaComponent implements OnInit, OnDestroy {
 
   // function to edit media
   editMediaItem(media: any) {
-    console.log(media)
-    // this.bottomSheet.open(EditorComponent, {
-    //   data: {
-    //     item: media,
-    //     new: false,
-    //     type: 'media'
-    //   }
-    // });
+    this.bottomSheet.open(EditorComponent, {
+      data: {
+        item: media,
+        new: false,
+        type: 'media'
+      }
+    });
   }
 
   ngOnDestroy(): void {
