@@ -87,7 +87,7 @@ export class MediaComponent implements OnInit, OnDestroy {
 
         // delete image from firebase storage
         this.data.deleteItemWithImage(media.image)
-          .subscribe(res => {
+          .then(res => {
             Swal.fire('Success', 'Inventory item deleted: ' + JSON.stringify(res), 'success');
             console.log(res);
           });
