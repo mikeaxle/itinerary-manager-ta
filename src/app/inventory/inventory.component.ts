@@ -27,8 +27,7 @@ export class InventoryComponent implements OnInit, OnDestroy {
   private ref;
 
   constructor(public router: Router, public data: DataService,
-              public countryService: CountryService, public dialog: MatDialog,
-              public bottomSheet: MatBottomSheet) {}
+              public countryService: CountryService, public dialog: MatDialog) {}
 
   ngOnInit() {
     // get countries
@@ -148,7 +147,7 @@ export class InventoryComponent implements OnInit, OnDestroy {
 
   // function to add new inventory item
   addNew() {
-    this.bottomSheet.open(EditorComponent, {
+    this.dialog.open(EditorComponent, {
       data: {
         item: null,
         new: true,
@@ -159,7 +158,7 @@ export class InventoryComponent implements OnInit, OnDestroy {
 
 // function to edit inventory item
   editInventoryItem(inventoryItem) {
-    this.bottomSheet.open(EditorComponent, {
+    this.dialog.open(EditorComponent, {
       data: {
         item: inventoryItem,
         new: false,

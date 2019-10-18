@@ -13,8 +13,13 @@ export class AppComponent {
   title = 'itinerary-manager-ta';
   user = this.getItem('user');
   url;
+  // isPlanetAfrica: any;
 
   constructor(public router: Router, public data: DataService) {
+  }
+
+  isPlanetAfrica()  {
+    return localStorage.getItem('company') === 'Planet Africa';
   }
 
   // getter

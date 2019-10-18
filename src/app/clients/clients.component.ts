@@ -21,7 +21,7 @@ export class ClientsComponent implements OnInit, OnDestroy {
   @ViewChild(MatSort, {static: true}) sort: MatSort;
   private ref;
 
-  constructor(public data: DataService, public dialog: MatDialog, private bottomSheet: MatBottomSheet) { }
+  constructor(public data: DataService, public dialog: MatDialog) { }
 
   ngOnInit() {
     // todo: dummy data
@@ -115,7 +115,7 @@ export class ClientsComponent implements OnInit, OnDestroy {
 
   addNew() {
     // todo: add arguments to editor component for type, mode, and data
-    this.bottomSheet.open(EditorComponent, {
+    this.dialog.open(EditorComponent, {
       data: {
         item: null,
         new: true,
@@ -125,7 +125,7 @@ export class ClientsComponent implements OnInit, OnDestroy {
   }
 
   editClient(client: any) {
-    this.bottomSheet.open(EditorComponent, {
+    this.dialog.open(EditorComponent, {
       data: {
         item: client,
         new: false,

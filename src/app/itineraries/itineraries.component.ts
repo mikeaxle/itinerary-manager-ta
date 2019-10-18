@@ -1,6 +1,6 @@
 import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {DataService} from '../services/data.service';
-import {MatBottomSheet, MatBottomSheetRef} from '@angular/material';
+import {MatBottomSheet, MatBottomSheetRef, MatDialog} from '@angular/material';
 import {MatPaginator} from '@angular/material/paginator';
 import {MatSort} from '@angular/material/sort';
 import {MatTableDataSource} from '@angular/material/table';
@@ -23,7 +23,7 @@ export class ItinerariesComponent implements OnInit, OnDestroy {
   private error: any
   ref;
 
-  constructor(public data: DataService, private bottomSheet: MatBottomSheet, public router: Router) {
+  constructor(public data: DataService, private matDialog: MatDialog, public router: Router) {
   }
 
   ngOnInit() {
@@ -108,7 +108,7 @@ export class ItinerariesComponent implements OnInit, OnDestroy {
   }
   // function to add new itinerary
   addNew() {
-    this.bottomSheet.open(EditorComponent, {
+    this.matDialog.open(EditorComponent, {
       data: {
         item: null,
         new: true,

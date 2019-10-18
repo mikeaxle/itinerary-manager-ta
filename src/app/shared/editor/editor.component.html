@@ -264,56 +264,31 @@
     <!-- short name -->
     <mat-form-field>
       <label>
-        <input
-          type="text"
-          placeholder="Short name"
-          formControlName="name"
-          matInput
-          required>
+        <input type="text" placeholder="Short name" formControlName="name" matInput required>
       </label>
     </mat-form-field>
 
     <!-- description -->
     <mat-form-field>
       <label>
-<textarea
-  placeholder="Short Description"
-  rows="2" cols="50"
-  formControlName="description"
-  matInput
-  required>
-</textarea>
+        <textarea placeholder="Short Description" rows="2" cols="50" formControlName="description" matInput required></textarea>
       </label>
     </mat-form-field>
 
     <!-- accommodation specific fields -->
-    <div
-      *ngIf="inventoryForm.controls.type.value === 'Accommodation'"
-      fxLayout="column">
+    <div *ngIf="inventoryForm.controls.type.value === 'Accommodation'" fxLayout="column">
 
       <!-- long description -->
       <mat-form-field>
         <label>
-<textarea
-  placeholder="Long Description"
-  rows="2" cols="50"
-  formControlName="longDescription"
-  matInput
-  required>
-</textarea>
+          <textarea placeholder="Long Description" rows="2" cols="50" formControlName="longDescription" matInput required></textarea>
         </label>
       </mat-form-field>
 
       <!-- inclusions -->
       <mat-form-field>
         <label>
-<textarea
-  placeholder="Inclusions"
-  rows="2" cols="50"
-  formControlName="inclusions"
-  matInput
-  required>
-</textarea>
+          <textarea placeholder="Inclusions" rows="2" cols="50" formControlName="inclusions" matInput required></textarea>
         </label>
       </mat-form-field>
 

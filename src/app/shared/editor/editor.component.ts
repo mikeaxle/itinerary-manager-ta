@@ -3,7 +3,6 @@ import {Itinerary} from '../../model/itinerary';
 import {DataService} from '../../services/data.service';
 import {FormArray, FormBuilder, FormControl, Validators} from '@angular/forms';
 import {Router} from '@angular/router';
-import { MatBottomSheetRef, MAT_BOTTOM_SHEET_DATA} from '@angular/material/bottom-sheet';
 import Swal from 'sweetalert2';
 import {countries} from '../../model/countries';
 import {Agent} from '../../model/agent';
@@ -14,6 +13,7 @@ import {Region} from '../../model/region';
 import {CountryService} from '../../services/country.service';
 import {inventoryTypes} from '../../model/inventory-types';
 import {MediaItem} from '../../model/mediaItem';
+import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
 
 @Component({
   selector: 'app-editor',
@@ -43,12 +43,12 @@ export class EditorComponent implements OnInit {
   types = inventoryTypes;
   oldImage: any;
 
-  constructor(@Inject(MAT_BOTTOM_SHEET_DATA) public args: any,
+  constructor(@Inject(MAT_DIALOG_DATA) public args: any,
               private formBuilder: FormBuilder,
               public data: DataService,
               public router: Router,
               public countryService: CountryService,
-              public bottomSheetRef: MatBottomSheetRef<EditorComponent>) {
+              public bottomSheetRef: MatDialogRef<EditorComponent>) {
   }
 
   ngOnInit() {
@@ -95,12 +95,11 @@ export class EditorComponent implements OnInit {
     });
 
     // get company invoice details
-    this.data.af.object(`companies/${this.data.currentCompany}`)
+    this.data.af.object(`companies/${localStorage.getItem('company')}`)
       .valueChanges()
       .subscribe((res) => {
         // this.data.list('company/True Africa')
-        // @ts-ignore
-        this.invoiceDetails = {prefix: res.prefix, invoice_number: res.invoice_number};
+        this.invoiceDetails = {prefix: res[`prefix`], invoice_number: res[`invoice_number`]};
       });
 
     // get agents list
@@ -111,7 +110,7 @@ export class EditorComponent implements OnInit {
       });
 
     // get client list
-    this.data.af.list(`clients/${this.data.currentCompany}/`)
+    this.data.af.list(`clients/${localStorage.getItem('company')}/`)
       .valueChanges()
       .subscribe(res => {
         this.clients = res;
@@ -145,7 +144,7 @@ export class EditorComponent implements OnInit {
 
   // initialize new inventory form
   initNewInventory() {
-    this.inventoryForm = this.formBuilder.group({
+    this.inventoryForm = this.args.new ? this.formBuilder.group({
       description: [null, Validators.required],
       destination: [null, Validators.required],
       image: [null, Validators.required],
@@ -154,7 +153,7 @@ export class EditorComponent implements OnInit {
       name: [null, Validators.required],
       region: [null, Validators.required],
       type: [null, Validators.required],
-    });
+    }) : this.formBuilder.group(this.inventoryItem);
   }
 
 
@@ -203,12 +202,12 @@ export class EditorComponent implements OnInit {
       this.itineraryForm.value.invoice_number = `${this.invoiceDetails.prefix}-${this.invoiceDetails.invoice_number}`;
 
       // push to firebase
-      this.data.saveItem(`itineraries/${this.data.currentCompany}`, this.itineraryForm.value)
+      this.data.saveItem(`itineraries/${localStorage.getItem('company')}`, this.itineraryForm.value)
         .then((res) => {
           // update invoice number in firebase
-          this.data.updateItem(this.data.currentCompany, 'companies', this.invoiceDetails);
+          this.data.updateItem(localStorage.getItem('company'), 'companies', this.invoiceDetails);
 
-          this.bottomSheetRef.dismiss();
+          this.closeDialog();
 
           // go to itinerary editor with new itinerary
           this.router.navigate(['itinerary-editor', { queryParams: {itineraryData: itinerary }} ])
@@ -336,7 +335,7 @@ export class EditorComponent implements OnInit {
 
   // function to close dialog
   closeDialog() {
-    this.bottomSheetRef.dismiss();
+    this.bottomSheetRef.close();
   }
 
 
