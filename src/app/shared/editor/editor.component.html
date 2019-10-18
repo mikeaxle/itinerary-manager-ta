@@ -235,84 +235,87 @@
 <!-- inventory form -->
 <div *ngIf="args.type === 'inventory'">
   <mat-card-title>Save Inventory</mat-card-title>
-  <form [formGroup]="inventoryForm">
-    <!-- destination -->
-    <mat-select
-      placeholder="Destination"
-      formControlName="destination"
-      (selectionChange)="onSelect($event)"
-      required>
-      <mat-option *ngFor="let d of destinations" [value]="d.id">
-        {{d.name}}
-      </mat-option>
-    </mat-select>
+  <mat-dialog-content>
+    <form [formGroup]="inventoryForm">
+      <!-- destination -->
+      <mat-select
+        placeholder="Destination"
+        formControlName="destination"
+        (selectionChange)="onSelect($event)"
+        required>
+        <mat-option *ngFor="let d of destinations" [value]="d.id">
+          {{d.name}}
+        </mat-option>
+      </mat-select>
 
-    <!-- region -->
-    <mat-select placeholder="Region" formControlName="region" required>
-      <mat-option *ngFor="let r of regions" [value]="r.id">
-        {{r.name}}
-      </mat-option>
-    </mat-select>
+      <!-- region -->
+      <mat-select placeholder="Region" formControlName="region" required>
+        <mat-option *ngFor="let r of regions" [value]="r.id">
+          {{r.name}}
+        </mat-option>
+      </mat-select>
 
-    <!-- type -->
-    <mat-select placeholder="Type" formControlName="type" required>
-      <mat-option *ngFor="let t of types" [value]="t">
-        {{t}}
-      </mat-option>
-    </mat-select>
+      <!-- type -->
+      <mat-select placeholder="Type" formControlName="type" required>
+        <mat-option *ngFor="let t of types" [value]="t">
+          {{t}}
+        </mat-option>
+      </mat-select>
 
-    <!-- short name -->
-    <mat-form-field>
-      <label>
-        <input type="text" placeholder="Short name" formControlName="name" matInput required>
-      </label>
-    </mat-form-field>
-
-    <!-- description -->
-    <mat-form-field>
-      <label>
-        <textarea placeholder="Short Description" rows="2" cols="50" formControlName="description" matInput required></textarea>
-      </label>
-    </mat-form-field>
-
-    <!-- accommodation specific fields -->
-    <div *ngIf="inventoryForm.controls.type.value === 'Accommodation'" fxLayout="column">
-
-      <!-- long description -->
+      <!-- short name -->
       <mat-form-field>
         <label>
-          <textarea placeholder="Long Description" rows="2" cols="50" formControlName="longDescription" matInput required></textarea>
+          <input type="text" placeholder="Short name" formControlName="name" matInput required>
         </label>
       </mat-form-field>
 
-      <!-- inclusions -->
+      <!-- description -->
       <mat-form-field>
         <label>
-          <textarea placeholder="Inclusions" rows="2" cols="50" formControlName="inclusions" matInput required></textarea>
+          <textarea placeholder="Short Description" rows="2" cols="50" formControlName="description" matInput required></textarea>
         </label>
       </mat-form-field>
 
-      <!-- image upload -->
-      <app-file-uploader
-        (notify)="fileSelected($event)"
-        [activeColor]="'orangered'"
-        [baseColor]="'lightgray'">
-      </app-file-uploader>
+      <!-- accommodation specific fields -->
+      <div *ngIf="inventoryForm.controls.type.value === 'Accommodation'" fxLayout="column">
+
+        <!-- long description -->
+        <mat-form-field>
+          <label>
+            <textarea placeholder="Long Description" rows="2" cols="50" formControlName="long_description" matInput required></textarea>
+          </label>
+        </mat-form-field>
+
+        <!-- inclusions -->
+        <mat-form-field>
+          <label>
+            <textarea placeholder="Inclusions" rows="2" cols="50" formControlName="inclusions" matInput required></textarea>
+          </label>
+        </mat-form-field>
+
+        <!-- image upload -->
+        <app-file-uploader
+          (notify)="fileSelected($event)"
+          [activeColor]="'orangered'"
+          [baseColor]="'lightgray'">
+        </app-file-uploader>
+        <span class="spacer-vert"></span>
+      </div>
+
+      <!-- error -->
       <span class="spacer-vert"></span>
-    </div>
 
-    <!-- error -->
-    <span class="spacer-vert"></span>
+      <!-- save button for activity and service -->
+      <button color="primary" type="submit" [disabled]="!inventoryForm.valid" class="full-input" mat-raised-button>Save</button>
 
-    <!-- save button for activity and service -->
-    <button color="primary" type="submit" [disabled]="!inventoryForm.valid" class="full-input" mat-raised-button>Save</button>
+      <span class="spacer-vert"></span>
 
-    <span class="spacer-vert"></span>
+      <!--  error display  -->
+      <span *ngIf="error" style="color: red">{{error}}</span>
 
-    <!--  error display  -->
-    <span *ngIf="error" style="color: red">{{error}}</span>
+    </form>
+  </mat-dialog-content>
 
-  </form>
 </div>
 
 <!-- media form -->

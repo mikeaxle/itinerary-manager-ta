@@ -14,6 +14,7 @@ import {CountryService} from '../../services/country.service';
 import {inventoryTypes} from '../../model/inventory-types';
 import {MediaItem} from '../../model/mediaItem';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
+import {MatDialogConfig} from '@angular/material';
 
 @Component({
   selector: 'app-editor',
@@ -149,7 +150,7 @@ export class EditorComponent implements OnInit {
       destination: [null, Validators.required],
       image: [null, Validators.required],
       inclusions: [null, Validators.required],
-      longDescription: [null, Validators.required],
+      long_description: [null, Validators.required],
       name: [null, Validators.required],
       region: [null, Validators.required],
       type: [null, Validators.required],
@@ -364,6 +365,9 @@ export class EditorComponent implements OnInit {
         itemId = this.mediaItem ? this.mediaItem[`key`] : null;
         break;
     }
+
+    // remove key
+    delete data[`key`];
 
     // check if new item
     if (this.args.new) {

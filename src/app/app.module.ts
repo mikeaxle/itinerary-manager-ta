@@ -31,7 +31,7 @@ import {
   MatGridListModule,
   MatListModule,
   MatRadioModule,
-  MatBottomSheetModule, MatProgressBarModule
+  MatBottomSheetModule, MatProgressBarModule, MatDialogConfig
 } from '@angular/material';
 import { InvalidTypeDirective } from './directives/invalid-type.directive';
 import { InvalidmessageDirective } from './directives/invalidmessage.directive';
@@ -73,6 +73,7 @@ import { SearchPipe } from './filter/search.pipe';
 import { PdfDialogComponent } from './shared/pdf-dialog/pdf-dialog.component';
 import { LoginComponent } from './login/login.component';
 import { NgxAuthFirebaseUIModule } from 'ngx-auth-firebaseui';
+import { ToolbarComponent } from './toolbar/toolbar.component';
 
 // currency Mask settings
 // @ts-ignore
@@ -117,7 +118,8 @@ export const CustomCurrencyMaskConfig: CurrencyMaskConfig = {
     StatusPipe,
     SearchPipe,
     PdfDialogComponent,
-    LoginComponent
+    LoginComponent,
+    ToolbarComponent
   ],
   entryComponents: [
     DayComponent,

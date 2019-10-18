@@ -176,11 +176,13 @@ export class DataService {
   // function to switch between companies
   switchCompany() {
     if (this.currentCompany === 'Planet Africa') {
-      localStorage.setItem('currentCompany', 'True Africa');
+      localStorage.setItem('company', 'True Africa');
       localStorage.setItem('color', '#B18C51');
+      localStorage.setItem('logo', '../assets/logos/avatar-trueafrica.png');
     } else if (this.currentCompany === 'True Africa') {
-      localStorage.setItem('currentCompany', 'Planet Africa');
+      localStorage.setItem('company', 'Planet Africa');
       localStorage.setItem('color', '#AC452F');
+      localStorage.setItem('logo', '../assets/logos/avatar-planetafrica.png');
     }
 
     // navigate back to itinerary list

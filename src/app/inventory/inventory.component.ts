@@ -1,5 +1,5 @@
 import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
-import {MatBottomSheet, MatDialog, MatPaginator, MatSort, MatTableDataSource} from '@angular/material';
+import {MAT_DIALOG_SCROLL_STRATEGY, MatBottomSheet, MatDialog, MatPaginator, MatSort, MatTableDataSource} from '@angular/material';
 import {CountryService} from '../services/country.service';
 import {Router} from '@angular/router';
 import {DataService} from '../services/data.service';
@@ -158,12 +158,15 @@ export class InventoryComponent implements OnInit, OnDestroy {
 
 // function to edit inventory item
   editInventoryItem(inventoryItem) {
+    // todo: fix region control when editing inventory item
     this.dialog.open(EditorComponent, {
+      autoFocus: false,
       data: {
         item: inventoryItem,
         new: false,
         type: 'inventory'
-      }
+      },
+      maxHeight: '90vh'
     });
   }
 

@@ -1,9 +1,10 @@
 import {Component, OnInit, ViewChild, OnDestroy} from '@angular/core';
 import {DataService} from '../services/data.service';
-import {MatBottomSheet, MatDialog, MatPaginator, MatSort, MatTableDataSource} from '@angular/material';
+import {MatBottomSheet, MatDialog, MatPaginator, MatSort, MatTable, MatTableDataSource} from '@angular/material';
 import {ConfirmComponent} from '../shared/confirm/confirm.component';
 import {PermissionDeniedDialogComponent} from '../shared/permission-denied-dialog/permission-denied-dialog.component';
 import {EditorComponent} from '../shared/editor/editor.component';
+import {snapshotChanges} from '@angular/fire/database';
 
 @Component({
   selector: 'app-clients',
@@ -19,7 +20,9 @@ export class ClientsComponent implements OnInit, OnDestroy {
 
   @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
   @ViewChild(MatSort, {static: true}) sort: MatSort;
+  @ViewChild(MatTable, {static: true}) table: MatTable<any>;
   private ref;
+  public dialogRef;
 
   constructor(public data: DataService, public dialog: MatDialog) { }
 
@@ -40,7 +43,6 @@ export class ClientsComponent implements OnInit, OnDestroy {
     this.ref = this.data.getList(`clients/${localStorage.getItem('company')}` )
       .snapshotChanges()
       .subscribe(snapshots => {
-
         snapshots.forEach(snapshot => {
           const client = snapshot.payload.val();
           client[`key`] = snapshot.key;
@@ -54,6 +56,9 @@ export class ClientsComponent implements OnInit, OnDestroy {
 
         // init sort
         this.dataSource.sort = this.sort;
+
+        // refresh rows
+        this.table.renderRows();
       });
   }
 
@@ -125,13 +130,17 @@ export class ClientsComponent implements OnInit, OnDestroy {
   }
 
   editClient(client: any) {
-    this.dialog.open(EditorComponent, {
+     this.dialogRef = this.dialog.open(EditorComponent, {
       data: {
         item: client,
         new: false,
         type: 'clients',
       }
     });
+
+     this. dialogRef.afterClosed().subscribe(() => {
+       this.table.renderRows();
+     });
   }
 
   ngOnDestroy(): void {

@@ -20,7 +20,7 @@ export class MediaComponent implements OnInit, OnDestroy {
   size = 15;
   ref;
 
-  constructor(private data: DataService, public dialog: MatDialog, public bottomSheet: MatBottomSheet) { }
+  constructor(private data: DataService, public dialog: MatDialog) { }
 
   ngOnInit() {
     // get media list
@@ -100,7 +100,7 @@ export class MediaComponent implements OnInit, OnDestroy {
 
   // function to add media
   addNew() {
-    this.bottomSheet.open(EditorComponent, {
+    this.dialog.open(EditorComponent, {
       data: {
         item: null,
         new: true,
@@ -111,7 +111,7 @@ export class MediaComponent implements OnInit, OnDestroy {
 
   // function to edit media
   editMediaItem(media: any) {
-    this.bottomSheet.open(EditorComponent, {
+    this.dialog.open(EditorComponent, {
       data: {
         item: media,
         new: false,

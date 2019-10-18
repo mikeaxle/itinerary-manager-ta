@@ -11,38 +11,4 @@ import { DataService } from './services/data.service';
 })
 export class AppComponent {
   title = 'itinerary-manager-ta';
-  user = this.getItem('user');
-  url;
-  // isPlanetAfrica: any;
-
-  constructor(public router: Router, public data: DataService) {
-  }
-
-  isPlanetAfrica()  {
-    return localStorage.getItem('company') === 'Planet Africa';
-  }
-
-  // getter
-  getItem(key: string): any {
-    return key === 'company' ? localStorage.getItem(key) : JSON.parse(localStorage.getItem(key));
-  }
-
-
-  getLogo() {
-    return localStorage.getItem('logo');
-  }
-
-
-  // function to logout
-  logout() {
-    localStorage.clear();
-    this.data.afAuth.auth.signOut()
-    .then(() => {
-      this.router.navigate(['login'])
-      .then(() => {
-        // delete local storage
-        Swal.fire('Authentication', 'Logged out', 'success');
-      });
-    });
-  }
 }
