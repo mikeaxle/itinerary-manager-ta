@@ -64,7 +64,6 @@ import { MediaComponent } from './media/media.component';
 import { AgentsComponent } from './agents/agents.component';
 import { FileUploaderComponent } from './shared/file-uploader/file-uploader.component';
 import { ItineraryItemFilterPipePipe } from './filter/itinerary.pipe';
-import { CommentsPipe } from './filter/comments.pipe';
 import { InclusionsPipe } from './filter/inclusions.pipe';
 import { MoneyPipe } from './filter/money.pipe';
 import { AgentPipe } from './filter/agent.pipe';
@@ -90,7 +89,6 @@ export const CustomCurrencyMaskConfig: CurrencyMaskConfig = {
 };
 
 @NgModule({
-  bootstrap: [AppComponent],
   declarations: [
     AppComponent,
     ItinerariesComponent,
@@ -111,7 +109,6 @@ export const CustomCurrencyMaskConfig: CurrencyMaskConfig = {
     AgentsComponent,
     FileUploaderComponent,
     ItineraryItemFilterPipePipe,
-    CommentsPipe,
     InclusionsPipe,
     MoneyPipe,
     AgentPipe,
@@ -178,6 +175,7 @@ export const CustomCurrencyMaskConfig: CurrencyMaskConfig = {
     MatProgressBarModule
   ],
   providers: [],
+  bootstrap: [AppComponent],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class AppModule {

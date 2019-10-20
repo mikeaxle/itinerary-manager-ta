@@ -10,15 +10,16 @@ import {AngularSvgIconModule} from 'angular-svg-icon';
 import {FlexLayoutModule} from '@angular/flex-layout';
 import {CurrencyMaskModule} from 'ng2-currency-mask';
 import {AppModule} from '../app.module';
+import {CommentsPipe} from '../filter/comments.pipe';
 
 
 @NgModule({
   declarations: [
     ItineraryEditorComponent,
-    ItineraryDetailsEditorComponent
+    ItineraryDetailsEditorComponent,
+    CommentsPipe
   ],
   imports: [
-    AppModule,
     CommonModule,
     ItinerariesRoutingModule,
     FormsModule,
@@ -37,7 +38,7 @@ import {AppModule} from '../app.module';
     MatGridListModule,
     MatDialogModule,
     MatDatepickerModule,
-    ReactiveFormsModule,
-  ]
+    ReactiveFormsModule
+  ],
 })
 export class ItinerariesModule { }
