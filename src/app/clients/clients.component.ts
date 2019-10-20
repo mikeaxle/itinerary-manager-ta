@@ -40,7 +40,7 @@ export class ClientsComponent implements OnInit, OnDestroy {
     this.clients = [];
 
     // get clients
-    this.ref = this.data.getList(`clients/${localStorage.getItem('company')}` )
+    this.ref = this.data.getList(`clients/${this.data.company}` )
       .snapshotChanges()
       .subscribe(snapshots => {
         snapshots.forEach(snapshot => {
@@ -98,7 +98,7 @@ export class ClientsComponent implements OnInit, OnDestroy {
   // function to delete item
   deleteClient(id: string) {
     // get itineraries
-    this.data.af.list(`itineraries/${localStorage.getItem('company')}`,
+    this.data.af.list(`itineraries/${this.data.company}`,
       ref => ref.orderByChild('client').equalTo(id).limitToFirst(1))
       .snapshotChanges()
       .subscribe((res) => {
@@ -107,7 +107,7 @@ export class ClientsComponent implements OnInit, OnDestroy {
           this.openPermissionDenied();
           // alert('Cannot delete a client with existing itineraries')
         } else {
-          this.data.deleteItem(id, `clients/${localStorage.getItem('company')}/`)
+          this.data.deleteItem(id, `clients/${this.data.company}/`)
             .then(() => {
               console.log('client deleted');
             })

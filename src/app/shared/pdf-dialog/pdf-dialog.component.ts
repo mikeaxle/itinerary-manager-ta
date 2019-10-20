@@ -8,8 +8,7 @@ import {MAT_DIALOG_DATA} from '@angular/material';
 
 })
 export class PdfDialogComponent implements OnInit {
-  image = '../../assets/pdf-icon.png';
-  color = localStorage.getItem('color');
+  image = '../../assets/pdf-icon.png';  
 
   constructor(@Inject(MAT_DIALOG_DATA) public args: any) { }
 

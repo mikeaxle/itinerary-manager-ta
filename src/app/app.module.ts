@@ -182,7 +182,7 @@ export const CustomCurrencyMaskConfig: CurrencyMaskConfig = {
 })
 export class AppModule {
   constructor(overlayContainer: OverlayContainer) {
-    if (localStorage.getItem('currentCompany') === 'Planet Africa') {
+    if (localStorage.getItem('company') === 'Planet Africa') {
       overlayContainer.getContainerElement().classList.add('planet-africa-theme');
     }
   }

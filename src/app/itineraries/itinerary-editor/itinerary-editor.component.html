@@ -1,4 +1,5 @@
-<div>
+<mat-spinner *ngIf="!itinerary$"></mat-spinner>
+<div *ngIf="itinerary$">
   <!-- tool bar -->
   <section fxLayout="row"
            fxLayoutAlign="space-around center"
@@ -9,15 +10,18 @@
 
     <!-- back button -->
     <span fxLayout="row" fxLayoutGap="20px" fxLayoutAlign=" center">
+    <!-- back button -->
       <button mat-icon-button [routerLink]="['/itineraries']" style="padding-top:5px">
           <svg-icon src="../assets/icons/back.svg" [style.fill]=color></svg-icon>
       </button>
 
+      <!-- invoice number -->
       <h2>Itinerary {{ itinerary$.invoice_number }}</h2>
     </span>
 
 
     <span class="fill-remaining-space"></span>
+<!--  status  -->
     <mat-select
       fxFlex="10"
       [(ngModel)]="itinerary$.status"
@@ -30,8 +34,9 @@
 
     <!-- buttons -->
     <span fxLayoutGap="10px">
-        <span class="fill-remaining-space"></span>
+      <span class="fill-remaining-space"></span>
 
+      <!-- duplicate itinerary button -->
       <button
         [ngClass]="data.getButtonStyle()"
         mat-button
@@ -39,7 +44,8 @@
         (click)="duplicateItinerary()">
         Duplicate
       </button>
-<!--   edit itinerary button   -->
+
+      <!-- edit itinerary button -->
         <button
           [ngClass]="data.getButtonStyle()"
           mat-button
@@ -47,7 +53,8 @@
           (click)="openEditItinerary()">
           Edit
         </button>
-<!-- delete itinerary button -->
+
+      <!-- delete itinerary button -->
         <button
           [ngClass]="data.getButtonStyle()"
           mat-button
@@ -56,7 +63,7 @@
           Delete
         </button>
 
-<!--   save as pdf menu   -->
+        <!--   save as pdf menu   -->
         <button
           mat-button
           mat-raised-button
@@ -65,7 +72,7 @@
           Save as PDF
         </button>
 
-      <!-- print pdf menu -->
+        <!-- print pdf menu -->
         <mat-menu #menu="matMenu">
           <button mat-menu-item (click)="saveAsPdfPartial()">Itinerary & Costs</button>
           <button mat-menu-item (click)="saveAsPdf(1)">Full Itinerary</button>
@@ -76,15 +83,11 @@
 
 
   <!-- page -->
-  <mat-spinner
-    class="spinner-padding"
-    *ngIf="itinerary$ === null"></mat-spinner>
 
   <mat-card
     class="mat-elevation-z8"
     style="max-width: 800px !important;"
-    fxLayout="column"
-    *ngIf="itinerary$!== null">
+    fxLayout="column">
 
     <!-- header -->
     <div class="itin-page-header">
@@ -137,9 +140,9 @@
     </div>
 
     <!-- days come here -->
-<!--  todo: put back dragula  [dragula]="'days'" [dragulaModel]="_DAYS", populate days array  -->
+<!--  todo: put back dragula  [dragula]="'days'" [dragulaModel]="days", populate days array  -->
     <div *ngIf="days">
-      <div *ngFor="let day of _DAYS; let i=index">
+      <div *ngFor="let day of days; let i=index">
 
         <!-- editor-components items added from modal -->
         <div
@@ -191,10 +194,10 @@
         </div>
 
         <!-- comments added from modal -->
-        <div  *ngIf="_COMMENTS" fxLayout="column" fxFlexAlign="space-between base-line">
+        <div *ngIf="comments" fxLayout="column" fxFlexAlign="space-between base-line">
 
           <!-- iterate comments array -->
-          <div *ngFor="let comment of _COMMENTS; let co=index; let last = last"
+          <div *ngFor="let comment of comments | commentsFilter: day.key; let co=index; let last = last"
                fxLayout="row"
                class="day">
             <!-- left column -->
@@ -243,7 +246,7 @@
       <button
         [ngClass]="data.getButtonStyle()"
         mat-raised-button
-        [disabled]="_DAYS.length < 1"
+        [disabled]="days.length < 1"
         (click)="openCommentDialog('add', null)">
         Add Comment
       </button>
@@ -373,19 +376,20 @@
         </div>
 
         <!-- payments made -->
-        <div fxLayout="column" fxFill *ngIf="payments | async">
-          <div fxLayout="row" *ngFor="let p of ( payments | async )" fxLayoutAlign="flex-start center" fxLayoutGap="10px" class="quote-field">
+        <div fxLayout="column" fxFill *ngIf="payments.length > 0">
+          <div fxLayout="row" *ngFor="let p of payments" fxLayoutAlign="flex-start center" fxLayoutGap="10px" class="quote-field">
             <span fxFlex="50">Payment Received {{ p.date }}</span>
             <span>USD</span>
 
+            <!-- amount -->
             <mat-form-field fxFlex="30" style="text-align: right !important;">
               <label>
                 <input disabled matInput/>
                 {{p.amount | number: '1.0-2'}}
               </label>
-
             </mat-form-field>
 
+            <!--  edit button -->
             <span fxFlex>
                     <!-- edit button -->
                     <button mat-icon-button (click)="openPaymentDialog('edit', p)">
@@ -494,7 +498,7 @@
             <mat-grid-tile
               *ngFor="let tile of itinerary$.gridImageTiles; let i=index"
               [style.background]='tileColor'
-              (click)="openImageSelector(gridImageTiles[i], i)">
+              (click)="openImageSelector(itinerary$.gridImageTile[i], i)">
               <mat-grid-tile-header>
                 <span class="fill-remaining-space"></span>
                 <img src="../assets/icons/edit-white.svg" alt="edit icon"/>

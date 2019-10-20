@@ -9,6 +9,7 @@ import {MatButtonModule, MatCardModule, MatChipsModule, MatDatepickerModule, Mat
 import {AngularSvgIconModule} from 'angular-svg-icon';
 import {FlexLayoutModule} from '@angular/flex-layout';
 import {CurrencyMaskModule} from 'ng2-currency-mask';
+import {AppModule} from '../app.module';
 
 
 @NgModule({
@@ -17,6 +18,7 @@ import {CurrencyMaskModule} from 'ng2-currency-mask';
     ItineraryDetailsEditorComponent
   ],
   imports: [
+    AppModule,
     CommonModule,
     ItinerariesRoutingModule,
     FormsModule,
@@ -35,7 +37,7 @@ import {CurrencyMaskModule} from 'ng2-currency-mask';
     MatGridListModule,
     MatDialogModule,
     MatDatepickerModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
   ]
 })
 export class ItinerariesModule { }

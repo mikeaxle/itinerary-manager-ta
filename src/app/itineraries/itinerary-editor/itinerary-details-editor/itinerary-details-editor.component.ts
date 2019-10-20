@@ -21,7 +21,6 @@ export class ItineraryDetailsEditorComponent implements OnInit, OnDestroy {
   error: any;
   user: any;
   totalDays: any;
-  color: any;
   agents = [];
   private startdate: Date;
   private enddate: Date;
@@ -35,7 +34,6 @@ export class ItineraryDetailsEditorComponent implements OnInit, OnDestroy {
 
 
   ngOnInit() {
-    this.color = localStorage.getItem('color');
 
     // get user
     this.user = this.data.user;
@@ -73,7 +71,7 @@ export class ItineraryDetailsEditorComponent implements OnInit, OnDestroy {
 
 
     // get client list
-    this.clients$ = this.data.getList(`clients/${localStorage.getItem('company')}/`)
+    this.clients$ = this.data.getList(`clients/${this.data.company}/`)
       .snapshotChanges()
       .subscribe(snapshots => {
         snapshots.forEach(snapshot => {
@@ -141,7 +139,7 @@ export class ItineraryDetailsEditorComponent implements OnInit, OnDestroy {
     }
 
     // push to firebase
-    this.data.updateItem(this.itinerary[`key`], `itineraries/${localStorage.getItem('company')}/`, this.itineraryForm.value)
+    this.data.updateItem(this.itinerary[`key`], `itineraries/${this.data.company}/`, this.itineraryForm.value)
       .then(() => {
         Swal.fire('Itinerary Editor', 'Itinerary details updated', 'success');
         this.dialogRef.close();

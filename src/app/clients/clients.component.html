@@ -12,7 +12,7 @@
 <!--    <mat-select placeholder="Agent" [formControl]="agentFilter" class="filters">-->
 <!--      <mat-option value="">All</mat-option>-->
 <!--      <mat-option *ngFor="let agent of agents | async" [value]="agent.$key">-->
-<!--        {{ agent.firstname }} {{ agent.lastname }} <span *ngIf=" loggedInUser.email === agent.email" [style.color]=color>(You)</span>-->
+<!--        {{ agent.firstname }} {{ agent.lastname }} <span *ngIf=" data.user.email === agent.email" [style.color]=color>(You)</span>-->
 <!--      </mat-option>-->
 <!--    </mat-select>-->
 

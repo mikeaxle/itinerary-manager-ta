@@ -96,7 +96,7 @@ export class EditorComponent implements OnInit {
     });
 
     // get company invoice details
-    this.data.af.object(`companies/${localStorage.getItem('company')}`)
+    this.data.af.object(`companies/${this.data.company}`)
       .valueChanges()
       .subscribe((res) => {
         // this.data.list('company/True Africa')
@@ -111,7 +111,7 @@ export class EditorComponent implements OnInit {
       });
 
     // get client list
-    this.data.af.list(`clients/${localStorage.getItem('company')}/`)
+    this.data.af.list(`clients/${this.data.company}/`)
       .valueChanges()
       .subscribe(res => {
         this.clients = res;
@@ -181,8 +181,6 @@ export class EditorComponent implements OnInit {
 
   // function to add new itinerary
   addItinerary(itinerary: any) {
-    console.log(this.itineraryForm.value);
-
     if (this.itineraryForm.valid) {
 
       // convert dates to date strings
@@ -203,17 +201,18 @@ export class EditorComponent implements OnInit {
       this.itineraryForm.value.invoice_number = `${this.invoiceDetails.prefix}-${this.invoiceDetails.invoice_number}`;
 
       // push to firebase
-      this.data.saveItem(`itineraries/${localStorage.getItem('company')}`, this.itineraryForm.value)
+      this.data.saveItem(`itineraries/${this.data.company}`, this.itineraryForm.value)
         .then((res) => {
           // update invoice number in firebase
-          this.data.updateItem(localStorage.getItem('company'), 'companies', this.invoiceDetails);
-
-          this.closeDialog();
+          this.data.updateItem(this.data.company, 'companies', this.invoiceDetails);
 
           // go to itinerary editor with new itinerary
-          this.router.navigate(['itinerary-editor', { queryParams: {itineraryData: itinerary }} ])
+          this.router.navigate(['/itinerary-editor', res.key])
             .then(() => {
-              Swal.fire('Success!', 'New itinerary successfully added', 'success');
+              Swal.fire('Success!', 'New itinerary successfully added', 'success')
+                .then(_ => {
+                  this.closeDialog();
+                });
               }
             );
 
@@ -353,7 +352,7 @@ export class EditorComponent implements OnInit {
       case 'clients':
         itemId = this.client ? this.client[`key`] : null;
         data.agent = this.user[`key`];
-        databasePath += `${localStorage.getItem('company')}/`;
+        databasePath += `${this.data.company}/`;
         break;
       case 'inventory':
         itemId = this.inventoryItem ? this.inventoryItem[`key`] : null;

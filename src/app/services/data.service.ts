@@ -1,10 +1,10 @@
-import {Injectable} from '@angular/core';
-import {Router} from '@angular/router';
-import {AngularFireDatabase} from '@angular/fire/database';
-import {AngularFireAuth} from '@angular/fire/auth';
-import {AngularFireStorage} from '@angular/fire/storage';
-import {finalize} from 'rxjs/operators';
-import {Observable} from 'rxjs';
+import { Injectable } from '@angular/core';
+import { Router } from '@angular/router';
+import { AngularFireDatabase } from '@angular/fire/database';
+import { AngularFireAuth } from '@angular/fire/auth';
+import { AngularFireStorage } from '@angular/fire/storage';
+import { finalize } from 'rxjs/operators';
+import { Observable } from 'rxjs';
 import 'rxjs-compat/add/observable/of';
 
 
@@ -14,8 +14,6 @@ import 'rxjs-compat/add/observable/of';
 export class DataService {
   uploadPercent: Observable<number>;
   downloadURL: Observable<string>;
-  currentCompany: any;
-  color: any;
   secondaryAppConfig = {
     apiKey: 'AIzaSyAQVDQYifHP_BT-xCtutLKRa8aI91e_Qmc',
     authDomain: 'true-africa-itinerary.firebaseapp.com',
@@ -23,13 +21,26 @@ export class DataService {
   };
   secondaryApp: any;
   sampleData;
-  constructor(public afAuth: AngularFireAuth, public af: AngularFireDatabase, private storage: AngularFireStorage, private router: Router) {
-    this.currentCompany = localStorage.getItem('currentCompany');
-    this.color = localStorage.getItem('color');
-  }
+  constructor(public afAuth: AngularFireAuth, public af: AngularFireDatabase, private storage: AngularFireStorage, private router: Router) {}
+
+  // getter for user
   get user(): any {
-    // parse user
     return JSON.parse(localStorage.getItem('user'));
+  }
+
+  // getter for color
+  get color(): any {
+    return localStorage.getItem('color')
+  }
+
+  // getter for company
+  get company(): any {
+    return localStorage.getItem('company');
+  }
+
+  // getter for logo
+  get logo(): any {
+    return localStorage.getItem('logo');
   }
 
   // save object
@@ -136,22 +147,6 @@ export class DataService {
       });
   }
 
-  // authenticate user
-  // authenticateUser() {
-  //   return this.afAuth.authState
-  //     .subscribe((auth) => {
-  //       // check if logged in
-  //       if (auth) {
-  //         // return observable of user
-  //         return this.af.object('users/' + auth[`uid`]);
-  //       } else {
-  //         // return observabke
-  //         return Observable.of(!!auth);
-  //       }
-  //
-  //     });
-  // }
-
   // log user out
   logout() {
     return this.afAuth.auth.signOut();
@@ -159,27 +154,27 @@ export class DataService {
 
   // function to get button styles
   getButtonStyle() {
-    if (this.currentCompany === 'Planet Africa') {
+    if (this.company === 'Planet Africa') {
       return 'lesser-button-pa';
-    } else if (this.currentCompany === 'True Africa') {
+    } else if (this.company === 'True Africa') {
       return 'lesser-button-ta';
     }
   }
   getButtonStyleMain() {
-    if (this.currentCompany === 'Planet Africa') {
+    if (this.company === 'Planet Africa') {
       return 'greater-button-pa';
-    } else if (this.currentCompany === 'True Africa') {
+    } else if (this.company === 'True Africa') {
       return 'greater-button-ta';
     }
   }
 
   // function to switch between companies
   switchCompany() {
-    if (this.currentCompany === 'Planet Africa') {
+    if (this.company === 'Planet Africa') {
       localStorage.setItem('company', 'True Africa');
       localStorage.setItem('color', '#B18C51');
       localStorage.setItem('logo', '../assets/logos/avatar-trueafrica.png');
-    } else if (this.currentCompany === 'True Africa') {
+    } else if (this.company === 'True Africa') {
       localStorage.setItem('company', 'Planet Africa');
       localStorage.setItem('color', '#AC452F');
       localStorage.setItem('logo', '../assets/logos/avatar-planetafrica.png');
@@ -194,7 +189,7 @@ export class DataService {
 
   }
 
-//  function to generate image name
+  //  function to generate image name
   getImageName(image: any): string {
     return image.name.replace(/["']/g, '');
   }

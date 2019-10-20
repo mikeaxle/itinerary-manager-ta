@@ -1,7 +1,4 @@
 import {Component, Injectable} from '@angular/core';
-import { Router} from '@angular/router';
-import Swal from 'sweetalert2';
-import { DataService } from './services/data.service';
 
 @Injectable()
 @Component({

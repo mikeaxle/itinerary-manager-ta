@@ -10,25 +10,17 @@ import Swal from 'sweetalert2';
 })
 export class ToolbarComponent {
 
-  user = this.getItem('user');
-  url;
-  // isPlanetAfrica: any;
-
   constructor(public router: Router, public data: DataService) {
+    console.log(this.router.url);
   }
 
   isPlanetAfrica()  {
-    return localStorage.getItem('company') === 'Planet Africa';
+    return this.data.company === 'Planet Africa';
   }
 
   // getter
   getItem(key: string): any {
     return key === 'company' ? localStorage.getItem(key) : JSON.parse(localStorage.getItem(key));
-  }
-
-
-  getLogo() {
-    return localStorage.getItem('logo');
   }
 
 

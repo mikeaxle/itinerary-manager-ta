@@ -19,9 +19,6 @@ export class AgentsComponent implements OnInit, OnDestroy {
   dataSource: MatTableDataSource<any>;
 
   // inject data worked and router into component
-  loggedInUser: any;
-  currentCompany: any;
-  color: any;
   @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
   @ViewChild(MatSort, {static: true}) sort: MatSort;
   agents: any;
@@ -96,10 +93,10 @@ export class AgentsComponent implements OnInit, OnDestroy {
   // function to delete item
   deleteAgent(id: string) {
 
-    if (this.loggedInUser.uid === id) {
+    if (this.data.user.uid === id) {
       alert('Cannot delete the user you are currently logged in as');
     } else  {
-      this.data.af.list(`itineraries/${this.currentCompany}`, ref => ref.orderByChild('agent').equalTo(id).limitToFirst(1))
+      this.data.af.list(`itineraries/${this.data.company}`, ref => ref.orderByChild('agent').equalTo(id).limitToFirst(1))
         .snapshotChanges()
         .subscribe((res) => {
           // check if agent has itineraries

@@ -39,7 +39,7 @@ export class ItinerariesComponent implements OnInit, OnDestroy {
     this.itineraries = [];
 
     // get itineraries
-    this.ref = this.data.af.list(`itineraries/${localStorage.getItem('company')}/`, ref => ref.limitToLast(250))
+    this.ref = this.data.af.list(`itineraries/${this.data.company}/`, ref => ref.limitToLast(250))
     .snapshotChanges()
       .subscribe(snapshots => {
 
@@ -73,7 +73,7 @@ export class ItinerariesComponent implements OnInit, OnDestroy {
     // client\agent name string
     // let string = '';
     // get from firebase
-    // this.data.getSingleItem(key, `${type}/${this.data.currentCompany}/`)
+    // this.data.getSingleItem(key, `${type}/${this.data.company}/`)
     //   .valueChanges()
     //   .subscribe((res) => {
     //     const client = res;
@@ -119,7 +119,7 @@ export class ItinerariesComponent implements OnInit, OnDestroy {
 
   editItinerary(itinerary) {
     // stringify itinerary and send as router param
-    this.router.navigate(['/itinerary-editor', JSON.stringify(itinerary)]);
+    this.router.navigate(['/itinerary-editor', itinerary.key]);
   }
 
   ngOnDestroy(): void {

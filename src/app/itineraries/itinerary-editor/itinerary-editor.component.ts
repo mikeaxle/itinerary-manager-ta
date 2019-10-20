@@ -20,6 +20,8 @@ import {CommonModule} from '@angular/common';
 import {map} from 'rxjs/operators';
 import {STATUS} from '../../model/statuses';
 import {ItineraryDetailsEditorComponent} from './itinerary-details-editor/itinerary-details-editor.component';
+import {snapshotChanges} from '@angular/fire/database';
+import Swal from 'sweetalert2';
 
 @NgModule({
   imports: [CommonModule]
@@ -39,13 +41,12 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
   remainingDays: any;
   usedDays: any;
   inventory: any;
-  days: any;
-  _DAYS = [];
+  daysRef$: any;
+  days = [];
   inclusions = [];
   total = 0;
   totalPayments = 0;
-  comments;
-  payments ;
+  paymentsRef$ ;
   statuses = STATUS;
   dayTitles = new Map([]);
   lastUsedParams = {
@@ -54,9 +55,7 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
   };
   tileColor = '#d8d8d8';
   coverImageTile = null;
-  gridImageTiles = new GridImageTiles();
   countries;
-  currentCompany: any;
   color: any;
   lesserButtonStyle: any;
   itinerary$: any;
@@ -64,9 +63,12 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
   exclusions = EXCLUSIONS;
   discount = 0;
   deposit = 0;
-  _COMMENTS = [];
-  _PAYMENTS = [];
+  comments = [];
+  payments = [];
   _PHONE_NUMBERS = [];
+  itineraryId;
+  itineraryRef$;
+  commentsRef$;
 
 
   constructor(public router: Router, private route: ActivatedRoute, public data: DataService, public formbuilder: FormBuilder,
@@ -77,39 +79,101 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     // get itinerary
-    this.itinerary$ = JSON.parse(this.route.snapshot.paramMap.get('itinerary'));
+    this.itineraryId = this.route.snapshot.paramMap.get('id');
 
-    // console.log(this.itinerary$);
+    // get itinerary firebase reference
+    this.itineraryRef$ = this.data.af.object(`itineraries/${this.data.company}/${this.itineraryId}`).snapshotChanges();
 
-    // todo: convert start date and end date on front end
-    /* calculate total days by converting dates into milliseconds, subtracting and
-divide by 86400000 which is the number of milliseconds equal to a editor-components */
-    this.totalDays = Math.round((Date.parse(this.itinerary$.enddate) - Date.parse(this.itinerary$.startdate)) / 86400000);
+    // subscribe to itinerary ref
+    this.itineraryRef$
+      .subscribe(_ => {
+        // get itinerary payload
+        const it = _.payload.val();
+
+        // get itinerary key
+        it[`key`] = _.payload.key;
+
+        // assign to local itinerary object for manipulation
+        this.itinerary$ = it;
+
+        // assign exclusions if not defined
+        if (this.itinerary$.exclusions === null) {
+          this.itinerary$.exclusions = this.exclusions;
+        }
+
+        // calculate total days remaining
+        this.calculateDays(it);
+
+        // get days related to itinerary id
+        this.getDays();
+
+        // get comments related to itinerary id
+        this.getComments();
+
+        // get payments related to itinerary id
+        this.getPayments();
+
+        // get contact numbers associated with itinerary
+        this.getContactNumbersForCountries();
+      });
+  }
+
+  // calculates total days assigned to itinerary
+  private calculateDays(itinerary) {
+    /* calculate total days by converting dates into milliseconds, subtracting and divide by 86400000 which is the number of milliseconds equal to a editor-components */
+    this.totalDays = Math.round((Date.parse(itinerary.enddate) - Date.parse(itinerary.startdate)) / 86400000);
     this.totalDays++;
+  }
 
-    // todo: status assigned on front end from itinerary
-    // todo: show in front end from itinerary$ check if total is defined, check if deposit is defined, check if discount is defined
-    // assign exclusions if not defined
-    if (this.itinerary$.exclusions === null) {
-      this.itinerary$.exclusions = this.exclusions;
-    }
+// get contact numbers to associated countries related to itinerary
+  private getContactNumbersForCountries() {
+    this.countries = this.data.af.list(`phone_numbers/${this.itineraryId}`)
+      .snapshotChanges()
+      .subscribe(snapshots => {
+        snapshots.forEach(snapshot => {
+          const phoneNumber = snapshot.payload.val();
+          phoneNumber[`key`] = snapshot.key;
+          this._PHONE_NUMBERS.push(phoneNumber);
+        });
+      });
+  }
 
-    // todo: move to front end from itinerary$ assign children to local variable, assign adults to local variable, assign cover image, assign images
+  // get payments related to itinerary
+  private getPayments() {
+    this.paymentsRef$ = this.data.af.list('payments/' + this.itineraryId)
+      .snapshotChanges()
+      .pipe(map(items => {
+        this.payments = items;
+        return items.map(payment => {
+          this.totalPayments += parseFloat(payment.payload.toJSON[`amount`]);
+        });
+      }));
+  }
 
-    // get itinerary
-    // this.itinerary = this.data.getSingleItem(this.id, `itineraries/${this.data.currentCompany}`)
-    //   .snapshotChanges()
+  // get comments related to itinerary
+  private getComments() {
+    this.commentsRef$ = this.data.af.list('comments/' + this.itineraryId)
+      .snapshotChanges()
+      .subscribe((snapshots) => {
+        snapshots.forEach(snapshot => {
+          const comment = snapshot.payload.val();
+          comment[`key`] = snapshot.key;
+          this.comments.push(comment);
+        });
+      });
+  }
 
-    // get days related to itinerary id
-    this.days = this.data.af.list('days/' + this.itinerary$.key, ref => ref.orderByChild('position'))
+  // get days related to itinerary
+   private  getDays() {
+    this.daysRef$ = this.data.af.list('days/' + this.itineraryId, ref => ref.orderByChild('position'))
       .snapshotChanges()
       .subscribe(res => {
         // reset temp inclusions array, used days and temp days array
         const _INCLUSIONS = [];
         this.usedDays = 0;
-        this._DAYS = [];
+        this.days = [];
 
-        // assign _DAYS array
+        // assign days array
         res.forEach((data) => {
           // get day
           const day = data.payload.val();
@@ -131,8 +195,7 @@ divide by 86400000 which is the number of milliseconds equal to a editor-compone
             });
           }
 
-          // add day to _DAYS array
-          this._DAYS.push(day);
+          this.days.push(day);
         });
 
         // filter array to include only unique values
@@ -140,57 +203,24 @@ divide by 86400000 which is the number of milliseconds equal to a editor-compone
           return arr.map(mapObj => mapObj.name).indexOf(obj.name) === pos;
         });
       });
-
-    // get comments related to itinerary id
-    this.comments = this.data.af.list('comments/' + this.itinerary$.key)
-      .snapshotChanges()
-      .subscribe((snapshots) => {
-        snapshots.forEach(snapshot => {
-          const comment = snapshot.payload.val();
-          comment[`key`] = snapshot.key;
-          this._COMMENTS.push(comment);
-        });
-      });
-
-    // get payments related to itinerary id
-    this.payments = this.data.af.list('payments/' + this.itinerary$.key)
-      .snapshotChanges()
-      .pipe(map(items => {
-        this._PAYMENTS = items;
-        return items.map(payment => {
-          this.totalPayments += parseFloat(payment.payload.toJSON[`amount`]);
-        });
-      }));
-
-
-    // get contact numbers associated with itinerary
-    this.countries =  this.data.af.list(`phone_numbers/${this.itinerary$.key}`)
-      .snapshotChanges()
-      .subscribe(snapshots => {
-      snapshots.forEach(snapshot => {
-        const phoneNumber = snapshot.payload.val();
-        phoneNumber[`key`] = snapshot.key;
-        this._PHONE_NUMBERS.push(phoneNumber);
-      });
-    });
   }
 
-  // function to remove editor-components
+// function to remove editor-components
   removeDay(key) {
     // remove editor-components from live object
-    this.days.remove(key);
+    this.daysRef$.remove(key);
   }
 
   // function to remove comment, first parameter is editor-components index, second parameter is
   removeComment(key: string) {
     // remove comment using data worker
-    this.comments.remove(key);
+    this.commentsRef$.remove(key);
   }
 
   // function to delete payment
   removePayment(key: string) {
     // remove payment from live object
-    this.payments.remove(key);
+    this.paymentsRef$.remove(key);
   }
 
   // function to delete country
@@ -206,7 +236,7 @@ divide by 86400000 which is the number of milliseconds equal to a editor-compone
 
     // get from firebase
     if (type === 'clients') {
-      this.data.getSingleItem(key, `${type}/${this.data.currentCompany}/`)
+      this.data.getSingleItem(key, `${type}/${this.data.company}/`)
         .snapshotChanges()
         .subscribe((res) => {
           // concat first name and last name
@@ -305,7 +335,7 @@ divide by 86400000 which is the number of milliseconds equal to a editor-compone
       firstDay = 1;
     } else {
       // iterate days array
-      this._DAYS.every((d, i) => {
+      this.days.every((d, i) => {
         // check if position is current position
         if (d.position === day.position) {
           return false;
@@ -322,32 +352,36 @@ divide by 86400000 which is the number of milliseconds equal to a editor-compone
     // add first editor-components to title
     title += `Day ${firstDay}`;
 
-    // init start date to itinerary start date
-    start_date = new Date(this.itinerary$.startdate);
+    // subscribe to itinerary ref
+    this.itineraryRef$
+      .subscribe(_ => {
+        // init start date to itinerary start date
+        start_date = new Date(_.payload.val().startdate);
 
-    // add number of days before current editor-components to start date to get current start date
-    start_date.setDate(start_date.getDate() + (firstDay - 1));
+        // add number of days before current editor-components to start date to get current start date
+        start_date.setDate(start_date.getDate() + (firstDay - 1));
 
-    // add start_date to date string
-    dates += `${start_date.getDate()} ${this.DATE_MONTHS[start_date.getMonth()]}`;
+        // add start_date to date string
+        dates += `${start_date.getDate()} ${this.DATE_MONTHS[start_date.getMonth()]}`;
 
-    // if editor-components contains more than 1 editor-components
-    if (day.days > 1) {
-      // last editor-components is first editor-components + total days - 1
-      lastDay = firstDay + day.days - 1;
+        // if editor-components contains more than 1 editor-components
+        if (day.days > 1) {
+          // last editor-components is first editor-components + total days - 1
+          lastDay = firstDay + day.days - 1;
 
-      // add last editor-components to title
-      title += ` - ${lastDay}`;
+          // add last editor-components to title
+          title += ` - ${lastDay}`;
 
-      // init end_date to start_date
-      end_date = start_date;
+          // init end_date to start_date
+          end_date = start_date;
 
-      // add number of days
-      end_date.setDate(end_date.getDate() + day.days - 1);
+          // add number of days
+          end_date.setDate(end_date.getDate() + day.days - 1);
 
-      // add to dates string
-      dates += ` - ${end_date.getDate()} ${this.DATE_MONTHS[end_date.getMonth()]}`;
-    }
+          // add to dates string
+          dates += ` - ${end_date.getDate()} ${this.DATE_MONTHS[end_date.getMonth()]}`;
+        }
+      });
 
     // check type
     if (type === 'title') {
@@ -381,7 +415,7 @@ divide by 86400000 which is the number of milliseconds equal to a editor-compone
     // variable to store editor-components position
     let position = 1;
 
-    this._DAYS.forEach((day, index) => {
+    this.days.forEach((dy, index) => {
         // check if there are any days
         // if (res.length !== undefined) {
           // add length of days array to positon to come up with position for new editor-components
@@ -455,19 +489,21 @@ divide by 86400000 which is the number of milliseconds equal to a editor-compone
     if (mode === 'add') {
       dialogRef = this.dialog.open(CommentComponent, {
         data: {
-          mode: 'add',
-          itineraryId: this.itinerary$.key,
+          comment: null,
           days: this.dayTitles,
-          comment: null},
+          itineraryId: this.itinerary$.key,
+          mode: 'add',
+        },
         width: '480px'
       });
     } else if (mode === 'edit') {
       dialogRef = this.dialog.open(CommentComponent, {
         data: {
-          mode: 'edit',
-          itineraryId: this.id,
+          comment,
           days: this.dayTitles,
-          comment},
+          itineraryId: this.id,
+          mode: 'edit'
+        },
         width: '480px'
       });
     }
@@ -509,7 +545,7 @@ divide by 86400000 which is the number of milliseconds equal to a editor-compone
   }
 
   // function to open image selector dialog
-  openImageSelector(gridImage: any, imageName: string) {
+  openImageSelector(gridImage, imageName) {
     const dialogRef = this.dialog.open(ImageSelectorComponent, {
       height: '600px',
       width: '1000px'
@@ -532,17 +568,17 @@ divide by 86400000 which is the number of milliseconds equal to a editor-compone
           gridImage = result;
 
           // push to local array
-          this.gridImageTiles[imageName] = gridImage;
+          this.itinerary$.gridImageTiles[imageName] = gridImage;
           // console.log(this.gridImageTiles)
 
           // prepare object to write to firebase
-          objectToWrite[`gridImageTiles`] = this.gridImageTiles;
+          objectToWrite[`gridImageTiles`] = this.itinerary$.gridImageTiles;
 
           // console.log(objectToWrite)
         }
 
         // write to firebase
-        this.itinerary$.update(objectToWrite);
+        this.itineraryRef$.update(objectToWrite);
 
       }
     }).unsubscribe();
@@ -573,12 +609,10 @@ divide by 86400000 which is the number of milliseconds equal to a editor-compone
       width: '480px'
     });
 
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result !== undefined) {
-        // if result is true
-        if (result) {
-          this.deleteItinerary();
-        }
+    dialogRef.afterClosed().subscribe((_) => {
+      // if result is true, delete itinerary
+      if  (_) {
+        this.deleteItinerary();
       }
     }).unsubscribe();
   }
@@ -597,7 +631,7 @@ divide by 86400000 which is the number of milliseconds equal to a editor-compone
     dataToUpdate['accommodation/' + 0 + '/inclusions'] = event.target.value;
 
     // update inclusion
-    this.days.update(data.day, dataToUpdate);
+    this.daysRef$.update(data.day, dataToUpdate);
 
 
     // console.log(data)
@@ -609,16 +643,16 @@ divide by 86400000 which is the number of milliseconds equal to a editor-compone
     // check which control called the function
     switch (type) {
       case 'total':
-        this.itinerary$.update({total: this.total});
+        this.itineraryRef$.update({total: this.total});
         break;
       case 'deposit':
-        this.itinerary$.update({deposit: this.itinerary$.deposit});
+        this.itineraryRef$.update({deposit: this.itinerary$.deposit});
         break;
       case 'discount':
-        this.itinerary$.update({discount: this.itinerary$.discount});
+        this.itineraryRef$.update({discount: this.itinerary$.discount});
         break;
       case 'exclusions':
-        this.itinerary$.update({exclusions: this.exclusions});
+        this.itineraryRef$.update({exclusions: this.itinerary$.exclusions});
         break;
       default:
         break;
@@ -627,23 +661,26 @@ divide by 86400000 which is the number of milliseconds equal to a editor-compone
 
   // function to write status to firebase when status is selected
   onSelect(status) {
-    this.itinerary$.update({status});
+    this.itineraryRef$.update({status});
   }
 
   // function to delete itinerary
   deleteItinerary() {
-    this.router.navigate(['../itineraries'])
+    this.router.navigate(['/itineraries'])
       .then(() => {
+        // Swal
+        Swal.fire('Delete Itinerary', `Itinerary ${this.id} Deleted`, 'success')
+          .then(_ => {
+            // delete days
+            this.daysRef$.remove();
+            // this.comments.remove()
 
-        // show snack bar
-        this.snackBar.open(`Itinerary ${this.id} Deleted`, 'CLOSE', {
-          duration: 3000
-        });
+            // delete payments
+            this.paymentsRef$.remove();
 
-        this.days.remove();
-        // this.comments.remove()
-        this.payments.remove();
-        this.itinerary$.remove();
+            // delete itinerary
+            this.itineraryRef$.remove();
+          });
 
       });
   }
@@ -658,22 +695,18 @@ divide by 86400000 which is the number of milliseconds equal to a editor-compone
     // variable to store comments
     let comments = null;
 
-
-    this.itinerary$.map((res) => {
-      // map data to duplicate
-      duplicate = res;
+      // copy data to duplicate
+    duplicate = this.itinerary$;
 
       // add the word duplicate to title of duplicate
-      duplicate.title += '(duplicate)';
-    });
+    duplicate.title += '(duplicate)';
+    duplicate.title += '(duplicate)';
 
     // map comments to local variable
-    this.comments.map((res) => comments = res)
-      .subscribe();
-
+    comments = this.comments;
 
     // assign invoice number
-    this.data.af.object(`companies/${this.currentCompany}`)
+    this.data.af.object(`companies/${this.data.company}`)
       .valueChanges()
       .subscribe((res) => {
       duplicateInvoiceNumber = res[`invoice_number`] + 1;
@@ -681,13 +714,13 @@ divide by 86400000 which is the number of milliseconds equal to a editor-compone
     }).unsubscribe();
 
     // write duplicate itinerary to
-    this.data.af.list(`itineraries/${this.currentCompany}`).push(duplicate)
+    this.data.af.list(`itineraries/${this.data.company}`).push(duplicate)
       .then((res) => {
         // assign duplicate key
         duplicateKey = res.key;
 
         // check for payments
-        this.payments.map((payments) => {
+        this.paymentsRef$.map((payments) => {
           if (payments.length > 0) {
             // write to firebase
             payments.forEach(p => {
@@ -697,7 +730,7 @@ divide by 86400000 which is the number of milliseconds equal to a editor-compone
         });
 
         // check for days
-        this.days.map((days) => {
+        this.daysRef$.map((days) => {
           if (days.length > 0) {
             // write to firebase
             days.forEach(d => {
@@ -720,15 +753,21 @@ divide by 86400000 which is the number of milliseconds equal to a editor-compone
 
       })
       .then(() => {
-
-        this.router.navigate(['itineraries'], {queryParams: {itineraryId: duplicateKey}})
+        // go to duplicate itinerary
+        this.router.navigate(['/itinerary-editor', duplicateKey])
           .then(() => {
             // update invoice number
-            this.data.updateItem(this.currentCompany, 'companies', {invoice_number: duplicateInvoiceNumber});
-
-            this.snackBar.open(`Itinerary ${duplicateKey}: ${duplicate.title.slice(0, duplicate.title.length - 11)} Duplicated`, 'CLOSE', {
-              duration: 3000
-            });
+            this.data.updateItem(this.data.company, 'companies', {invoice_number: duplicateInvoiceNumber})
+              .then(_ => {
+                // Swal
+                Swal.fire('Duplicate Itinerary',
+                  `Itinerary ${duplicateKey}: ${duplicate.title.slice(0, duplicate.title.length - 11)} Duplicated`,
+                  'success');
+              })
+              .catch(err => {
+                // Swal
+                Swal.fire('Duplicate Itinerary', err.message, 'success');
+              });
           });
       });
   }
@@ -742,7 +781,7 @@ divide by 86400000 which is the number of milliseconds equal to a editor-compone
     if (this.coverImageTile !== undefined ) {
       // check if grid images are all specified
 
-      for (const g of this.gridImageTiles.gridImageTiles) {
+      for (const g of this.itinerary$.gridImageTiles.gridImageTiles) {
         if (g.imageUrl !== false) {
           canPrint = true;
         } else {
@@ -755,19 +794,19 @@ divide by 86400000 which is the number of milliseconds equal to a editor-compone
     if (canPrint) {
       if (type === 1) {
         this.savePdfService.savePDF({
-          comments: this._COMMENTS,
-          days: this._DAYS,
+          comments: this.comments,
+          days: this.days,
           itinerary: this.itinerary$,
-          payments: this._PAYMENTS,
+          payments: this.payments,
           phoneNumbers: this._PHONE_NUMBERS,
         }, 1, this.usedDays);
       } else if (type  === 2) {
         this.savePdfService.savePDF(
           {
-            comments: this._COMMENTS,
-            days: this._DAYS,
+            comments: this.comments,
+            days: this.days,
             itinerary: this.itinerary$,
-            payments: this._PAYMENTS,
+            payments: this.payments,
             phoneNumbers: this._PHONE_NUMBERS,
           }, 2, this.usedDays);
       }
@@ -780,10 +819,10 @@ divide by 86400000 which is the number of milliseconds equal to a editor-compone
   // save partial pdf
   saveAsPdfPartial() {
     this.savePdfService.savePDF( {
-      comments: this._COMMENTS,
-      days: this._DAYS,
+      comments: this.comments,
+      days: this.days,
       itinerary: this.itinerary$,
-      payments: this._PAYMENTS,
+      payments: this.payments,
       phoneNumbers: this._PHONE_NUMBERS,
     }, 2, this.usedDays);
   }
@@ -793,18 +832,20 @@ isArray(obj: any ) {
     return Array.isArray(obj);
  }
 
- updateItinerary () {
-  this.data.af.object(this.itinerary$.key)
-  .snapshotChanges()
-  .subscribe(snapshotChanges => {
-    this.itinerary$ = snapshotChanges.payload.val();
-    this.itinerary$[`key`] = snapshotChanges.key;
-  })
+ updateItinerary() {
+    console.log('does updateItinerary need to be called?');
+  // this.itineraryRef$
+  // .subscribe(it => {
+  //   this.itinerary$ = it.payload.val();
+  //   this.itinerary$[`key`] = it.key;
+  // });
 }
 
   ngOnDestroy() {
     // unsubscribe from observables to remove memory leaks
-    // this.days.unsubsribe();
-    this.comments.unsubscribe();
+    this.daysRef$.unsubscribe();
+    this.commentsRef$.unsubscribe();
+    this.paymentsRef$.unsubscribe();
+    this.itineraryRef$.unsubscribe();
   }
 }
