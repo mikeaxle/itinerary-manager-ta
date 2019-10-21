@@ -55,7 +55,7 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
   };
   tileColor = '#d8d8d8';
   coverImageTile = null;
-  countries;
+  countriesRef$;
   color: any;
   lesserButtonStyle: any;
   itinerary$: any;
@@ -69,6 +69,10 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
   itineraryId;
   itineraryRef$;
   commentsRef$;
+  private agentRef$;
+  private clientRef$;
+  private client: any;
+  private agent: any;
 
 
   constructor(public router: Router, private route: ActivatedRoute, public data: DataService, public formbuilder: FormBuilder,
@@ -87,34 +91,42 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
     // subscribe to itinerary ref
     this.itineraryRef$
       .subscribe(_ => {
-        // get itinerary payload
-        const it = _.payload.val();
+        if (_.payload.val()) {
+          // get itinerary payload
+          const it = _.payload.val();
 
-        // get itinerary key
-        it[`key`] = _.payload.key;
+          // get itinerary key
+          it[`key`] = _.payload.key;
 
-        // assign to local itinerary object for manipulation
-        this.itinerary$ = it;
+          // assign to local itinerary object for manipulation
+          this.itinerary$ = it;
 
-        // assign exclusions if not defined
-        if (this.itinerary$.exclusions === null) {
-          this.itinerary$.exclusions = this.exclusions;
+          // assign exclusions if not defined
+          if (this.itinerary$.exclusions === null) {
+            this.itinerary$.exclusions = this.exclusions;
+          }
+
+          // calculate total days remaining
+          this.calculateDays(it);
+
+          // get days related to itinerary id
+          this.getDays();
+
+          // get comments related to itinerary id
+          this.getComments();
+
+          // get payments related to itinerary id
+          this.getPayments();
+
+          // get contact numbers associated with itinerary
+          this.getContactNumbersForCountries();
+
+          // get client
+          this.getClient();
+
+          // get agent
+          this.getAgent();
         }
-
-        // calculate total days remaining
-        this.calculateDays(it);
-
-        // get days related to itinerary id
-        this.getDays();
-
-        // get comments related to itinerary id
-        this.getComments();
-
-        // get payments related to itinerary id
-        this.getPayments();
-
-        // get contact numbers associated with itinerary
-        this.getContactNumbersForCountries();
       });
   }
 
@@ -127,10 +139,10 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
 
 // get contact numbers to associated countries related to itinerary
   private getContactNumbersForCountries() {
-    this.countries = this.data.af.list(`phone_numbers/${this.itineraryId}`)
+    this.countriesRef$ = this.data.af.list(`phone_numbers/${this.itineraryId}`)
       .snapshotChanges()
-      .subscribe(snapshots => {
-        snapshots.forEach(snapshot => {
+      .subscribe(_ => {
+        _.forEach(snapshot => {
           const phoneNumber = snapshot.payload.val();
           phoneNumber[`key`] = snapshot.key;
           this._PHONE_NUMBERS.push(phoneNumber);
@@ -142,20 +154,25 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
   private getPayments() {
     this.paymentsRef$ = this.data.af.list('payments/' + this.itineraryId)
       .snapshotChanges()
-      .pipe(map(items => {
-        this.payments = items;
-        return items.map(payment => {
-          this.totalPayments += parseFloat(payment.payload.toJSON[`amount`]);
+      .subscribe(_ => {
+        _.forEach(snapshot => {
+          // add to payments array
+          const payment = snapshot.payload.val();
+          payment[`key`] = snapshot.key;
+          this.payments.push(payment);
+
+          // increment total payments
+          this.totalPayments += parseFloat(payment[`amount`]);
         });
-      }));
+      });
   }
 
   // get comments related to itinerary
   private getComments() {
     this.commentsRef$ = this.data.af.list('comments/' + this.itineraryId)
       .snapshotChanges()
-      .subscribe((snapshots) => {
-        snapshots.forEach(snapshot => {
+      .subscribe((_) => {
+        _.forEach(snapshot => {
           const comment = snapshot.payload.val();
           comment[`key`] = snapshot.key;
           this.comments.push(comment);
@@ -167,14 +184,14 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
    private  getDays() {
     this.daysRef$ = this.data.af.list('days/' + this.itineraryId, ref => ref.orderByChild('position'))
       .snapshotChanges()
-      .subscribe(res => {
+      .subscribe(_ => {
         // reset temp inclusions array, used days and temp days array
         const _INCLUSIONS = [];
         this.usedDays = 0;
         this.days = [];
 
         // assign days array
-        res.forEach((data) => {
+        _.forEach((data) => {
           // get day
           const day = data.payload.val();
 
@@ -225,36 +242,28 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
 
   // function to delete country
   removeCountry(key) {
-    this.countries.remove(key);
+    this.countriesRef$.remove(key);
   }
 
-  // function to get client name
-  getName(key: string, type: string) {
-    // client\agent name string
-    // tslint:disable-next-line:variable-name
-    let string = '';
 
-    // get from firebase
-    if (type === 'clients') {
-      this.data.getSingleItem(key, `${type}/${this.data.company}/`)
-        .snapshotChanges()
-        .subscribe((res) => {
-          // concat first name and last name
-          string = `${res[`firstname`]} ${res[`lastname`]}`;
-        })
-        .unsubscribe();
-    } else {
-      this.data.getSingleItem(key, `${type}`)
-        .snapshotChanges()
-        .subscribe((res) => {
-          // concat first name and last name
-          string = `${res[`firstname`]} ${res[`lastname`]}`;
-        })
-        .unsubscribe();
-    }
+  // gets agent object
+  getAgent() {
+    this.agentRef$ = this.data.af.object(`users/${this.itinerary$.agent}`)
+      .snapshotChanges()
+      .subscribe(_ => {
+        this.agent = _.payload.val();
+        this.agent[`key`] = _.key;
+      });
+  }
 
-    // return full name
-    return string;
+  // gets client
+  getClient() {
+    this.clientRef$ = this.data.af.object(`clients/${this.data.company}/${this.itinerary$.client}`)
+      .snapshotChanges()
+      .subscribe(_ => {
+        this.client = _.payload.val();
+        this.client[`key`] =  _.key;
+      });
   }
 
   // function to get itinerary descriptions from editor-components
@@ -455,7 +464,7 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
 
     // after dialog is close
     dialogRef.afterClosed().subscribe(result => {
-      if (result !== undefined && result !== 'undefined') {
+      // if (result !== undefined && result !== 'undefined') {
         // reassign previously used country and editor-components
         this.lastUsedParams = result.lastUsedParams;
 
@@ -477,9 +486,9 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
             .catch((error) => {
               console.log(error);
             });
-        }
+        // }
       }
-    }).unsubscribe();
+    });
   }
 
   // function to open comment dialog
@@ -553,7 +562,7 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
 
     dialogRef.afterClosed().subscribe((result) => {
 
-      if (result !== undefined) {
+      // if (result !== undefined) {
         const objectToWrite = {};
 
         // check name of image
@@ -575,10 +584,10 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
           objectToWrite[`gridImageTiles`] = this.itinerary$.gridImageTiles;
 
           // console.log(objectToWrite)
-        }
+        // }
 
         // write to firebase
-        this.itineraryRef$.update(objectToWrite);
+          this.itineraryRef$.update(objectToWrite);
 
       }
     }).unsubscribe();
@@ -588,6 +597,8 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
   openEditItinerary() {
     const dialogRef = this.dialog.open(ItineraryDetailsEditorComponent, {
       data: {
+        agent: this.agent,
+        client: this.client,
         itinerary: this.itinerary$,
         usedDays: this.usedDays
       },
@@ -611,10 +622,8 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
 
     dialogRef.afterClosed().subscribe((_) => {
       // if result is true, delete itinerary
-      if  (_) {
         this.deleteItinerary();
-      }
-    }).unsubscribe();
+    });
   }
 
   // function to delete image
@@ -666,23 +675,33 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
 
   // function to delete itinerary
   deleteItinerary() {
-    this.router.navigate(['/itineraries'])
-      .then(() => {
+    // delete itinerary
+    this.data.af.object(`itineraries/${this.data.company}/${this.itineraryId}`)
+      .remove()
+      .then(_ => {
         // Swal
-        Swal.fire('Delete Itinerary', `Itinerary ${this.id} Deleted`, 'success')
-          .then(_ => {
+        Swal.fire('Delete Itinerary', `Itinerary ${this.itineraryId} Deleted`, 'success')
+          .then( _ => {
+            // delete countries
+            this.countriesRef$ ? this.data.af.list(`phone_numbers/${this.itineraryId}`).remove() : console.log('no countries to delete');
+
             // delete days
-            this.daysRef$.remove();
-            // this.comments.remove()
+            this.daysRef$ ? this.data.af.list('days/' + this.itineraryId).remove() : console.log('no days to delete');
+
+            // delete comments
+            this.commentsRef$ ? this.data.af.list('comments/' + this.itineraryId).remove() : console.log('no comments to delete');
 
             // delete payments
-            this.paymentsRef$.remove();
-
-            // delete itinerary
-            this.itineraryRef$.remove();
+            this.paymentsRef$ ? this.data.af.list('payments/' + this.itineraryId).remove() : console.log('no payments to delete');
           });
-
+      })
+      .catch(err => {
+        // Swal
+        Swal.fire('Delete Itinerary', `Itinerary ${this.itineraryId} failed to delete`, 'error');
       });
+
+    // go to itineraries page
+    this.router.navigate(['/itineraries']);
   }
 
   // function to duplicate itinerary
@@ -781,7 +800,7 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
     if (this.coverImageTile !== undefined ) {
       // check if grid images are all specified
 
-      for (const g of this.itinerary$.gridImageTiles.gridImageTiles) {
+      for (const g of this.itinerary$.gridImageTiles) {
         if (g.imageUrl !== false) {
           canPrint = true;
         } else {
@@ -843,9 +862,11 @@ isArray(obj: any ) {
 
   ngOnDestroy() {
     // unsubscribe from observables to remove memory leaks
-    this.daysRef$.unsubscribe();
-    this.commentsRef$.unsubscribe();
-    this.paymentsRef$.unsubscribe();
-    this.itineraryRef$.unsubscribe();
+    delete this.daysRef$;
+    delete this.commentsRef$;
+    delete this.paymentsRef$;
+    delete this.itineraryRef$;
+    delete this.clientRef$;
+    delete this.agentRef$;
   }
 }

@@ -91,7 +91,7 @@
 
     <!-- header -->
     <div class="itin-page-header">
-      <h2>{{ getName(itinerary$.client, 'clients') }}</h2>
+      <h2 *ngIf="client">Client: {{ client.firstname }} {{ client.lastname }}</h2>
       <h1>{{ itinerary$.title}}</h1>
     </div>
 
@@ -105,7 +105,7 @@
           </td>
           <td>
             <h5>Safari Specialist</h5>
-            <b>{{ getName( itinerary$.agent,'users') }}</b>
+            <b *ngIf="agent">{{ agent.firstname }} {{ agent.lastname }}</b>
           </td>
           <td>
             <h5>Status</h5>

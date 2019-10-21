@@ -1,6 +1,6 @@
 <!-- itinerary form -->
 <div *ngIf="args.type === 'itinerary'">
-  <mat-card-title>Save Itinerary</mat-card-title>
+  <mat-card-title>Itinerary Editor</mat-card-title>
   <form [formGroup]="itineraryForm">
     <!-- agent -->
     <!--  todo: put back condition <span *ngIf="(user | async)?.$key === agent.$key" [style.color]="data.color">(You)</span>  -->
@@ -10,7 +10,7 @@
       required>
       <mat-option
         *ngFor="let agent of agents"
-        [value]="agent">
+        [value]="agent.key">
         {{agent.firstname }} {{agent.lastname}}
       </mat-option>
     </mat-select>
@@ -23,7 +23,7 @@
       required>
       <mat-option
         *ngFor="let client of clients"
-        [value]="client">
+        [value]="client.key">
         {{client.firstname}} {{client.lastname}}
       </mat-option>
     </mat-select>

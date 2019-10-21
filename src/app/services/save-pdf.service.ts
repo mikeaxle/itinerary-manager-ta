@@ -9,6 +9,7 @@ import {async} from 'rxjs-compat/scheduler/async';
 import {snapshotChanges} from '@angular/fire/database';
 import {MatDialog, MatDialogRef} from '@angular/material';
 import {PdfDialogComponent} from '../shared/pdf-dialog/pdf-dialog.component';
+import Swal from 'sweetalert2';
 
 @Injectable({
   providedIn: 'root'
@@ -88,15 +89,20 @@ export class SavePdfService {
 
          // save pdf
          saveAs(file, `${this.itinerary.title} ${Date.now()}.pdf`);
-
          // close ref
          this.dialogRef.close();
     }
       , (err) => {
         console.log(err);
-        alert(`An error has occurred`);
+        Swal.fire('Generating PDF', err.message, 'error')
+          .then(_ => {
+            // close ref
+            this.dialogRef.close();
+          });
       }
     );
+
+
   }
 
   // function to save pdf

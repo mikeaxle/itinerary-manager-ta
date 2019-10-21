@@ -31,8 +31,8 @@ export class EditorComponent implements OnInit {
   agent: Agent;
   client: Client;
   numbers: any;
-  agents: any;
-  clients: any;
+  agents = [];
+  clients = [];
   error: any;
   user: any;
   invoiceDetails: any;
@@ -105,16 +105,24 @@ export class EditorComponent implements OnInit {
 
     // get agents list
     this.data.af.list('users')
-      .valueChanges()
-      .subscribe((res) => {
-        this.agents = res;
+      .snapshotChanges()
+      .subscribe((_) => {
+        _.forEach(snapshot => {
+          const agent = snapshot.payload.val();
+          agent[`key`] = snapshot.key;
+          this.agents.push(agent);
+        });
       });
 
     // get client list
     this.data.af.list(`clients/${this.data.company}/`)
-      .valueChanges()
-      .subscribe(res => {
-        this.clients = res;
+      .snapshotChanges()
+      .subscribe(_ => {
+        _.forEach(snapshot => {
+          const client = snapshot.payload.val();
+          client[`key`] = snapshot.key;
+          this.clients.push(client);
+        });
       });
 
     // make numbers
