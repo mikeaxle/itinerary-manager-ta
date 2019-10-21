@@ -285,7 +285,7 @@
       <!-- exclusions input -->
       <mat-form-field>
         <label>
-          <textarea [(ngModel)]="exclusions" rows="4" type="text" matInput (keyup.enter)="onKeyUpQuote('exclusions')" (blur)="onKeyUpQuote('exclusions')" placeholder="Exclusions"></textarea>
+          <textarea [(ngModel)]="this.itinerary$.exclusions" rows="4" type="text" matInput (keyup.enter)="onKeyUpSave('exclusions')" (blur)="onKeyUpSave('exclusions')" placeholder="Exclusions"></textarea>
         </label>
       </mat-form-field>
     </div>
@@ -305,9 +305,9 @@
             <label>
               <input
                 currencyMask
-                [(ngModel)]="total"
-                (keyup.enter)="onKeyUpQuote('total')"
-                (blur)="onKeyUpQuote('total')"
+                [(ngModel)]="itinerary$.total"
+                (keyup.enter)="onKeyUpSave('total')"
+                (blur)="onKeyUpSave('total')"
                 matInput/>
             </label>
           </mat-form-field>
@@ -349,9 +349,9 @@
             <label>
               <input
                 currencyMask
-                [(ngModel)]="itinerary$.discount ? itinerary$.discount : discount"
-                (keyup.enter)="onKeyUpQuote('discount')"
-                (blur)="onKeyUpQuote('discount')"
+                [(ngModel)]="itinerary$.discount"
+                (keyup.enter)="onKeyUpSave('discount')"
+                (blur)="onKeyUpSave('discount')"
                 matInput/>
             </label>
           </mat-form-field>
@@ -366,9 +366,9 @@
             <label>
               <input
                 currencyMask
-                [(ngModel)]="itinerary$.deposit ? itinerary$.deposit : deposit"
-                (keyup.enter)="onKeyUpQuote('deposit')"
-                (blur)="onKeyUpQuote('deposit')"
+                [(ngModel)]="itinerary$.deposit"
+                (keyup.enter)="onKeyUpSave('deposit')"
+                (blur)="onKeyUpSave('deposit')"
                 matInput/>
             </label>
           </mat-form-field>

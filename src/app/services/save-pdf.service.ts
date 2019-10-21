@@ -155,7 +155,7 @@ export class SavePdfService {
 
     // get exclusions
     if (this.itinerary.exclusions === undefined) {
-      this.itinerary.exclusions = 'International travel, Tourist visas, Drinks and meals unless specified in inclusions, General Travel Insurance (it is strongly recommended not to travel without comprehensive travel and medical insurance), Tipping and gratuities (please read the Important Information for your Safari document for more info).'
+      this.itinerary.exclusions = 'International travel, Tourist visas, Drinks and meals unless specified in inclusions, General Travel Insurance (it is strongly recommended not to travel without comprehensive travel and medical insurance), Tipping and gratuities (please read the Important Information for your Safari document for more info).';
     }
 
     // get logos

@@ -102,9 +102,12 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
           this.itinerary$ = it;
 
           // assign exclusions if not defined
-          if (this.itinerary$.exclusions === null) {
-            this.itinerary$.exclusions = this.exclusions;
-          }
+          this.itinerary$[`exclusions`]  = this.itinerary$[`exclusions`] ? this.itinerary$[`exclusions`] : this.exclusions;
+
+          // set finance variables
+          this.itinerary$[`total`] = this.itinerary$[`total`] ? this.itinerary$[`total`] : 0;
+          this.itinerary$[`discount`] = this.itinerary$[`discount`] ? this.itinerary$[`discount`] : 0;
+          this.itinerary$[`deposit`] = this.itinerary$[`deposit`] ? this.itinerary$[`deposit`] : 0;
 
           // calculate total days remaining
           this.calculateDays(it);
@@ -411,7 +414,7 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
     let balance = 0;
 
     // check if total is equal to 0, assign balance depending on total, discount and total payments
-    this.total === 0 ? balance = 0 : balance = (this.total - this.itinerary$.discount) - this.totalPayments;
+    this.itinerary$.total === 0 ? balance = 0 : balance = (this.itinerary$.total - this.itinerary$.discount) - this.totalPayments;
 
     // return balance
     return balance;
@@ -640,28 +643,45 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
     dataToUpdate['accommodation/' + 0 + '/inclusions'] = event.target.value;
 
     // update inclusion
-    this.daysRef$.update(data.day, dataToUpdate);
-
-
-    // console.log(data)
+    this.updateFirebaseObject(`days/${this.itineraryId}/${data.day}/`, dataToUpdate, 'inclusion');
   }
 
-  // function to save quote details to firebase on blur or press enter
-  onKeyUpQuote(type: string) {
+  private updateFirebaseObject(path: any, dataToUpdate, caller: string) {
+    this.data.af.object(path)
+      .update(dataToUpdate)
+      .then(_ => {
+        console.log(`updated ${caller}`);
+      })
+      .catch(err => {
+        console.log(err);
+        Swal.fire('Inclusions', `Failed to update ${caller}. ${err.message}`, 'error');
+      });
+  }
+
+// function to save quote details to firebase on blur or press enter
+  onKeyUpSave(type: string) {
 
     // check which control called the function
     switch (type) {
       case 'total':
-        this.itineraryRef$.update({total: this.total});
+        this.updateFirebaseObject(`itineraries/${this.data.company}/${this.itineraryId}`,
+          { total: this.itinerary$.total },
+          'itinerary total');
         break;
       case 'deposit':
-        this.itineraryRef$.update({deposit: this.itinerary$.deposit});
+        this.updateFirebaseObject(`itineraries/${this.data.company}/${this.itineraryId}`,
+          { deposit: this.itinerary$.deposit },
+          'itinerary deposit');
         break;
       case 'discount':
-        this.itineraryRef$.update({discount: this.itinerary$.discount});
+        this.updateFirebaseObject(`itineraries/${this.data.company}/${this.itineraryId}`,
+          { discount: this.itinerary$.discount },
+          'itinerary discount');
         break;
       case 'exclusions':
-        this.itineraryRef$.update({exclusions: this.itinerary$.exclusions});
+        this.updateFirebaseObject(`itineraries/${this.data.company}/${this.itineraryId}`,
+          { exclusions: this.itinerary$.exclusions },
+          'exclusions');
         break;
       default:
         break;
