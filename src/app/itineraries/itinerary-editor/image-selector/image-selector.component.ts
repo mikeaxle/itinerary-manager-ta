@@ -17,7 +17,7 @@ export class ImageSelectorComponent implements OnInit {
 
   ngOnInit() {
     // get image list from firebase
-    this.mediaList = this.data.getList('media');
+    this.mediaList = this.data.af.list('media').valueChanges()
   }
 
   // function to close dialog

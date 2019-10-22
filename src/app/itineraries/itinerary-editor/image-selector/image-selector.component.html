@@ -1,8 +1,8 @@
 <h2 mat-dialog-title>Select Image</h2>
 
-<mat-grid-list cols="3" rowHeight="150px">
+<mat-grid-list cols="3" rowHeight="150px" *ngIf="mediaList | async as mediaListArray">
   <mat-grid-tile
-    *ngFor="let media of mediaList | async"
+    *ngFor="let media of mediaListArray"
     [style.background]="tileBackground"
     (click)="onCloseConfirm(media)">
 

@@ -19,6 +19,7 @@ import {CommonModule} from '@angular/common';
 import {STATUS} from '../../model/statuses';
 import {ItineraryDetailsEditorComponent} from './itinerary-details-editor/itinerary-details-editor.component';
 import Swal from 'sweetalert2';
+import {GridImageTiles} from '../../model/gridImageTiles';
 
 @NgModule({
   imports: [CommonModule]
@@ -74,6 +75,8 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
   private commentsSubscription$: any;
   private countriesSubscription$;
   countriesPdf = [];
+  grid = new GridImageTiles()
+  gridImageTiles;
 
   constructor(public router: Router, private route: ActivatedRoute, public data: DataService, public formbuilder: FormBuilder,
               public dialog: MatDialog, private dragula: DragulaService, public savePdfService: SavePdfService, public snackBar: MatSnackBar,
@@ -82,6 +85,9 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    // init grid image tiles
+    this.gridImageTiles = this.grid.gridImageTiles;
+
     // get itinerary
     this.itineraryId = this.route.snapshot.paramMap.get('id');
 
@@ -103,6 +109,12 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
 
           // assign exclusions if not defined
           this.itinerary$[`exclusions`]  = this.itinerary$[`exclusions`] ? this.itinerary$[`exclusions`] : this.exclusions;
+
+
+          // set grid image tiles
+          if (it.gridImageTiles) {
+            this.gridImageTiles = it.gridImageTiles;
+          }
 
           // set finance variables
           this.itinerary$[`total`] = this.itinerary$[`total`] ? this.itinerary$[`total`] : 0;
@@ -642,7 +654,7 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
           if (mode === 'add') {
             payment.date = payment.date.toDateString();
             // write payment to firebase
-            this.paymentsRef$.update(payment)
+            this.paymentsRef$.push(payment)
               .then(() => {
                 console.log('payment added');
               })

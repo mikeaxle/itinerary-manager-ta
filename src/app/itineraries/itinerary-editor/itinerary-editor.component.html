@@ -487,15 +487,16 @@
           <h3>Grid Images</h3>
           <mat-grid-list cols="2" rowHeight="1.5:1">
             <mat-grid-tile
-              *ngFor="let tile of itinerary$.gridImageTiles; let i=index"
+              *ngFor="let tile of this.gridImageTiles; let i=index"
               [style.background]='tileColor'
-              (click)="openImageSelector(itinerary$.gridImageTile[i], i)">
+              (click)="openImageSelector(gridImageTiles[i], i)">
               <mat-grid-tile-header>
                 <span class="fill-remaining-space"></span>
-                <img src="../assets/icons/edit-white.svg" alt="edit icon"/>
+                <img src="../assets/icons/edit-white.svg" />
               </mat-grid-tile-header>
-              <img *ngIf="tile.imageUrl" [src]="tile.imageUrl" height="100%" style="border-radius: 5px" alt="grid image"/>
-              <svg-icon *ngIf="!tile.imageUrl" src="../assets/icons/add.svg" [style.fill]="color"></svg-icon>
+<!--              <img *ngIf="tile.imageUrl" [src]="tile.imageUrl" height="100%" style="border-radius: 5px"/>-->
+              {{ tile | json }}
+              <svg-icon *ngIf="!tile.imageUrl" src="../assets/icons/add.svg" [style.fill]=color></svg-icon>
             </mat-grid-tile>
           </mat-grid-list>
 
