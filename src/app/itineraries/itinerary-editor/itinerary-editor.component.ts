@@ -1005,20 +1005,20 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
     if (canPrint) {
       if (type === 1) {
         this.savePdfService.savePDF({
-          comments: this.comments,
+          comments: this.commentsPdf,
           days: this.days,
           itinerary: this.itinerary$,
-          payments: this.payments,
-          phoneNumbers: this.countries,
+          payments: this.paymentsPdf,
+          phoneNumbers: this.countriesPdf,
         }, 1, this.usedDays);
       } else if (type  === 2) {
         this.savePdfService.savePDF(
           {
-            comments: this.comments,
+            comments: this.commentsPdf,
             days: this.days,
             itinerary: this.itinerary$,
-            payments: this.payments,
-            phoneNumbers: this.countries,
+            payments: this.paymentsPdf,
+            phoneNumbers: this.countriesPdf,
           }, 2, this.usedDays);
       }
     } else {
