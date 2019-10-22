@@ -494,8 +494,8 @@
                 <span class="fill-remaining-space"></span>
                 <img src="../assets/icons/edit-white.svg" />
               </mat-grid-tile-header>
-<!--              <img *ngIf="tile.imageUrl" [src]="tile.imageUrl" height="100%" style="border-radius: 5px"/>-->
-              {{ tile | json }}
+              <img *ngIf="tile.imageUrl" [src]="tile.imageUrl" height="100%" style="border-radius: 5px"/>
+<!--              {{ tile | json }}-->
               <svg-icon *ngIf="!tile.imageUrl" src="../assets/icons/add.svg" [style.fill]=color></svg-icon>
             </mat-grid-tile>
           </mat-grid-list>

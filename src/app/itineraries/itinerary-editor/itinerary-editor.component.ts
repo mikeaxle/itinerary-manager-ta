@@ -75,8 +75,14 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
   private commentsSubscription$: any;
   private countriesSubscription$;
   countriesPdf = [];
-  grid = new GridImageTiles()
-  gridImageTiles;
+  gridImageTiles =  [
+    { imageUrl: false },
+{ imageUrl: false },
+{ imageUrl: false },
+{ imageUrl: false },
+{ imageUrl: false },
+{ imageUrl: false },
+];
 
   constructor(public router: Router, private route: ActivatedRoute, public data: DataService, public formbuilder: FormBuilder,
               public dialog: MatDialog, private dragula: DragulaService, public savePdfService: SavePdfService, public snackBar: MatSnackBar,
@@ -85,9 +91,6 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    // init grid image tiles
-    this.gridImageTiles = this.grid.gridImageTiles;
-
     // get itinerary
     this.itineraryId = this.route.snapshot.paramMap.get('id');
 
@@ -726,7 +729,7 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
     });
 
     dialogRef.afterClosed().subscribe((result) => {
-
+      console.log(result)
       if (result) {
         const objectToWrite = {};
 
@@ -742,22 +745,27 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
           gridImage = result;
 
           // push to local array
-          this.itinerary$.gridImageTiles[imageName] = gridImage;
+          this.gridImageTiles[imageName] = gridImage;
           // console.log(this.gridImageTiles)
 
           // prepare object to write to firebase
-          objectToWrite[`gridImageTiles`] = this.itinerary$.gridImageTiles;
+          objectToWrite[`gridImageTiles`] = this.gridImageTiles;
 
           // console.log(objectToWrite)
           // }
 
           // write to firebase
-          this.itineraryRef$.update(objectToWrite);
-
+          this.data.af.object(`itineraries/${this.data.company}/${this.itineraryId}`).update(objectToWrite)
+            .then(_ => {
+              console.log('media item attached');
+            })
+            .catch(err => {
+              console.log(err);
+              Swal.fire('Media Selector', 'adding media failed', 'error');
+            })
         }
-
       }
-    }).unsubscribe();
+    })
   }
 
   // function to edit itinerary booking details
@@ -984,7 +992,7 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
     if (this.coverImageTile !== undefined ) {
       // check if grid images are all specified
 
-      for (const g of this.itinerary$.gridImageTiles) {
+      for (const g of this.gridImageTiles) {
         if (g.imageUrl !== false) {
           canPrint = true;
         } else {
