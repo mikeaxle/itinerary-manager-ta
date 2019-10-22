@@ -195,38 +195,26 @@
 
         <!-- comments added from modal -->
         <div *ngIf="comments | async as commentArray" fxLayout="column" fxFlexAlign="space-between base-line">
-
           <!-- iterate comments array -->
-          <div *ngFor="let comment of commentArray | commentsFilter: day.key; let co=index; let last = last"
-               fxLayout="row"
-               class="day">
+          <div *ngFor="let comment of commentArray | commentsFilter: day.key;" fxLayout="row" class="day">
             <!-- left column -->
-            <span
-              fxLayoutAlign="space-around center"
-              fxFlex="18"
-              fxLayoutGap="5px">
-
-              <img [src]="getCommentIcon(comment.type)" />
-
+            <span fxLayoutAlign="space-around center" fxFlex="18" fxLayoutGap="5px">
+              <img [src]="getCommentIcon(comment.payload.val().type)" />
             </span>
 
             <!-- middle column -->
             <span fxFlex="80" fxFlexAlign="flex-start">
-              <p> {{comment.comment}}</p>
+              <span>{{comment.payload.val().comment}}</span>
             </span>
 
             <!-- right column -->
-            <span
-              fxLayout="row"
-              fxLayoutAlign="space-between center"
-              fxFlex
-              fxLayout.xs="column"
-              fxLayout.sm="column">
+            <span fxLayout="row" fxLayoutAlign="space-between center" fxFlex fxLayout.xs="column" fxLayout.sm="column">
               <span style="width:40px"></span>
               <button mat-icon-button (click)="openCommentDialog('edit', comment)">
-                  <svg-icon src="../assets/icons/edit.svg" [style.fill]=color> </svg-icon>
+                <svg-icon src="../assets/icons/edit.svg" [style.fill]=color> </svg-icon>
               </button>
 
+              <!-- remove comment button -->
               <button mat-icon-button (click)="removeComment(comment.key)">
                   <svg-icon src="../assets/icons/trash.svg" [style.fill]=color></svg-icon>
               </button>
@@ -323,7 +311,7 @@
           <mat-form-field fxFlex="30" style="text-align:right !important;">
             <label>
               <input disabled matInput/>
-              {{ total/(itinerary$.children + itinerary$.adults) | number: '1.0-2'}}
+              {{ averageCost | number: '1.0-2'}}
             </label>
           </mat-form-field>
           <span fxFlex></span>
@@ -337,8 +325,9 @@
           <mat-form-field fxFlex="30" style="text-align:right !important;">
             <label>
               <input disabled matInput/>
-              {{ (total/(itinerary$.children + itinerary$.adults))/usedDays | number: '1.0-2' }}
+              {{ averageCost / usedDays | number: '1.0-2'}}
             </label>
+
           </mat-form-field>
           <span fxFlex></span>
         </div>
@@ -378,31 +367,31 @@
         </div>
 
         <!-- payments made -->
-        <div fxLayout="column" fxFill *ngIf="payments.length > 0">
-          <div fxLayout="row" *ngFor="let p of payments" fxLayoutAlign="flex-start center" fxLayoutGap="10px" class="quote-field">
-            <span fxFlex="50">Payment Received {{ p.date }}</span>
+        <div fxLayout="column" fxFill *ngIf="payments | async as paymentsArray">
+          <div fxLayout="row" *ngFor="let payment of paymentsArray" fxLayoutAlign="flex-start center" fxLayoutGap="10px" class="quote-field">
+            <span fxFlex="50">Payment Received {{ payment.payload.val().date }}</span>
             <span>USD</span>
 
             <!-- amount -->
             <mat-form-field fxFlex="30" style="text-align: right !important;">
               <label>
                 <input disabled matInput/>
-                {{p.amount | number: '1.0-2'}}
+                {{payment.payload.val().amount | number: '1.0-2'}}
               </label>
             </mat-form-field>
 
             <!--  edit button -->
             <span fxFlex>
-                    <!-- edit button -->
-                    <button mat-icon-button (click)="openPaymentDialog('edit', p)">
-                      <mat-icon src="../assets/icons/edit.svg"  [style.fill]=color></mat-icon>
-                    </button>
+              <!-- edit button -->
+              <button mat-icon-button (click)="openPaymentDialog('edit', payment)">
+                <svg-icon src="../assets/icons/edit.svg"  [style.fill]=color></svg-icon>
+              </button>
 
               <!-- delete button -->
-                    <button mat-icon-button (click)="removePayment(p.key)">
-                      <mat-icon src="../assets/icons/trash.svg" [style.fill]=color></mat-icon>
-                    </button>
-                  </span>
+              <button mat-icon-button (click)="removePayment(payment.key)">
+                <svg-icon src="../assets/icons/trash.svg" [style.fill]=color></svg-icon>
+              </button>
+            </span>
           </div>
         </div>
 
@@ -436,12 +425,12 @@
     <h2>Contact Numbers</h2>
     <div fxLayout>
       <div fxFlex="50"></div>
-      <div *ngIf="_PHONE_NUMBERS" fxFlex fxLayout="Column">
-        <div *ngFor="let c of _PHONE_NUMBERS" fxLayoutAlign="flex-start center" fxLayoutGap="10px" class="quote-field">
+      <div *ngIf="countries | async as phoneNumbersArray" fxFlex fxLayout="Column">
+        <div *ngFor="let c of phoneNumbersArray" fxLayoutAlign="flex-start center" fxLayoutGap="10px" class="quote-field">
           <mat-form-field fxFlex="72">
             <label>
               <input disabled matInput>
-              {{ countryService.getDestination(c.country_id).name }}
+              {{ countryService.getDestination(c.payload.val().country_id).name }}
             </label>
           </mat-form-field>
           <span fxFlex fxLayout>

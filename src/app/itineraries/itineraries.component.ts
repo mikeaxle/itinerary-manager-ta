@@ -57,7 +57,7 @@ export class ItinerariesComponent implements OnInit, OnDestroy {
         });
 
         // init data source
-        this.dataSource = new MatTableDataSource(this.itineraries);
+        this.dataSource = new MatTableDataSource(this.itineraries.reverse());
 
         // init data source
         this.dataSource.paginator = this.paginator;

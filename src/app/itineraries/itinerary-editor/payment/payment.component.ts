@@ -18,7 +18,7 @@ export class PaymentComponent implements OnInit {
 
   constructor(private formBuilder: FormBuilder,
               public data: DataService,
-              public dialogRed: MatDialogRef<PaymentComponent>,
+              public dialogRef: MatDialogRef<PaymentComponent>,
               @Inject(MAT_DIALOG_DATA) public params: any) { }
 
 
@@ -57,40 +57,11 @@ export class PaymentComponent implements OnInit {
 
   // function to close dialog
   onCloseConfirm() {
-
-    // convert date to date string
-    if (this.params.mode === 'edit') {
-
-      // convert date object to string
-      this.paymentForm.value.date = this.paymentForm.value.date.toDateString();
-
-      // write payment to firebase
-      this.data.updateItem(this.payment.$key, 'payments/' + this.itineraryId, this.paymentForm.value)
-        .then(() => {
-          this.dialogRed.close();
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-    }
-
-    if (this.params.mode === 'add') {
-      this.paymentForm.value.date = this.paymentForm.value.date.toDateString();
-      // write payment to firebase
-      this.data.saveItem('payments/' + this.itineraryId , this.paymentForm.value)
-        .then(() => {
-          // return payment key
-          this.dialogRed.close();
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-    }
-
+    this.dialogRef.close(this.paymentForm.value);
   }
 
   // function to cancel dialog
   onCloseCancel() {
-    this.dialogRed.close();
+    this.dialogRef.close();
   }
 }
