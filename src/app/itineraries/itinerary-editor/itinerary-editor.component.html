@@ -194,10 +194,10 @@
         </div>
 
         <!-- comments added from modal -->
-        <div *ngIf="comments" fxLayout="column" fxFlexAlign="space-between base-line">
+        <div *ngIf="comments | async as commentArray" fxLayout="column" fxFlexAlign="space-between base-line">
 
           <!-- iterate comments array -->
-          <div *ngFor="let comment of comments | commentsFilter: day.key; let co=index; let last = last"
+          <div *ngFor="let comment of commentArray | commentsFilter: day.key; let co=index; let last = last"
                fxLayout="row"
                class="day">
             <!-- left column -->
@@ -231,11 +231,13 @@
                   <svg-icon src="../assets/icons/trash.svg" [style.fill]=color></svg-icon>
               </button>
           </span>
+
+            </div>
+
           </div>
 
         </div>
       </div>
-    </div>
 
     <!-- editor-components editor button -->
     <div
@@ -405,7 +407,7 @@
         </div>
 
         <!-- add payment button -->
-        <div fxLayout="row" xLayoutAlign="flex-start center" fxLayoutGap="10px" style="height: 40px; margin-top: 10px">
+        <div fxLayout="row" FxLayoutAlign="flex-start center" fxLayoutGap="10px" style="height: 40px; margin-top: 10px">
           <span fxFlex="50"></span>
           <button
             mat-raised-button

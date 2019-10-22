@@ -31,26 +31,7 @@ export class CommentComponent implements OnInit {
 
   // function to close dialog
   onCloseConfirm() {
-    // save to firebase comments list
-    if (this.params.mode === 'add') {
-      this.data.saveItem('comments/' + this.params.itineraryId, this.comment)
-        .then(() => {
-          // close dialog
-          this.dialogRef.close();
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-
-    } else if (this.params.mode === 'edit') {
-      this.data.updateItem(this.comment[`key`], 'comments/' + this.params.itineraryId, this.comment)
-        .then(() => {
-          this.dialogRef.close();
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-    }
+    this.dialogRef.close(this.comment);
   }
 
   // function to cancel dialog
