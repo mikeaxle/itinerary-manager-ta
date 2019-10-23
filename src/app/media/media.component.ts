@@ -47,7 +47,7 @@ export class MediaComponent implements OnInit, OnDestroy {
         this.size = this.mediaList.length;
       });
 
-     // itint pagination
+     // init pagination
      this.getData({pageIndex: this.page, pageSize: this.size});
   }
 

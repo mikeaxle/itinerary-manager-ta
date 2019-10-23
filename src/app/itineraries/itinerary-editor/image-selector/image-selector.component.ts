@@ -11,6 +11,7 @@ export class ImageSelectorComponent implements OnInit, OnDestroy {
   mediaList = [];
   MEDIA_LIST = [];
   tileBackground = '#add8e6';
+
   private mediaListSubscription$;
 
   constructor(private data: DataService,
@@ -22,7 +23,7 @@ export class ImageSelectorComponent implements OnInit, OnDestroy {
     this.mediaListSubscription$ = this.data.af.list('media').valueChanges()
       .subscribe(_ => {
         this.mediaList = _;
-        this.MEDIA_LIST =  this.mediaList;
+        this.MEDIA_LIST =  [...this.mediaList];
       });
   }
 
