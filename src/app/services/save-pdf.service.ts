@@ -163,12 +163,12 @@ export class SavePdfService {
     this.getHeaderLogo();
 
     // check pdf print mode type
-    if (type === 2) {
+    if (type === 1) {
       this.html = this.getHtmlHalf();
-    } else if (type === 1) {
-      this.html = this.getHtmlFull();
-    } else if (type === 3) {
+    } else if (type === 2) {
       this.html = this.getHtmlFullNoCost();
+    } else if (type === 3) {
+      this.html = this.getHtmlFull();
     }
 
     // get pdf

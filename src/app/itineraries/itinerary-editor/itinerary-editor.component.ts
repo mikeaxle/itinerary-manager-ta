@@ -722,37 +722,36 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
   }
 
   // function to open image selector dialog
-  openImageSelector(gridImage, imageName) {
+  openImageSelector(gridImage, index) {
     const dialogRef = this.dialog.open(ImageSelectorComponent, {
       height: '600px',
       width: '1000px'
     });
 
     dialogRef.afterClosed().subscribe((result) => {
-      console.log(result)
       if (result) {
         const objectToWrite = {};
 
         // check name of image
-        if (imageName === 'coverImageTile') {
+        if (index < 0) {
           // assign image url to selected grid image
           gridImage = result;
           // prepare object to write to firebase
-          objectToWrite[imageName] = gridImage;
+          objectToWrite[`coverImageTile`] = gridImage;
         } else {
 
           // save item
           gridImage = result;
 
           // push to local array
-          this.gridImageTiles[imageName] = gridImage;
+          this.gridImageTiles[index] = gridImage;
           // console.log(this.gridImageTiles)
 
           // prepare object to write to firebase
           objectToWrite[`gridImageTiles`] = this.gridImageTiles;
 
           // console.log(objectToWrite)
-          // }
+          }
 
           // write to firebase
           this.data.af.object(`itineraries/${this.data.company}/${this.itineraryId}`).update(objectToWrite)
@@ -762,10 +761,9 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
             .catch(err => {
               console.log(err);
               Swal.fire('Media Selector', 'adding media failed', 'error');
-            })
+            });
         }
-      }
-    })
+      });
   }
 
   // function to edit itinerary booking details
@@ -989,9 +987,8 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
     let canPrint = false;
 
     // check if cover image is specified
-    if (this.coverImageTile !== undefined ) {
+    if (this.itinerary$.coverImageTile) {
       // check if grid images are all specified
-
       for (const g of this.gridImageTiles) {
         if (g.imageUrl !== false) {
           canPrint = true;
@@ -1003,26 +1000,15 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
     }
 
     if (canPrint) {
-      if (type === 1) {
         this.savePdfService.savePDF({
           comments: this.commentsPdf,
           days: this.days,
           itinerary: this.itinerary$,
           payments: this.paymentsPdf,
           phoneNumbers: this.countriesPdf,
-        }, 1, this.usedDays);
-      } else if (type  === 2) {
-        this.savePdfService.savePDF(
-          {
-            comments: this.commentsPdf,
-            days: this.days,
-            itinerary: this.itinerary$,
-            payments: this.paymentsPdf,
-            phoneNumbers: this.countriesPdf,
-          }, 2, this.usedDays);
-      }
+        }, type, this.usedDays);
     } else {
-      alert('Please add all 7 images in order to print the full pdf ');
+      Swal.fire('Generate PDF', 'Please add all 7 images in order to print the full pdf', 'error');
       // console.log(`Can print: ${canPrint}, ${this.gridImageTiles} `)
     }
   }
@@ -1035,7 +1021,7 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
       itinerary: this.itinerary$,
       payments: this.paymentsPdf,
       phoneNumbers: this.countriesPdf,
-    }, 2, this.usedDays);
+    }, 1, this.usedDays);
   }
 
   // function to check if object is an array

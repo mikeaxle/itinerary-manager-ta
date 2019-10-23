@@ -75,8 +75,8 @@
         <!-- print pdf menu -->
         <mat-menu #menu="matMenu">
           <button mat-menu-item (click)="saveAsPdfPartial()">Itinerary & Costs</button>
-          <button mat-menu-item (click)="saveAsPdf(1)">Full Itinerary</button>
-          <button mat-menu-item (click)="saveAsPdf(3)">Full Itinerary - No Costs</button>
+          <button mat-menu-item (click)="saveAsPdf(3)">Full Itinerary</button>
+          <button mat-menu-item (click)="saveAsPdf(2)">Full Itinerary - No Costs</button>
         </mat-menu>
   </span>
   </section>
@@ -468,7 +468,7 @@
           <mat-grid-list cols="1" rowHeight="1:2">
             <mat-grid-tile
               [style.background]='tileColor'
-              (click)="openImageSelector(itinerary$.coverImageTile, 'coverImageTile')">
+              (click)="openImageSelector(itinerary$.coverImageTile, -1)">
               <mat-grid-tile-header>
                 <span class="fill-remaining-space"></span>
                 <img src="../assets/icons/edit-white.svg"  alt="edit icon"/>
