@@ -6,12 +6,14 @@
 
 <span class="spacer-vert"></span>
 
+<!-- all in one filter -->
+<app-search [dataSource]="dataSource" caller="itineraries"></app-search>
+
 <!-- todo: add filters -->
 <!-- spinner -->
 <div class="spacer-vert-100" *ngIf="itineraries.length === 0" fxLayout="row" fxLayoutAlign="center center">
   <mat-spinner></mat-spinner>
 </div>
-
 
 <!-- data table-->
 <table *ngIf="itineraries.length > 0" mat-table [dataSource]="dataSource" class="mat-elevation-z8">

@@ -3,6 +3,14 @@
   <h1>Media</h1>
   <button mat-raised-button color="primary" (click)="addNew()">Add New</button>
 </div>
+<!-- search filter -->
+<mat-form-field>
+  <label>
+    <input matInput (keyup)="applyFilter($event.target.value)" placeholder="search media">
+  </label>
+</mat-form-field>
+
+<span class="spacer-vert"></span>
 
 <!-- spinner -->
 <div class="spacer-vert-100" *ngIf="MEDIA_LIST.length === 0" fxLayout="row" fxLayoutAlign="center center">

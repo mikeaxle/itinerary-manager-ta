@@ -123,4 +123,10 @@ export class MediaComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.ref.unsubscribe();
   }
+
+  applyFilter(value: any) {
+    this.MEDIA_LIST.filter((item, index) => {
+      return  item.title.search(value) !== -1;
+    });
+  }
 }

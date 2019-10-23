@@ -73,6 +73,7 @@ import { PdfDialogComponent } from './shared/pdf-dialog/pdf-dialog.component';
 import { LoginComponent } from './login/login.component';
 import { NgxAuthFirebaseUIModule } from 'ngx-auth-firebaseui';
 import { ToolbarComponent } from './toolbar/toolbar.component';
+import { SearchComponent } from './shared/search/search.component';
 
 // currency Mask settings
 // @ts-ignore
@@ -116,7 +117,8 @@ export const CustomCurrencyMaskConfig: CurrencyMaskConfig = {
     SearchPipe,
     PdfDialogComponent,
     LoginComponent,
-    ToolbarComponent
+    ToolbarComponent,
+    SearchComponent
   ],
   entryComponents: [
     DayComponent,

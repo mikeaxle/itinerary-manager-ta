@@ -36,18 +36,6 @@ export class InventoryComponent implements OnInit, OnDestroy {
     // get regions
     this.regions = this.countryService.getRegions();
 
-    // todo: dummy data
-    // const dummydata = [
-    //   this.data.sampleData.inventory['-KwZJEvnHfYeFOKnQXkA'],
-    //   this.data.sampleData.inventory['-KwZJRJ8rDoNhLXxFbjw'],
-    //   this.data.sampleData.inventory['-KwZJ_f6e5Rj6CRrbhII'],
-    //   this.data.sampleData.inventory['-KwZK87v2uuzrVpdWIoz'],
-    //   this.data.sampleData.inventory['-KwZKKmBu2cq2Z2R9Ymc'],
-    //   this.data.sampleData.inventory['-KwepzM-invrDAVdp8z_'],
-    //   this.data.sampleData.inventory['-KweqGt4RfNiINpm3Ffv'],
-    //   this.data.sampleData.inventory['-KweqcZjCq3ubFVWdspD'],
-    // ];
-
     // init inventory array
     this.inventory = [];
 

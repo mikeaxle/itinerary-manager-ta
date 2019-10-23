@@ -3,7 +3,7 @@
   <h1>Contacts</h1>
   <button mat-raised-button color="primary" (click)="addNew()">Add New Client</button>
 </div>
-<span style="padding: 20px"></span>
+<span class="spacer-vert"></span>
 
 <!-- table -->
 <!--  <div class="example-header" fxLayoutGap="20px">-->
@@ -26,6 +26,7 @@
 
 
 <!-- todo: add filters -->
+<app-search [dataSource]="dataSource" caller="clients"></app-search>
 
 <!-- spinner -->
 <div class="spacer-vert-100" *ngIf="clients.length === 0" fxLayout="row" fxLayoutAlign="center center">

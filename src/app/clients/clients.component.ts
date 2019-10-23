@@ -20,7 +20,6 @@ export class ClientsComponent implements OnInit, OnDestroy {
 
   @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
   @ViewChild(MatSort, {static: true}) sort: MatSort;
-  @ViewChild(MatTable, {static: true}) table: MatTable<any>;
   private ref;
   public dialogRef;
 
@@ -57,18 +56,7 @@ export class ClientsComponent implements OnInit, OnDestroy {
         // init sort
         this.dataSource.sort = this.sort;
 
-        // refresh rows
-        this.table.renderRows();
       });
-  }
-
-  // filter function
-  applyFilter(filterValue: string) {
-    this.dataSource.filter = filterValue.trim().toLowerCase();
-
-    if (this.dataSource.paginator) {
-      this.dataSource.paginator.firstPage();
-    }
   }
 
   // function to open confirm delete dialog
@@ -139,7 +127,7 @@ export class ClientsComponent implements OnInit, OnDestroy {
     });
 
      this. dialogRef.afterClosed().subscribe(() => {
-       this.table.renderRows();
+
      });
   }
 

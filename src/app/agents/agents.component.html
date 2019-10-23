@@ -3,7 +3,8 @@
   <h1>Agents</h1>
   <button mat-raised-button color="primary"  (click)="addNew()">Add New Agent</button>
 </div>
-<span style="padding: 20px"></span>
+
+<span class="spacer-vert"></span>
 
 
 <!-- table -->
@@ -15,6 +16,8 @@
 <!--    </mat-input-container>-->
 
 <!--  </div>-->
+
+<app-search [dataSource]="dataSource" caller="agents"></app-search>
 
 <!-- spinner -->
 <div class="spacer-vert-100" *ngIf="agents.length === 0" fxLayout="row" fxLayoutAlign="center center">

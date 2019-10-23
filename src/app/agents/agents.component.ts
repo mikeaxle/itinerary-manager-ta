@@ -28,16 +28,6 @@ export class AgentsComponent implements OnInit, OnDestroy {
   constructor(public router: Router, public data: DataService, public dialog: MatDialog) {}
 
   ngOnInit() {
-    // todo: dummy data
-    // const dummydata = [
-    //   this.data.sampleData.users['5oPFb9A68mgbFJm3VtdfWCn9Yoc2'],
-    //   this.data.sampleData.users['5oPFb9A68mgbFJm3VtdfWCn9Yoc2'],
-    //   this.data.sampleData.users['5oPFb9A68mgbFJm3VtdfWCn9Yoc2'],
-    //   this.data.sampleData.users['5oPFb9A68mgbFJm3VtdfWCn9Yoc2'],
-    //   this.data.sampleData.users['5oPFb9A68mgbFJm3VtdfWCn9Yoc2'],
-    //   this.data.sampleData.users['5oPFb9A68mgbFJm3VtdfWCn9Yoc2'],
-    // ];
-
     this.agents = [];
 
     this.ref = this.data.af.list(`users`)

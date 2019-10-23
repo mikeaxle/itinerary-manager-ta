@@ -27,14 +27,6 @@ export class ItinerariesComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    // todo: add dummy data
-    // const dummydata = [
-    //   this.data.sampleData.itineraries['Planet Africa']['-L6VmNj-yY1NiNsV4_eZ'],
-    //   this.data.sampleData.itineraries['Planet Africa']['-L6WvcFAHVIMplaQqKdf'],
-    //   this.data.sampleData.itineraries['Planet Africa']['-L745WMaomnzBEVhzN2j'],
-    //   this.data.sampleData.itineraries['Planet Africa']['-L7ZJtvIw5r_0FophV5V'],
-    // ];
-
     // init itineraries array
     this.itineraries = [];
 
@@ -98,14 +90,6 @@ export class ItinerariesComponent implements OnInit, OnDestroy {
       });
   }
 
-  // filter function
-  applyFilter(filterValue: string) {
-    this.dataSource.filter = filterValue.trim().toLowerCase();
-
-    if (this.dataSource.paginator) {
-      this.dataSource.paginator.firstPage();
-    }
-  }
   // function to add new itinerary
   addNew() {
     this.matDialog.open(EditorComponent, {
