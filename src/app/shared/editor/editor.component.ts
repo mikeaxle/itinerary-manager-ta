@@ -200,7 +200,7 @@ export class EditorComponent implements OnInit {
       // }
 
       // add status field to formData
-      this.itineraryForm.value.status = 'Draft';
+      this.itineraryForm.value.status = 'Provisional';
 
       // increment invoice number
       this.invoiceDetails.invoice_number += 1;
