@@ -180,6 +180,9 @@ export const CustomCurrencyMaskConfig: CurrencyMaskConfig = {
   ],
   providers: [],
   bootstrap: [AppComponent],
+  exports: [
+    ProgressBarComponent
+  ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class AppModule {

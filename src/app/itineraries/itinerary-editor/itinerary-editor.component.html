@@ -1,4 +1,6 @@
-<mat-spinner *ngIf="!itinerary$"></mat-spinner>
+<!-- progress bar -->
+<mat-progress-bar *ngIf="!itinerary$" mode="query" color="primary" class="example-margin progress-bar"></mat-progress-bar>
+
 <div *ngIf="itinerary$">
   <!-- tool bar -->
   <section fxLayout="row"
