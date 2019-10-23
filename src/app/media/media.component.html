@@ -24,6 +24,7 @@
                [pageSizeOptions]="[15, 30, 60, mediaList.length]"
                (page)="getData($event)">
 </mat-paginator>
+
 <mat-grid-list *ngIf="MEDIA_LIST.length > 0" cols="4" rowHeight="250px">
   <mat-grid-tile
     *ngFor="let media of MEDIA_LIST" [style.background]="tileBackground">

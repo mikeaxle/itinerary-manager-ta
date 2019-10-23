@@ -124,9 +124,23 @@ export class MediaComponent implements OnInit, OnDestroy {
     this.ref.unsubscribe();
   }
 
-  applyFilter(value: any) {
-    this.MEDIA_LIST.filter((item, index) => {
-      return  item.title.search(value) !== -1;
+  applyFilter(value) {
+    const temp = [];
+    // iterate entire media list
+    this.mediaList.forEach(media => {
+      // search title for occurances of value
+      if (media.title.search(value) !== -1) {
+        // push to temp array
+        temp.push(media)
+      }
     });
+
+  //  check if temp array has entries
+    if (temp.length > 0) {
+      this.MEDIA_LIST = temp;
+      this.page = 1;
+    }
   }
+
+
 }
