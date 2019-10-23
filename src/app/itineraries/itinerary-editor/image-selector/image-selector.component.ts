@@ -8,7 +8,8 @@ import {DataService} from '../../../services/data.service';
   templateUrl: './image-selector.component.html'
 })
 export class ImageSelectorComponent implements OnInit, OnDestroy {
-  mediaList;
+  mediaList = [];
+  MEDIA_LIST = [];
   tileBackground = '#add8e6';
   private mediaListSubscription$;
 
@@ -21,6 +22,7 @@ export class ImageSelectorComponent implements OnInit, OnDestroy {
     this.mediaListSubscription$ = this.data.af.list('media').valueChanges()
       .subscribe(_ => {
         this.mediaList = _;
+        this.MEDIA_LIST =  this.mediaList;
       });
   }
 
@@ -35,7 +37,27 @@ export class ImageSelectorComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.mediaListSubscription$.unsubscribe()
+    this.mediaListSubscription$.unsubscribe();
   }
 
+  applyFilter(value: any) {
+    // if (value === '') {
+    //   this.MEDIA_LIST = this.mediaList;
+    // }
+    const temp = [];
+    // iterate entire media list
+    this.mediaList.forEach(media => {
+      // search title for occurances of value
+      if (media.title.search(value) !== -1) {
+        // push to temp array
+        temp.push(media);
+      }
+    });
+
+    // //  check if temp array has entries
+    if (temp.length > 0) {
+      this.MEDIA_LIST = temp;
+      // this.page = 1;
+    }
+  }
 }

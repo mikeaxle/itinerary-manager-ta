@@ -89,6 +89,9 @@ export class SavePdfService {
 
          // save pdf
          saveAs(file, `${this.itinerary.title} ${Date.now()}.pdf`);
+
+         console.log('pdf generated');
+
          // close ref
          this.dialogRef.close();
     }

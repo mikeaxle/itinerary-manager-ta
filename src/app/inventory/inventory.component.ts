@@ -23,7 +23,7 @@ export class InventoryComponent implements OnInit, OnDestroy {
   displayedColumns = [ 'Image', 'Title', 'Country', 'Region', 'Type', 'Actions'];
   dataSource: MatTableDataSource<any>;
   @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
-  @ViewChild(MatSort, {static: true}) sort: MatSort;
+  // @ViewChild(MatSort, {static: true}) sort: MatSort;
   private ref;
 
   constructor(public router: Router, public data: DataService,
@@ -57,7 +57,7 @@ export class InventoryComponent implements OnInit, OnDestroy {
         this.dataSource.paginator = this.paginator;
 
         // init sort
-        this.dataSource.sort = this.sort;
+        // this.dataSource.sort = this.sort;
       });
   }
 

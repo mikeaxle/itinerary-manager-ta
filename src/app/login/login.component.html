@@ -1,4 +1,5 @@
 <ngx-auth-firebaseui-login
+  *ngIf="!data.user"
   (onError)="onLoginError($event)"
   [messageOnAuthError]="'Welcome to ' + data.company + ' Itinerary Manager'"
   [logoUrl]="logo"
@@ -6,3 +7,5 @@
   [providers]="providers.EmailAndPassword"
   [registrationEnabled]="false">
 </ngx-auth-firebaseui-login>
+
+<mat-spinner *ngIf="data.user"></mat-spinner>

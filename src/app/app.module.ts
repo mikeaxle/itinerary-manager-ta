@@ -74,6 +74,7 @@ import { LoginComponent } from './login/login.component';
 import { NgxAuthFirebaseUIModule } from 'ngx-auth-firebaseui';
 import { ToolbarComponent } from './toolbar/toolbar.component';
 import { SearchComponent } from './shared/search/search.component';
+import { ProgressBarComponent } from './shared/progress-bar/progress-bar.component';
 
 // currency Mask settings
 // @ts-ignore
@@ -118,7 +119,8 @@ export const CustomCurrencyMaskConfig: CurrencyMaskConfig = {
     PdfDialogComponent,
     LoginComponent,
     ToolbarComponent,
-    SearchComponent
+    SearchComponent,
+    ProgressBarComponent
   ],
   entryComponents: [
     DayComponent,

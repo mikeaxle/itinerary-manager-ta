@@ -127,7 +127,9 @@ th {
   margin: 0 auto;
   overflow: hidden;
 }
-
+.progress-bar {
+  width: 90%;
+}
 .page-title {
   display: flex;
   flex-direction: row;

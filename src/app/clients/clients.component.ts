@@ -19,7 +19,7 @@ export class ClientsComponent implements OnInit, OnDestroy {
   clients;
 
   @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
-  @ViewChild(MatSort, {static: true}) sort: MatSort;
+  // @ViewChild(MatSort, {static: true}) sort: MatSort;
   private ref;
   public dialogRef;
 
@@ -54,7 +54,7 @@ export class ClientsComponent implements OnInit, OnDestroy {
         this.dataSource.paginator = this.paginator;
 
         // init sort
-        this.dataSource.sort = this.sort;
+        // this.dataSource.sort = this.sort;
 
       });
   }

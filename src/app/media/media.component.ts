@@ -131,7 +131,7 @@ export class MediaComponent implements OnInit, OnDestroy {
       // search title for occurances of value
       if (media.title.search(value) !== -1) {
         // push to temp array
-        temp.push(media)
+        temp.push(media);
       }
     });
 
