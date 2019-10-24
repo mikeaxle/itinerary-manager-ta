@@ -17,16 +17,25 @@
 
 
     <!-- client -->
-    <mat-select
-      placeholder="Client"
-      formControlName="client"
-      required>
-      <mat-option
-        *ngFor="let client of clients"
-        [value]="client.key">
-        {{client.firstname}} {{client.lastname}}
-      </mat-option>
-    </mat-select>
+<!--    <mat-select-->
+<!--      placeholder="Client"-->
+<!--      formControlName="client"-->
+<!--      required>-->
+<!--      <mat-option-->
+<!--        *ngFor="let client of clients"-->
+<!--        [value]="client.key">-->
+<!--        {{client.firstname}} {{client.lastname}}-->
+<!--      </mat-option>-->
+<!--    </mat-select>-->
+
+    <mat-form-field>
+      <input matInput placeholder="Client" aria-label="Client" [matAutocomplete]="auto" formControlName="client">
+      <mat-autocomplete #auto="matAutocomplete">
+        <mat-option *ngFor="let client of filteredClients | async" [value]="client.key">
+          {{client.firstname}} {{client.lastname}}
+        </mat-option>
+      </mat-autocomplete>
+    </mat-form-field>
 
     <!-- Adults and Children -->
     <div class="double-items">
@@ -172,7 +181,7 @@
       <mat-autocomplete #auto="matAutocomplete">
         <mat-option *ngFor="let country of filteredCountries | async" [value]="country.name">
           <span>{{country.name}}</span> |
-          <small>Population: {{country.code}}</small>
+          <small>code: {{country.code}}</small>
         </mat-option>
       </mat-autocomplete>
     </mat-form-field>

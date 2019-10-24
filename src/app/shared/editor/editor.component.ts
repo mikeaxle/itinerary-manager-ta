@@ -51,6 +51,7 @@ export class EditorComponent implements OnInit {
   types = inventoryTypes;
   oldImage: any;
   filteredCountries: Observable<CountryCodes>;
+  private filteredClients: Observable<any[]>;
 
   constructor(@Inject(MAT_DIALOG_DATA) public args: any,
               private formBuilder: FormBuilder,
@@ -65,6 +66,12 @@ export class EditorComponent implements OnInit {
   private _filterCountries(value): CountryCodes[] {
     const filterValue = value.toLowerCase();
     return this.countries.filter(country => country.name.toLowerCase().indexOf(filterValue) === 0);
+  }
+
+  // getter to return filtered country codes
+  private _filterClients(value): CountryCodes[] {
+    const filterValue = value.toLowerCase();
+    return this.clients.filter(client => `${client.firstname} ${client.lastname}`.toLowerCase().indexOf(filterValue) === 0);
   }
 
   ngOnInit() {
@@ -140,6 +147,14 @@ export class EditorComponent implements OnInit {
           client[`key`] = snapshot.key;
           this.clients.push(client);
         });
+
+        // init filtered clients  and subscribe to client form control on itinerary form
+        this.filteredClients = this.itineraryForm.controls.client
+          .valueChanges
+          .pipe(
+            startWith(''),
+            map(client => client ? this._filterClients(client) : this.clients.slice())
+          );
       });
 
     // make numbers
