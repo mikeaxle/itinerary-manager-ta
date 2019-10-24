@@ -11,6 +11,7 @@ import {FlexLayoutModule} from '@angular/flex-layout';
 import {CurrencyMaskModule} from 'ng2-currency-mask';
 import {AppModule} from '../app.module';
 import {CommentsPipe} from '../filter/comments.pipe';
+import {DragDropModule} from '@angular/cdk/drag-drop';
 
 
 @NgModule({
@@ -39,7 +40,8 @@ import {CommentsPipe} from '../filter/comments.pipe';
     MatDialogModule,
     MatDatepickerModule,
     ReactiveFormsModule,
-    MatProgressBarModule
+    MatProgressBarModule,
+    DragDropModule
   ],
 })
 export class ItinerariesModule { }

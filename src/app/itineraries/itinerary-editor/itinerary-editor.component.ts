@@ -20,6 +20,7 @@ import {STATUS} from '../../model/statuses';
 import {ItineraryDetailsEditorComponent} from './itinerary-details-editor/itinerary-details-editor.component';
 import Swal from 'sweetalert2';
 import {generalInclusions} from '../../model/generalInclusions';
+import {CdkDragDrop, moveItemInArray} from '@angular/cdk/drag-drop';
 
 @NgModule({
   imports: [CommonModule]
@@ -84,11 +85,30 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
 { imageUrl: false },
 ];
   generalInclusions = generalInclusions;
-
+  private daysSubscription$;
   constructor(public router: Router, private route: ActivatedRoute, public data: DataService, public formbuilder: FormBuilder,
               public dialog: MatDialog, private dragula: DragulaService, public savePdfService: SavePdfService, public snackBar: MatSnackBar,
               public http: HttpClient, public countryService: CountryService) {
 
+  }
+
+  // drop event to initiate reorder of days
+  drop(event: CdkDragDrop<string[]>) {
+    const day = this.days[event.currentIndex];
+    // change position to current index
+    day[`position`] = event.currentIndex;
+
+    // write to database
+    this.daysRef$.update(day)
+      .then(_ => {
+        console.log('Day reordered');
+      })
+      .catch(err => {
+        Swal.fire('Day Order', err.message, 'error');
+      });
+
+    // move item in array
+    moveItemInArray(this.days, event.previousIndex, event.currentIndex);
   }
 
   ngOnInit(): void {
@@ -226,9 +246,9 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
   // get days related to itinerary
    private  getDays() {
     this.days = [];
-    this.daysRef$ = this.data.af.list('days/' + this.itineraryId, ref => ref.orderByChild('position'))
-      .snapshotChanges()
-      .subscribe(_ => {
+    this.daysRef$ = this.data.af.list('days/' + this.itineraryId, ref => ref.orderByChild('position')).snapshotChanges();
+
+    this.daysSubscription$ = this.daysRef$.subscribe(_ => {
         // reset temp inclusions array, used days and temp days array
         const _INCLUSIONS = [];
         this.usedDays = 0;
@@ -384,21 +404,20 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
   }
 
   // function to generate editor-components title
+  // function to generate editor-components title
   getDayTitle(type: string, day: any) {
     // variables related to editor-components tile
     let title = '';
-    let firstDay = 0;
-    let lastDay = 0;
+    let first_day = 0;
+    let last_day = 0;
 
     // variables related to dates
-    // tslint:disable-next-line:variable-name
     let start_date: any;
-    // tslint:disable-next-line:variable-name
     let end_date: any;
     let dates = '';
 
     if (day.position < 1) {
-      firstDay = 1;
+      first_day = 1;
     } else {
       // iterate days array
       this.days.every((d, i) => {
@@ -407,52 +426,48 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
           return false;
         }
         // add all days of days before to current
-        firstDay += d.days;
+        first_day += d.days;
         return true;
       });
 
       // add 1 to editor-components
-      firstDay += 1;
+      first_day += 1;
     }
 
     // add first editor-components to title
-    title += `Day ${firstDay}`;
+    title += `Day ${first_day}`;
 
-    // subscribe to itinerary ref
-    this.itineraryRef$
-      .subscribe(_ => {
-        // init start date to itinerary start date
-        start_date = new Date(_.payload.val().startdate);
+    // init start date to itinerary start date
+    start_date = new Date(this.itinerary$.startdate);
 
-        // add number of days before current editor-components to start date to get current start date
-        start_date.setDate(start_date.getDate() + (firstDay - 1));
+    // add number of days before current editor-components to start date to get current start date
+    start_date.setDate(start_date.getDate() + (first_day - 1));
 
-        // add start_date to date string
-        dates += `${start_date.getDate()} ${this.DATE_MONTHS[start_date.getMonth()]}`;
+    // add start_date to date string
+    dates += `${start_date.getDate()} ${this.DATE_MONTHS[start_date.getMonth()]}`;
 
-        // if editor-components contains more than 1 editor-components
-        if (day.days > 1) {
-          // last editor-components is first editor-components + total days - 1
-          lastDay = firstDay + day.days - 1;
+    // if editor-components contains more than 1 editor-components
+    if (day.days > 1) {
+      // last editor-components is first editor-components + total days - 1
+      last_day = first_day + day.days - 1;
 
-          // add last editor-components to title
-          title += ` - ${lastDay}`;
+      // add last editor-components to title
+      title += ` - ${last_day}`;
 
-          // init end_date to start_date
-          end_date = start_date;
+      // init end_date to start_date
+      end_date = start_date;
 
-          // add number of days
-          end_date.setDate(end_date.getDate() + day.days - 1);
+      // add number of days
+      end_date.setDate(end_date.getDate() + day.days - 1);
 
-          // add to dates string
-          dates += ` - ${end_date.getDate()} ${this.DATE_MONTHS[end_date.getMonth()]}`;
-        }
-      });
+      // add to dates string
+      dates += ` - ${end_date.getDate()} ${this.DATE_MONTHS[end_date.getMonth()]}`;
+    }
 
     // check type
     if (type === 'title') {
       // add editor-components key and title to map
-      this.dayTitles.set(day.key, title);
+      this.dayTitles.set(day.$key, title);
 
       // return editor-components title
       return title;

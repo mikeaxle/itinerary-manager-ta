@@ -144,10 +144,11 @@
     <!-- days come here -->
 <!--  todo: put back dragula  [dragula]="'days'" [dragulaModel]="days", populate days array  -->
     <div *ngIf="days">
-      <div *ngFor="let day of days; let i=index">
+      <div *ngFor="let day of days; let i=index" cdkDropList (cdkDropListDropped)="drop($event)">
 
-        <!-- editor-components items added from modal -->
+        <!-- day  -->
         <div
+          cdkDragPlaceholder
           fxLayout="row"
           fxFlexAlign="space-between base-line"
           class="day">
