@@ -31,7 +31,7 @@ import {
   MatGridListModule,
   MatListModule,
   MatRadioModule,
-  MatBottomSheetModule, MatProgressBarModule, MatDialogConfig
+  MatBottomSheetModule, MatProgressBarModule, MatDialogConfig, MatAutocompleteModule
 } from '@angular/material';
 import { InvalidTypeDirective } from './directives/invalid-type.directive';
 import { InvalidmessageDirective } from './directives/invalidmessage.directive';
@@ -75,6 +75,7 @@ import { NgxAuthFirebaseUIModule } from 'ngx-auth-firebaseui';
 import { ToolbarComponent } from './toolbar/toolbar.component';
 import { SearchComponent } from './shared/search/search.component';
 import { ProgressBarComponent } from './shared/progress-bar/progress-bar.component';
+import { SafeHtmlPipe } from './filter/safe-html.pipe';
 
 // currency Mask settings
 // @ts-ignore
@@ -120,7 +121,8 @@ export const CustomCurrencyMaskConfig: CurrencyMaskConfig = {
     LoginComponent,
     ToolbarComponent,
     SearchComponent,
-    ProgressBarComponent
+    ProgressBarComponent,
+    SafeHtmlPipe
   ],
   entryComponents: [
     DayComponent,
@@ -176,7 +178,8 @@ export const CustomCurrencyMaskConfig: CurrencyMaskConfig = {
     MatBottomSheetModule,
     ReactiveFormsModule,
     MatSelectModule,
-    MatProgressBarModule
+    MatProgressBarModule,
+    MatAutocompleteModule
   ],
   providers: [],
   bootstrap: [AppComponent],

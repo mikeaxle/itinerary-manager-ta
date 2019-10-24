@@ -15,13 +15,20 @@ import {inventoryTypes} from '../../model/inventory-types';
 import {MediaItem} from '../../model/mediaItem';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
 import {MatDialogConfig} from '@angular/material';
+import {Observable} from 'rxjs';
+import {map, startWith} from 'rxjs/operators';
+
+// interface for country codes
+export interface CountryCodes {
+  code: string;
+  name: string ;
+}
 
 @Component({
   selector: 'app-editor',
   styleUrls: ['./editor.component.css'],
   templateUrl: './editor.component.html'
 })
-
 export class EditorComponent implements OnInit {
   itineraryForm: any;
   agentForm: any;
@@ -43,13 +50,21 @@ export class EditorComponent implements OnInit {
   regions: Region[];
   types = inventoryTypes;
   oldImage: any;
+  filteredCountries: Observable<CountryCodes>;
 
   constructor(@Inject(MAT_DIALOG_DATA) public args: any,
               private formBuilder: FormBuilder,
               public data: DataService,
               public router: Router,
               public countryService: CountryService,
-              public bottomSheetRef: MatDialogRef<EditorComponent>) {
+              public bottomSheetRef: MatDialogRef<EditorComponent>) {}
+
+
+
+              // getter to return filtered country codes
+  private _filterCountries(value): CountryCodes[] {
+    const filterValue = value.toLowerCase();
+    return this.countries.filter(country => country.name.toLowerCase().indexOf(filterValue) === 0);
   }
 
   ngOnInit() {
@@ -64,6 +79,8 @@ export class EditorComponent implements OnInit {
         case 'clients':
           this.client = this.args.item;
           this.initNewClient();
+
+
           break;
         case 'inventory':
           this.inventoryItem = this.args.item;
@@ -138,6 +155,14 @@ export class EditorComponent implements OnInit {
       nationality: [null, Validators.required],
       phone: [null, Validators.required]
     }) : this.formBuilder.group(this.client);
+
+    // init filtered countries and subscribe to value changes on nationality control
+    this.filteredCountries = this.clientForm.controls.nationality
+      .valueChanges
+      .pipe(
+        startWith(''),
+        map(country => country ? this._filterCountries(country) : this.countries.slice())
+      );
   }
 
   // initialize new agent form

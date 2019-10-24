@@ -361,6 +361,11 @@ mat-grid-tile  {
   padding: 10px;
 }
 
+.flag-img {
+  vertical-align: middle;
+  margin-right: 8px;
+}
+
 .spacer-vert {
   padding-bottom: 10px;
   padding-top: 10px;

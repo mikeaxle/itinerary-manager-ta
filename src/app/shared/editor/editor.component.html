@@ -163,9 +163,19 @@
     </mat-form-field>
 
     <!-- nationality -->
-    <mat-select placeholder="Nationality" formControlName="nationality" required>
-      <mat-option *ngFor="let country of countries" [value]="country.name">{{country.name}}</mat-option>
-    </mat-select>
+<!--    <mat-select placeholder="Nationality" formControlName="nationality" required>-->
+<!--      <mat-option *ngFor="let country of countries" [value]="country.name">{{country.name}}</mat-option>-->
+<!--    </mat-select>-->
+
+    <mat-form-field>
+      <input matInput placeholder="Nationality" aria-label="Nationality" [matAutocomplete]="auto" formControlName="nationality">
+      <mat-autocomplete #auto="matAutocomplete">
+        <mat-option *ngFor="let country of filteredCountries | async" [value]="country.name">
+          <span>{{country.name}}</span> |
+          <small>Population: {{country.code}}</small>
+        </mat-option>
+      </mat-autocomplete>
+    </mat-form-field>
 
     <span class="spacer-vert"></span>
 

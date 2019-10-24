@@ -5,6 +5,7 @@ import {ConfirmComponent} from '../shared/confirm/confirm.component';
 import {PermissionDeniedDialogComponent} from '../shared/permission-denied-dialog/permission-denied-dialog.component';
 import {EditorComponent} from '../shared/editor/editor.component';
 import {snapshotChanges} from '@angular/fire/database';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-clients',
@@ -48,7 +49,7 @@ export class ClientsComponent implements OnInit, OnDestroy {
           this.clients.push(client);
         });
         // init data source
-        this.dataSource = new MatTableDataSource(this.clients);
+        this.dataSource = new MatTableDataSource(this.clients.reverse());
 
         // init data source
         this.dataSource.paginator = this.paginator;
@@ -86,23 +87,33 @@ export class ClientsComponent implements OnInit, OnDestroy {
   // function to delete item
   deleteClient(id: string) {
     // get itineraries
-    this.data.af.list(`itineraries/${this.data.company}`,
-      ref => ref.orderByChild('client').equalTo(id).limitToFirst(1))
-      .snapshotChanges()
-      .subscribe((res) => {
-        // check if client has itineraries
-        if (res.length === 1) {
-          this.openPermissionDenied();
-          // alert('Cannot delete a client with existing itineraries')
-        } else {
-          this.data.deleteItem(id, `clients/${this.data.company}/`)
-            .then(() => {
-              console.log('client deleted');
-            })
-            .catch((error) => {
-              this.error = error;
-            });
-        }
+    // this.data.af.list(`itineraries/${this.data.company}`,
+    //   ref => ref.orderByChild('client').equalTo(id).limitToFirst(1))
+    //   .snapshotChanges()
+    //   .subscribe((res) => {
+    //     // check if client has itineraries
+    //     if (res.length === 1) {
+    //       this.openPermissionDenied();
+    //       // alert('Cannot delete a client with existing itineraries')
+    //     } else {
+    //       this.data.deleteItem(id, `clients/${this.data.company}/`)
+    //         .then(() => {
+    //           console.log('client deleted');
+    //         })
+    //         .catch((error) => {
+    //           this.error = error;
+    //         });
+    //     }
+    //   });
+
+    this.data.deleteItem(id, `clients/${this.data.company}/`)
+      .then(() => {
+        console.log('client deleted');
+        Swal.fire('Client Editor', 'Client deleted: ' + id, 'error');
+      })
+      .catch((err) => {
+        this.error = err;
+        Swal.fire('Client Editor', 'Failed to delete client: ' + err.message, 'error');
       });
   }
 
