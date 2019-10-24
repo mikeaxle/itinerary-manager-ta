@@ -76,6 +76,7 @@ import { ToolbarComponent } from './toolbar/toolbar.component';
 import { SearchComponent } from './shared/search/search.component';
 import { ProgressBarComponent } from './shared/progress-bar/progress-bar.component';
 import { SafeHtmlPipe } from './filter/safe-html.pipe';
+import {AngularFireAuthGuard} from '@angular/fire/auth-guard';
 
 // currency Mask settings
 // @ts-ignore
@@ -181,7 +182,7 @@ export const CustomCurrencyMaskConfig: CurrencyMaskConfig = {
     MatProgressBarModule,
     MatAutocompleteModule
   ],
-  providers: [],
+  providers: [AngularFireAuthGuard],
   bootstrap: [AppComponent],
   exports: [
     ProgressBarComponent
