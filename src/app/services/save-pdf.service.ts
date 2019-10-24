@@ -300,7 +300,7 @@ footer p:last-of-type{
 
   <footer>
     <p class="quote">“I never knew of a morning in Africa when I woke up that I was not happy.”</p>
-    <p class="author">ERNEST HEMMINGWAY</p>
+    <p class="author">ERNEST HEMINGWAY</p>
   </footer>
 </div>
 
