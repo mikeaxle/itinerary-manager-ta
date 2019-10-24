@@ -270,6 +270,22 @@
 
     <span class="spacer-vert"></span>
 
+    <!-- inclusions -->
+    <div  class="itin-border-top">
+      <h2>General Inclusions</h2>
+      <!-- inclusion -->
+      <div fxLayout="column">
+        <!-- inclusions input -->
+        <mat-form-field>
+          <label>
+            <textarea rows="4" matInput (keyup.enter)="onKeyUpSave('generalInclusions')" (blur)="onKeyUpSave('generalInclusions')" placeholder="General Inclusions" [(ngModel)]="itinerary$.generalInclusions"></textarea>
+          </label>
+        </mat-form-field>
+      </div>
+    </div>
+
+    <span class="spacer-vert"></span>
+
     <!-- exclusions -->
     <div *ngIf="inclusions?.length > 0">
       <h2>Exclusions</h2>

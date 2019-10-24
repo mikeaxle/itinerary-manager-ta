@@ -15,7 +15,11 @@ export class CommentComponent implements OnInit {
   mapIterator: any;
   commentForm: FormGroup;
   comment: Comment;
-  types = inventoryTypes;
+  types = [
+    'Flight',
+    'Activity',
+    'Info'
+  ];
 
   constructor(public data: DataService,
               public dialogRef: MatDialogRef<CommentComponent>,

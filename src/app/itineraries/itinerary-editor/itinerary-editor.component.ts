@@ -19,7 +19,7 @@ import {CommonModule} from '@angular/common';
 import {STATUS} from '../../model/statuses';
 import {ItineraryDetailsEditorComponent} from './itinerary-details-editor/itinerary-details-editor.component';
 import Swal from 'sweetalert2';
-import {GridImageTiles} from '../../model/gridImageTiles';
+import {generalInclusions} from '../../model/generalInclusions';
 
 @NgModule({
   imports: [CommonModule]
@@ -83,6 +83,7 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
 { imageUrl: false },
 { imageUrl: false },
 ];
+  generalInclusions = generalInclusions;
 
   constructor(public router: Router, private route: ActivatedRoute, public data: DataService, public formbuilder: FormBuilder,
               public dialog: MatDialog, private dragula: DragulaService, public savePdfService: SavePdfService, public snackBar: MatSnackBar,
@@ -117,6 +118,11 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
           // set grid image tiles
           if (it.gridImageTiles) {
             this.gridImageTiles = it.gridImageTiles;
+          }
+
+          // check if general inclusions are present on itinerary
+          if (!it.generalInclusions) {
+            this.itinerary$[`generalInclusions`] = this.generalInclusions;
           }
 
           // set finance variables
@@ -618,8 +624,8 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
     if (mode === 'add') {
       dialogRef = this.dialog.open(PaymentComponent, {
         data: {
+          id: this.itineraryId,
           mode,
-          id: this.itineraryId
         },
         width: '480px'
       });
@@ -646,7 +652,7 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
             // write payment to firebase
             this.paymentsRef$.update(data.key, payment)
               .then(() => {
-                console.log('comment updated');
+                console.log('payment updated');
               })
               .catch((error) => {
                 console.log(error);
@@ -754,7 +760,7 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
           }
 
           // write to firebase
-          this.data.af.object(`itineraries/${this.data.company}/${this.itineraryId}`).update(objectToWrite)
+        this.data.af.object(`itineraries/${this.data.company}/${this.itineraryId}`).update(objectToWrite)
             .then(_ => {
               console.log('media item attached');
             })
@@ -824,7 +830,7 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
       })
       .catch(err => {
         console.log(err);
-        Swal.fire('Inclusions', `Failed to update ${caller}. ${err.message}`, 'error');
+        Swal.fire(`${caller} update`, `Failed to update ${caller}. ${err.message}`, 'error');
       });
   }
 
@@ -852,6 +858,11 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
         this.updateFirebaseObject(`itineraries/${this.data.company}/${this.itineraryId}`,
           { exclusions: this.itinerary$.exclusions },
           'exclusions');
+        break;
+      case 'generalInclusions':
+        this.updateFirebaseObject(`itineraries/${this.data.company}/${this.itineraryId}`,
+          { generalInclusions: this.itinerary$.generalInclusions },
+          'generalInclusions');
         break;
       default:
         break;
@@ -1040,15 +1051,15 @@ isArray(obj: any ) {
 
   ngOnDestroy() {
     // unsubscribe from observables to remove memory leaks
-    delete this.daysRef$
+    delete this.daysRef$;
     delete this.commentsRef$;
     delete this.paymentsRef$;
     delete this.itineraryRef$;
     delete this.clientRef$;
     delete this.agentRef$;
 
-    this.paymentsSubscription$.unsubscribe()
-    this.commentsSubscription$.unsubscribe()
+    this.paymentsSubscription$.unsubscribe();
+    this.commentsSubscription$.unsubscribe();
     this.countriesSubscription$.unsubscribe();
   }
 }

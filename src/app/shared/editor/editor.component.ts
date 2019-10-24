@@ -17,6 +17,7 @@ import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
 import {MatDialogConfig} from '@angular/material';
 import {Observable} from 'rxjs';
 import {map, startWith} from 'rxjs/operators';
+import {generalInclusions} from '../../model/generalInclusions';
 
 // interface for country codes
 export interface CountryCodes {
@@ -52,6 +53,7 @@ export class EditorComponent implements OnInit {
   oldImage: any;
   filteredCountries: Observable<CountryCodes>;
   private filteredClients: Observable<any[]>;
+  generalInclusions = generalInclusions;
 
   constructor(@Inject(MAT_DIALOG_DATA) public args: any,
               private formBuilder: FormBuilder,
@@ -235,12 +237,10 @@ export class EditorComponent implements OnInit {
       this.itineraryForm.value.startdate = this.itineraryForm.value.startdate.toDateString();
       this.itineraryForm.value.enddate = this.itineraryForm.value.enddate.toDateString();
 
-      // if (this.user.role === 'agent') {
-      //   formData.value.agent = this.user.$key
-      // }
-
       // add status field to formData
       this.itineraryForm.value.status = 'Provisional';
+
+      this.itineraryForm.value.generalInclusions = generalInclusions;
 
       // increment invoice number
       this.invoiceDetails.invoice_number += 1;
