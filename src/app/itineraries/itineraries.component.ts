@@ -1,6 +1,6 @@
 import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {DataService} from '../services/data.service';
-import {MatBottomSheet, MatBottomSheetRef} from '@angular/material';
+import {MatBottomSheet, MatBottomSheetRef, MatDialog} from '@angular/material';
 import {MatPaginator} from '@angular/material/paginator';
 import {MatSort} from '@angular/material/sort';
 import {MatTableDataSource} from '@angular/material/table';
@@ -19,27 +19,19 @@ export class ItinerariesComponent implements OnInit, OnDestroy {
   dataSource: MatTableDataSource<any>;
   itineraries;
   @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
-  @ViewChild(MatSort, {static: true}) sort: MatSort;
+  // @ViewChild(MatSort, {static: true}) sort: MatSort;
   private error: any
   ref;
 
-  constructor(public data: DataService, private bottomSheet: MatBottomSheet, public router: Router) {
+  constructor(public data: DataService, private matDialog: MatDialog, public router: Router) {
   }
 
   ngOnInit() {
-    // todo: add dummy data
-    // const dummydata = [
-    //   this.data.sampleData.itineraries['Planet Africa']['-L6VmNj-yY1NiNsV4_eZ'],
-    //   this.data.sampleData.itineraries['Planet Africa']['-L6WvcFAHVIMplaQqKdf'],
-    //   this.data.sampleData.itineraries['Planet Africa']['-L745WMaomnzBEVhzN2j'],
-    //   this.data.sampleData.itineraries['Planet Africa']['-L7ZJtvIw5r_0FophV5V'],
-    // ];
-
     // init itineraries array
     this.itineraries = [];
 
     // get itineraries
-    this.ref = this.data.af.list(`itineraries/${localStorage.getItem('company')}/`, ref => ref.limitToLast(250))
+    this.ref = this.data.af.list(`itineraries/${this.data.company}/`, ref => ref.limitToLast(250))
     .snapshotChanges()
       .subscribe(snapshots => {
 
@@ -57,13 +49,13 @@ export class ItinerariesComponent implements OnInit, OnDestroy {
         });
 
         // init data source
-        this.dataSource = new MatTableDataSource(this.itineraries);
+        this.dataSource = new MatTableDataSource(this.itineraries.reverse());
 
         // init data source
         this.dataSource.paginator = this.paginator;
 
         // init sort
-        this.dataSource.sort = this.sort;
+        // this.dataSource.sort = this.sort;
       });
 
   }
@@ -73,7 +65,7 @@ export class ItinerariesComponent implements OnInit, OnDestroy {
     // client\agent name string
     // let string = '';
     // get from firebase
-    // this.data.getSingleItem(key, `${type}/${this.data.currentCompany}/`)
+    // this.data.getSingleItem(key, `${type}/${this.data.company}/`)
     //   .valueChanges()
     //   .subscribe((res) => {
     //     const client = res;
@@ -98,17 +90,9 @@ export class ItinerariesComponent implements OnInit, OnDestroy {
       });
   }
 
-  // filter function
-  applyFilter(filterValue: string) {
-    this.dataSource.filter = filterValue.trim().toLowerCase();
-
-    if (this.dataSource.paginator) {
-      this.dataSource.paginator.firstPage();
-    }
-  }
   // function to add new itinerary
   addNew() {
-    this.bottomSheet.open(EditorComponent, {
+    this.matDialog.open(EditorComponent, {
       data: {
         item: null,
         new: true,
@@ -119,7 +103,7 @@ export class ItinerariesComponent implements OnInit, OnDestroy {
 
   editItinerary(itinerary) {
     // stringify itinerary and send as router param
-    this.router.navigate(['/itinerary-editor', JSON.stringify(itinerary)]);
+    this.router.navigate(['/itinerary-editor', itinerary.key]);
   }
 
   ngOnDestroy(): void {

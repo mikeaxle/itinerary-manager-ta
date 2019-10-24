@@ -19,28 +19,15 @@ export class AgentsComponent implements OnInit, OnDestroy {
   dataSource: MatTableDataSource<any>;
 
   // inject data worked and router into component
-  loggedInUser: any;
-  currentCompany: any;
-  color: any;
   @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
   @ViewChild(MatSort, {static: true}) sort: MatSort;
   agents: any;
   ref: any;
 
 
-  constructor(public router: Router, public data: DataService, public dialog: MatDialog, public bottomSheet: MatBottomSheet) {}
+  constructor(public router: Router, public data: DataService, public dialog: MatDialog) {}
 
   ngOnInit() {
-    // todo: dummy data
-    // const dummydata = [
-    //   this.data.sampleData.users['5oPFb9A68mgbFJm3VtdfWCn9Yoc2'],
-    //   this.data.sampleData.users['5oPFb9A68mgbFJm3VtdfWCn9Yoc2'],
-    //   this.data.sampleData.users['5oPFb9A68mgbFJm3VtdfWCn9Yoc2'],
-    //   this.data.sampleData.users['5oPFb9A68mgbFJm3VtdfWCn9Yoc2'],
-    //   this.data.sampleData.users['5oPFb9A68mgbFJm3VtdfWCn9Yoc2'],
-    //   this.data.sampleData.users['5oPFb9A68mgbFJm3VtdfWCn9Yoc2'],
-    // ];
-
     this.agents = [];
 
     this.ref = this.data.af.list(`users`)
@@ -96,10 +83,10 @@ export class AgentsComponent implements OnInit, OnDestroy {
   // function to delete item
   deleteAgent(id: string) {
 
-    if (this.loggedInUser.uid === id) {
+    if (this.data.user.uid === id) {
       alert('Cannot delete the user you are currently logged in as');
     } else  {
-      this.data.af.list(`itineraries/${this.currentCompany}`, ref => ref.orderByChild('agent').equalTo(id).limitToFirst(1))
+      this.data.af.list(`itineraries/${this.data.company}`, ref => ref.orderByChild('agent').equalTo(id).limitToFirst(1))
         .snapshotChanges()
         .subscribe((res) => {
           // check if agent has itineraries
@@ -121,7 +108,7 @@ export class AgentsComponent implements OnInit, OnDestroy {
 
   // function to add new agent
   addNew() {
-    this.bottomSheet.open(EditorComponent, {
+    this.dialog.open(EditorComponent, {
       data: {
         item: null,
         new: true,
@@ -132,7 +119,7 @@ export class AgentsComponent implements OnInit, OnDestroy {
 
   // function to edit agent
   editAgent(agent) {
-    this.bottomSheet.open(EditorComponent, {
+    this.dialog.open(EditorComponent, {
       data: {
         item: agent,
         new: false,

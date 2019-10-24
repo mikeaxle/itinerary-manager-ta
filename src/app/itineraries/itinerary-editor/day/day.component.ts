@@ -80,17 +80,17 @@ export class DayComponent implements OnInit {
     // init days array
     this.remainingDays = Array.from(Array(100).keys());
 
-    // // init previously used country and region params
-    // this.lastUsedParams = this.params.lastUsedParams
+    // init previously used country and region params
+    this.lastUsedParams = this.params.lastUsedParams
 
-    // // check if last used params are default, then null
-    // if (this.lastUsedParams.country === 0) {
-    //   this.lastUsedParams.country = null
-    // }
+    // check if last used params are default, then null
+    if (this.lastUsedParams.country === 0) {
+      this.lastUsedParams.country = null
+    }
 
-    // if (this.lastUsedParams.region === 0) {
-    //   this.lastUsedParams.region = null
-    // }
+    if (this.lastUsedParams.region === 0) {
+      this.lastUsedParams.region = null
+    }
 
     // subscribe to services observable
     this.changes();

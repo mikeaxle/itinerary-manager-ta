@@ -3,7 +3,6 @@ import {Itinerary} from '../../model/itinerary';
 import {DataService} from '../../services/data.service';
 import {FormArray, FormBuilder, FormControl, Validators} from '@angular/forms';
 import {Router} from '@angular/router';
-import { MatBottomSheetRef, MAT_BOTTOM_SHEET_DATA} from '@angular/material/bottom-sheet';
 import Swal from 'sweetalert2';
 import {countries} from '../../model/countries';
 import {Agent} from '../../model/agent';
@@ -14,6 +13,8 @@ import {Region} from '../../model/region';
 import {CountryService} from '../../services/country.service';
 import {inventoryTypes} from '../../model/inventory-types';
 import {MediaItem} from '../../model/mediaItem';
+import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
+import {MatDialogConfig} from '@angular/material';
 
 @Component({
   selector: 'app-editor',
@@ -30,8 +31,8 @@ export class EditorComponent implements OnInit {
   agent: Agent;
   client: Client;
   numbers: any;
-  agents: any;
-  clients: any;
+  agents = [];
+  clients = [];
   error: any;
   user: any;
   invoiceDetails: any;
@@ -43,12 +44,12 @@ export class EditorComponent implements OnInit {
   types = inventoryTypes;
   oldImage: any;
 
-  constructor(@Inject(MAT_BOTTOM_SHEET_DATA) public args: any,
+  constructor(@Inject(MAT_DIALOG_DATA) public args: any,
               private formBuilder: FormBuilder,
               public data: DataService,
               public router: Router,
               public countryService: CountryService,
-              public bottomSheetRef: MatBottomSheetRef<EditorComponent>) {
+              public bottomSheetRef: MatDialogRef<EditorComponent>) {
   }
 
   ngOnInit() {
@@ -95,26 +96,33 @@ export class EditorComponent implements OnInit {
     });
 
     // get company invoice details
-    this.data.af.object(`companies/${this.data.currentCompany}`)
+    this.data.af.object(`companies/${this.data.company}`)
       .valueChanges()
       .subscribe((res) => {
         // this.data.list('company/True Africa')
-        // @ts-ignore
-        this.invoiceDetails = {prefix: res.prefix, invoice_number: res.invoice_number};
+        this.invoiceDetails = {prefix: res[`prefix`], invoice_number: res[`invoice_number`]};
       });
 
     // get agents list
     this.data.af.list('users')
-      .valueChanges()
-      .subscribe((res) => {
-        this.agents = res;
+      .snapshotChanges()
+      .subscribe((_) => {
+        _.forEach(snapshot => {
+          const agent = snapshot.payload.val();
+          agent[`key`] = snapshot.key;
+          this.agents.push(agent);
+        });
       });
 
     // get client list
-    this.data.af.list(`clients/${this.data.currentCompany}/`)
-      .valueChanges()
-      .subscribe(res => {
-        this.clients = res;
+    this.data.af.list(`clients/${this.data.company}/`)
+      .snapshotChanges()
+      .subscribe(_ => {
+        _.forEach(snapshot => {
+          const client = snapshot.payload.val();
+          client[`key`] = snapshot.key;
+          this.clients.push(client);
+        });
       });
 
     // make numbers
@@ -145,21 +153,21 @@ export class EditorComponent implements OnInit {
 
   // initialize new inventory form
   initNewInventory() {
-    this.inventoryForm = this.formBuilder.group({
+    this.inventoryForm = this.args.new ? this.formBuilder.group({
       description: [null, Validators.required],
       destination: [null, Validators.required],
       image: [null, Validators.required],
       inclusions: [null, Validators.required],
-      longDescription: [null, Validators.required],
+      long_description: [null, Validators.required],
       name: [null, Validators.required],
       region: [null, Validators.required],
       type: [null, Validators.required],
-    });
+    }) : this.formBuilder.group(this.inventoryItem);
   }
 
 
   addTag(tag: string) {
-    this.mediaItem.tags.push(tag)
+    this.mediaItem.tags.push(tag);
   }
 
   // function to validate
@@ -181,8 +189,6 @@ export class EditorComponent implements OnInit {
 
   // function to add new itinerary
   addItinerary(itinerary: any) {
-    console.log(this.itineraryForm.value);
-
     if (this.itineraryForm.valid) {
 
       // convert dates to date strings
@@ -194,7 +200,7 @@ export class EditorComponent implements OnInit {
       // }
 
       // add status field to formData
-      this.itineraryForm.value.status = 'Draft';
+      this.itineraryForm.value.status = 'Provisional';
 
       // increment invoice number
       this.invoiceDetails.invoice_number += 1;
@@ -203,17 +209,18 @@ export class EditorComponent implements OnInit {
       this.itineraryForm.value.invoice_number = `${this.invoiceDetails.prefix}-${this.invoiceDetails.invoice_number}`;
 
       // push to firebase
-      this.data.saveItem(`itineraries/${this.data.currentCompany}`, this.itineraryForm.value)
+      this.data.saveItem(`itineraries/${this.data.company}`, this.itineraryForm.value)
         .then((res) => {
           // update invoice number in firebase
-          this.data.updateItem(this.data.currentCompany, 'companies', this.invoiceDetails);
-
-          this.bottomSheetRef.dismiss();
+          this.data.updateItem(this.data.company, 'companies', this.invoiceDetails);
 
           // go to itinerary editor with new itinerary
-          this.router.navigate(['itinerary-editor', { queryParams: {itineraryData: itinerary }} ])
+          this.router.navigate(['/itinerary-editor', res.key])
             .then(() => {
-              Swal.fire('Success!', 'New itinerary successfully added', 'success');
+              Swal.fire('Success!', 'New itinerary successfully added', 'success')
+                .then(_ => {
+                  this.closeDialog();
+                });
               }
             );
 
@@ -315,36 +322,28 @@ export class EditorComponent implements OnInit {
 
       } else {
 
-        try {
           // TODO: delete old image
-          // this.data.deleteItemWithImage(this.oldImage)
-          // .then((res) => {
+          this.data.deleteItemWithImage(this.oldImage)
+          .then((res) => {
             // update with image
-            this.data.updateItemWithImage(this.mediaItem[`key`], 'media', this.mediaItem, this.mediaItem.image, 'media')
+            this.data.updateItemWithImage(this.mediaItem[`key`], 'media', this.mediaItem, this.mediaItem.image, 'media');
+
             // console.log(res);
             Swal.fire('Success', 'Existing media item successfully updated', 'success');
-        
-          // })
-          
-        } catch (err) {
-          console.log(err)
-
-        // Swal
-        Swal.fire('Failed!', `An error has occurred: ${err.message}`, 'error');
-
-        // assign error to variable
-        this.error = err;
-        }
-
-      }
-
+          })
+            .catch((err) => {
+              console.log(err);
+              Swal.fire('Failed!', `An error has occurred: ${err.message}`, 'error');
+              this.error = err;
+            });
+          }
         // close form
-        this.closeDialog()
+    this.closeDialog();
   }
 
   // function to close dialog
   closeDialog() {
-    this.bottomSheetRef.dismiss();
+    this.bottomSheetRef.close();
   }
 
 
@@ -361,7 +360,7 @@ export class EditorComponent implements OnInit {
       case 'clients':
         itemId = this.client ? this.client[`key`] : null;
         data.agent = this.user[`key`];
-        databasePath += `${localStorage.getItem('company')}/`;
+        databasePath += `${this.data.company}/`;
         break;
       case 'inventory':
         itemId = this.inventoryItem ? this.inventoryItem[`key`] : null;
@@ -373,6 +372,9 @@ export class EditorComponent implements OnInit {
         itemId = this.mediaItem ? this.mediaItem[`key`] : null;
         break;
     }
+
+    // remove key
+    delete data[`key`];
 
     // check if new item
     if (this.args.new) {

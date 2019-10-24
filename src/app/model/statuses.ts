@@ -4,5 +4,6 @@ export const STATUS = [
   'Provisional',
   'Confirmed',
   'Complete',
-  'Cancelled'
+  'Cancelled',
+  'Archived'
 ];

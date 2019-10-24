@@ -1,7 +1,9 @@
 import {Component, Inject, OnDestroy, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup} from '@angular/forms';
+import {FormBuilder, FormControl, FormGroup} from '@angular/forms';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
 import {DataService} from '../../../services/data.service';
+import Swal from 'sweetalert2';
+import { snapshotChanges } from '@angular/fire/database';
 
 // assign day in milliseconds
 const DAY_IN_MILLISECONDS = 1000 * 60 * 60 * 24;
@@ -15,16 +17,14 @@ export class ItineraryDetailsEditorComponent implements OnInit, OnDestroy {
   TODAY = new Date();
   public itineraryForm: FormGroup;
   itinerary;
-  clients = []
   error: any;
   user: any;
   totalDays: any;
-  color: any;
-  agents = []
   private startdate: Date;
   private enddate: Date;
-  private agents$;
-  private clients$;
+  private agent;
+  private client;
+  formRef$;
 
   constructor(private formBuilder: FormBuilder,
               public data: DataService,
@@ -33,13 +33,18 @@ export class ItineraryDetailsEditorComponent implements OnInit, OnDestroy {
 
 
   ngOnInit() {
-    this.color = localStorage.getItem('color');
 
     // get user
     this.user = this.data.user;
 
     // get itinerary
     this.itinerary = this.params.itinerary;
+
+    // get agent  from params
+    this.agent = this.params.agent;
+
+    //  get from params
+    this.client = this.params.client
 
     // create start date and end date objects
     this.startdate = new Date(this.itinerary.startdate);
@@ -48,48 +53,27 @@ export class ItineraryDetailsEditorComponent implements OnInit, OnDestroy {
     // init form
     this.itineraryForm = this.initItinerary();
 
+
     // calculate remaining days
     this.calculateDays();
 
     // subscribe to changes on itinerary form. calculate number of days
-    this.itineraryForm
+    this.formRef$ = this.itineraryForm
       .valueChanges
       .subscribe((val) => {
         this.calculateDays();
       });
 
-    // get agents list
-    this.agents$ = this.data.af.list('users')
-      .snapshotChanges()
-      .subscribe((snaphots) => {
-        snaphots.forEach(snapshot => {
-          const agent = snapshot.payload.val();
-          agent[`key`] = snapshot.key;
-          this.agents.push(agent);
-        });
-      });
-
-
-    // get client list
-    this.clients$ = this.data.getList(`clients/${localStorage.getItem('company')}/`)
-      .snapshotChanges()
-      .subscribe(snapshots => {
-        snapshots.forEach(snapshot => {
-          const client = snapshot.payload.val();
-          client[`key`] = snapshot.key;
-          this.clients.push(client)
-        });
-      });
   }
 
   // function to init itinerary
   initItinerary() {
     return this.formBuilder.group({
       adults: [this.itinerary.adults],
-      agent: [this.itinerary.agent],
+      agent: [this.agent.key],
       children: [this.itinerary.children],
       children_ages: [this.itinerary.children_ages],
-      client: [this.itinerary.client],
+      client: [this.client.key],
       enddate: [this.enddate],
       startdate: [this.startdate],
       title: [this.itinerary.title]
@@ -139,22 +123,25 @@ export class ItineraryDetailsEditorComponent implements OnInit, OnDestroy {
     }
 
     // push to firebase
-    this.data.updateItem(this.itinerary.$key, `itineraries/${this.data.currentCompany}/`, this.itineraryForm.value)
+    this.data.updateItem(this.itinerary[`key`], `itineraries/${this.data.company}/`, this.itineraryForm.value)
       .then(() => {
+        Swal.fire('Itinerary Editor', 'Itinerary details updated', 'success');
         this.dialogRef.close();
       })
       .catch((error) => {
+        Swal.fire('Itinerary Editor', error.message, 'error');
         console.log(error);
       });
   }
 
   // function to cancel dialog
   onCloseCancel() {
+    // close dialog
     this.dialogRef.close();
   }
 
   ngOnDestroy(): void {
-    this.agents$.unsubscribe();
-    this.clients$.unsubscribe();
+    // unsubscribe from form
+    this.formRef$.unsubscribe();
   }
 }

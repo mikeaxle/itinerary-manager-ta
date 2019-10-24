@@ -1,9 +1,10 @@
 import {Component, OnInit, ViewChild, OnDestroy} from '@angular/core';
 import {DataService} from '../services/data.service';
-import {MatBottomSheet, MatDialog, MatPaginator, MatSort, MatTableDataSource} from '@angular/material';
+import {MatBottomSheet, MatDialog, MatPaginator, MatSort, MatTable, MatTableDataSource} from '@angular/material';
 import {ConfirmComponent} from '../shared/confirm/confirm.component';
 import {PermissionDeniedDialogComponent} from '../shared/permission-denied-dialog/permission-denied-dialog.component';
 import {EditorComponent} from '../shared/editor/editor.component';
+import {snapshotChanges} from '@angular/fire/database';
 
 @Component({
   selector: 'app-clients',
@@ -18,10 +19,11 @@ export class ClientsComponent implements OnInit, OnDestroy {
   clients;
 
   @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
-  @ViewChild(MatSort, {static: true}) sort: MatSort;
+  // @ViewChild(MatSort, {static: true}) sort: MatSort;
   private ref;
+  public dialogRef;
 
-  constructor(public data: DataService, public dialog: MatDialog, private bottomSheet: MatBottomSheet) { }
+  constructor(public data: DataService, public dialog: MatDialog) { }
 
   ngOnInit() {
     // todo: dummy data
@@ -37,10 +39,9 @@ export class ClientsComponent implements OnInit, OnDestroy {
     this.clients = [];
 
     // get clients
-    this.ref = this.data.getList(`clients/${localStorage.getItem('company')}` )
+    this.ref = this.data.getList(`clients/${this.data.company}` )
       .snapshotChanges()
       .subscribe(snapshots => {
-
         snapshots.forEach(snapshot => {
           const client = snapshot.payload.val();
           client[`key`] = snapshot.key;
@@ -53,17 +54,9 @@ export class ClientsComponent implements OnInit, OnDestroy {
         this.dataSource.paginator = this.paginator;
 
         // init sort
-        this.dataSource.sort = this.sort;
+        // this.dataSource.sort = this.sort;
+
       });
-  }
-
-  // filter function
-  applyFilter(filterValue: string) {
-    this.dataSource.filter = filterValue.trim().toLowerCase();
-
-    if (this.dataSource.paginator) {
-      this.dataSource.paginator.firstPage();
-    }
   }
 
   // function to open confirm delete dialog
@@ -93,7 +86,7 @@ export class ClientsComponent implements OnInit, OnDestroy {
   // function to delete item
   deleteClient(id: string) {
     // get itineraries
-    this.data.af.list(`itineraries/${localStorage.getItem('company')}`,
+    this.data.af.list(`itineraries/${this.data.company}`,
       ref => ref.orderByChild('client').equalTo(id).limitToFirst(1))
       .snapshotChanges()
       .subscribe((res) => {
@@ -102,7 +95,7 @@ export class ClientsComponent implements OnInit, OnDestroy {
           this.openPermissionDenied();
           // alert('Cannot delete a client with existing itineraries')
         } else {
-          this.data.deleteItem(id, `clients/${localStorage.getItem('company')}/`)
+          this.data.deleteItem(id, `clients/${this.data.company}/`)
             .then(() => {
               console.log('client deleted');
             })
@@ -115,7 +108,7 @@ export class ClientsComponent implements OnInit, OnDestroy {
 
   addNew() {
     // todo: add arguments to editor component for type, mode, and data
-    this.bottomSheet.open(EditorComponent, {
+    this.dialog.open(EditorComponent, {
       data: {
         item: null,
         new: true,
@@ -125,13 +118,17 @@ export class ClientsComponent implements OnInit, OnDestroy {
   }
 
   editClient(client: any) {
-    this.bottomSheet.open(EditorComponent, {
+     this.dialogRef = this.dialog.open(EditorComponent, {
       data: {
         item: client,
         new: false,
         type: 'clients',
       }
     });
+
+     this. dialogRef.afterClosed().subscribe(() => {
+
+     });
   }
 
   ngOnDestroy(): void {

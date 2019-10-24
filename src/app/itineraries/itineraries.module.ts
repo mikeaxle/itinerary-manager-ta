@@ -5,16 +5,19 @@ import { ItinerariesRoutingModule } from './itineraries-routing.module';
 import {ItineraryEditorComponent} from './itinerary-editor/itinerary-editor.component';
 import { ItineraryDetailsEditorComponent } from './itinerary-editor/itinerary-details-editor/itinerary-details-editor.component';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {MatButtonModule, MatCardModule, MatChipsModule, MatDatepickerModule, MatDialogModule, MatGridListModule, MatIconModule, MatInputModule, MatMenuModule, MatOptionModule, MatProgressSpinnerModule, MatSelectModule} from '@angular/material';
+import {MatButtonModule, MatCardModule, MatChipsModule, MatDatepickerModule, MatDialogModule, MatGridListModule, MatIconModule, MatInputModule, MatMenuModule, MatOptionModule, MatProgressBarModule, MatProgressSpinnerModule, MatSelectModule} from '@angular/material';
 import {AngularSvgIconModule} from 'angular-svg-icon';
 import {FlexLayoutModule} from '@angular/flex-layout';
 import {CurrencyMaskModule} from 'ng2-currency-mask';
+import {AppModule} from '../app.module';
+import {CommentsPipe} from '../filter/comments.pipe';
 
 
 @NgModule({
   declarations: [
     ItineraryEditorComponent,
-    ItineraryDetailsEditorComponent
+    ItineraryDetailsEditorComponent,
+    CommentsPipe
   ],
   imports: [
     CommonModule,
@@ -35,7 +38,8 @@ import {CurrencyMaskModule} from 'ng2-currency-mask';
     MatGridListModule,
     MatDialogModule,
     MatDatepickerModule,
-    ReactiveFormsModule
-  ]
+    ReactiveFormsModule,
+    MatProgressBarModule
+  ],
 })
 export class ItinerariesModule { }

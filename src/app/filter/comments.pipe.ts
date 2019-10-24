@@ -8,7 +8,7 @@ export class CommentsPipe implements PipeTransform {
 
     // filter comment by editor-components
     return value.filter((e) => {
-      return e.day === args;
+      return e.payload.val().day === args;
     });
   }
 }

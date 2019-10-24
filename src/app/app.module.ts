@@ -31,7 +31,7 @@ import {
   MatGridListModule,
   MatListModule,
   MatRadioModule,
-  MatBottomSheetModule, MatProgressBarModule
+  MatBottomSheetModule, MatProgressBarModule, MatDialogConfig
 } from '@angular/material';
 import { InvalidTypeDirective } from './directives/invalid-type.directive';
 import { InvalidmessageDirective } from './directives/invalidmessage.directive';
@@ -64,7 +64,6 @@ import { MediaComponent } from './media/media.component';
 import { AgentsComponent } from './agents/agents.component';
 import { FileUploaderComponent } from './shared/file-uploader/file-uploader.component';
 import { ItineraryItemFilterPipePipe } from './filter/itinerary.pipe';
-import { CommentsPipe } from './filter/comments.pipe';
 import { InclusionsPipe } from './filter/inclusions.pipe';
 import { MoneyPipe } from './filter/money.pipe';
 import { AgentPipe } from './filter/agent.pipe';
@@ -73,6 +72,9 @@ import { SearchPipe } from './filter/search.pipe';
 import { PdfDialogComponent } from './shared/pdf-dialog/pdf-dialog.component';
 import { LoginComponent } from './login/login.component';
 import { NgxAuthFirebaseUIModule } from 'ngx-auth-firebaseui';
+import { ToolbarComponent } from './toolbar/toolbar.component';
+import { SearchComponent } from './shared/search/search.component';
+import { ProgressBarComponent } from './shared/progress-bar/progress-bar.component';
 
 // currency Mask settings
 // @ts-ignore
@@ -89,7 +91,6 @@ export const CustomCurrencyMaskConfig: CurrencyMaskConfig = {
 };
 
 @NgModule({
-  bootstrap: [AppComponent],
   declarations: [
     AppComponent,
     ItinerariesComponent,
@@ -110,14 +111,16 @@ export const CustomCurrencyMaskConfig: CurrencyMaskConfig = {
     AgentsComponent,
     FileUploaderComponent,
     ItineraryItemFilterPipePipe,
-    CommentsPipe,
     InclusionsPipe,
     MoneyPipe,
     AgentPipe,
     StatusPipe,
     SearchPipe,
     PdfDialogComponent,
-    LoginComponent
+    LoginComponent,
+    ToolbarComponent,
+    SearchComponent,
+    ProgressBarComponent
   ],
   entryComponents: [
     DayComponent,
@@ -176,11 +179,15 @@ export const CustomCurrencyMaskConfig: CurrencyMaskConfig = {
     MatProgressBarModule
   ],
   providers: [],
+  bootstrap: [AppComponent],
+  exports: [
+    ProgressBarComponent
+  ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class AppModule {
   constructor(overlayContainer: OverlayContainer) {
-    if (localStorage.getItem('currentCompany') === 'Planet Africa') {
+    if (localStorage.getItem('company') === 'Planet Africa') {
       overlayContainer.getContainerElement().classList.add('planet-africa-theme');
     }
   }

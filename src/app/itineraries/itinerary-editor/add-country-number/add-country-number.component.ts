@@ -64,26 +64,7 @@ export class AddCountryNumberComponent implements OnInit {
 
   // function to close dialog and write to firebase
   onCloseConfirm() {
-
-    if (this.params.mode === 'edit') {
-      // update existing item
-      this.data.updateItem(this.params.country.$key, `phone_numbers/${this.params.id}`, this.addNumberForm.value)
-        .then(() => {
-          this.dialogRef.close();
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-    } else {
-      // save new contact number
-      this.data.saveItem(`phone_numbers/${this.params.id}`, this.addNumberForm.value)
-        .then(() => {
-          this.dialogRef.close();
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-    }
+    this.dialogRef.close(this.addNumberForm.value);
   }
 
   // function to cancel dialog

@@ -23,13 +23,13 @@ export class LoginComponent implements OnDestroy  {
     this.data.afAuth.authState.subscribe(auth => {
       if (auth) {
         // check if local storage variables are defined
-        if (localStorage.getItem('company') === undefined) {
+        if (this.data.company === undefined) {
           // default to True Africa
           localStorage.setItem('company', 'True Africa');
         }
 
         // set global color
-        if (localStorage.getItem('company') === 'Planet Africa') {
+        if (this.data.company === 'Planet Africa') {
           localStorage.setItem('color', '#AC452F');
           localStorage.setItem('logo', '../assets/logos/avatar-planetafrica.png');
         } else {

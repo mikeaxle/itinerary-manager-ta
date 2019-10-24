@@ -2,29 +2,40 @@
 <h2 mat-dialog-title>Edit Itinerary Details</h2>
 <form [formGroup]="itineraryForm" fxLayout="column">
   <!-- agent -->
-  <mat-select
-    *ngIf="user.role === 'admin'"
-    placeholder="Agent"
-    formControlName="agent"
-    required>
-    <mat-option
-      *ngFor="let agent of agents"
-      [value]="agent.key">
-      {{agent.firstname }} {{agent.lastname}} <span *ngIf="user.key === agent.key" [style.color]="data.color">(You)</span>
-    </mat-option>
-  </mat-select>
+<!--  <mat-select-->
+<!--    *ngIf="user.role === 'admin'"-->
+<!--    placeholder="Agent"-->
+<!--    formControlName="agent"-->
+<!--    disabled-->
+<!--    required>-->
+<!--    <mat-option-->
+<!--      [value]="agent">-->
+<!--      {{agent.firstname }} {{agent.lastname}} <span *ngIf="user.key === agent.key" [style.color]="data.color">(You)</span>-->
+<!--    </mat-option>-->
+<!--  </mat-select>-->
+  <mat-form-field>
+    <label>
+      <input placeholder="Agent"  [value]="agent.firstname + '' + agent.lastname" matInput readonly/>
+    </label>
+  </mat-form-field>
 
   <!-- client -->
-  <mat-select
-    placeholder="Client"
-    formControlName="client"
-    required>
-    <mat-option
-      *ngFor="let client of clients"
-      [value]="client.key">
-      {{client.firstname}} {{client.lastname}}
-    </mat-option>
-  </mat-select>
+<!--  <mat-select-->
+<!--    placeholder="Client"-->
+<!--    formControlName="client"-->
+<!--    disabled-->
+<!--    required>-->
+<!--    <mat-option-->
+<!--      [value]="client">-->
+<!--      {{client.firstname}} {{client.lastname}}-->
+<!--    </mat-option>-->
+<!--  </mat-select>-->
+
+  <mat-form-field>
+    <label>
+      <input placeholder="Client"  [value]="client.firstname + '' + client.lastname" matInput readonly/>
+    </label>
+  </mat-form-field>
 
   <!-- Adults and Children -->
   <div class="double-items">

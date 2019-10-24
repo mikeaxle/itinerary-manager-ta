@@ -1,5 +1,5 @@
 import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
-import {MatBottomSheet, MatDialog, MatPaginator, MatSort, MatTableDataSource} from '@angular/material';
+import {MAT_DIALOG_SCROLL_STRATEGY, MatBottomSheet, MatDialog, MatPaginator, MatSort, MatTableDataSource} from '@angular/material';
 import {CountryService} from '../services/country.service';
 import {Router} from '@angular/router';
 import {DataService} from '../services/data.service';
@@ -23,12 +23,11 @@ export class InventoryComponent implements OnInit, OnDestroy {
   displayedColumns = [ 'Image', 'Title', 'Country', 'Region', 'Type', 'Actions'];
   dataSource: MatTableDataSource<any>;
   @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
-  @ViewChild(MatSort, {static: true}) sort: MatSort;
+  // @ViewChild(MatSort, {static: true}) sort: MatSort;
   private ref;
 
   constructor(public router: Router, public data: DataService,
-              public countryService: CountryService, public dialog: MatDialog,
-              public bottomSheet: MatBottomSheet) {}
+              public countryService: CountryService, public dialog: MatDialog) {}
 
   ngOnInit() {
     // get countries
@@ -36,18 +35,6 @@ export class InventoryComponent implements OnInit, OnDestroy {
 
     // get regions
     this.regions = this.countryService.getRegions();
-
-    // todo: dummy data
-    // const dummydata = [
-    //   this.data.sampleData.inventory['-KwZJEvnHfYeFOKnQXkA'],
-    //   this.data.sampleData.inventory['-KwZJRJ8rDoNhLXxFbjw'],
-    //   this.data.sampleData.inventory['-KwZJ_f6e5Rj6CRrbhII'],
-    //   this.data.sampleData.inventory['-KwZK87v2uuzrVpdWIoz'],
-    //   this.data.sampleData.inventory['-KwZKKmBu2cq2Z2R9Ymc'],
-    //   this.data.sampleData.inventory['-KwepzM-invrDAVdp8z_'],
-    //   this.data.sampleData.inventory['-KweqGt4RfNiINpm3Ffv'],
-    //   this.data.sampleData.inventory['-KweqcZjCq3ubFVWdspD'],
-    // ];
 
     // init inventory array
     this.inventory = [];
@@ -70,7 +57,7 @@ export class InventoryComponent implements OnInit, OnDestroy {
         this.dataSource.paginator = this.paginator;
 
         // init sort
-        this.dataSource.sort = this.sort;
+        // this.dataSource.sort = this.sort;
       });
   }
 
@@ -129,25 +116,15 @@ export class InventoryComponent implements OnInit, OnDestroy {
         if (item.image !== undefined && item.image !== 'undefined') {
 
           // delete image from firebase storage
-          try {
             this.data.deleteItemWithImage(item.image)
-              .subscribe((res) => {
+              .then((res) => {
                 Swal.fire('Success', 'Inventory item deleted: ' + JSON.stringify(res), 'success');
                 console.log(res);
+              })
+              .catch((err) => {
+                Swal.fire('Failed', err.message, 'error');
+                console.log(err);
               });
-          } catch (e) {
-            Swal.fire('Failed', e.message, 'error');
-            console.log(e);
-          }
-
-            // .then(() => {
-            //
-            //   console.log('inventory image deleted');
-            // })
-            // .catch((error) => {
-            //
-            //   console.log('image delete error: ' + error.message);
-            // });
         }
       })
       .catch((error) => {
@@ -158,7 +135,7 @@ export class InventoryComponent implements OnInit, OnDestroy {
 
   // function to add new inventory item
   addNew() {
-    this.bottomSheet.open(EditorComponent, {
+    this.dialog.open(EditorComponent, {
       data: {
         item: null,
         new: true,
@@ -169,12 +146,15 @@ export class InventoryComponent implements OnInit, OnDestroy {
 
 // function to edit inventory item
   editInventoryItem(inventoryItem) {
-    this.bottomSheet.open(EditorComponent, {
+    // todo: fix region control when editing inventory item
+    this.dialog.open(EditorComponent, {
+      autoFocus: false,
       data: {
         item: inventoryItem,
         new: false,
         type: 'inventory'
-      }
+      },
+      maxHeight: '90vh'
     });
   }
 

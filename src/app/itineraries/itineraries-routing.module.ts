@@ -7,11 +7,11 @@ import {ItineraryEditorComponent} from './itinerary-editor/itinerary-editor.comp
 
 const routes: Routes = [
   { path: 'itineraries', component: ItinerariesComponent },
-  { path: 'itinerary-editor/:itinerary', component: ItineraryEditorComponent }
+  { path: 'itinerary-editor/:id', component: ItineraryEditorComponent }
 ];
 
 @NgModule({
-  imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
+  imports: [RouterModule.forChild(routes)]
 })
 export class ItinerariesRoutingModule { }

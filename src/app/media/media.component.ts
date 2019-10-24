@@ -20,7 +20,7 @@ export class MediaComponent implements OnInit, OnDestroy {
   size = 15;
   ref;
 
-  constructor(private data: DataService, public dialog: MatDialog, public bottomSheet: MatBottomSheet) { }
+  constructor(private data: DataService, public dialog: MatDialog) { }
 
   ngOnInit() {
     // get media list
@@ -47,7 +47,7 @@ export class MediaComponent implements OnInit, OnDestroy {
         this.size = this.mediaList.length;
       });
 
-     // itint pagination
+     // init pagination
      this.getData({pageIndex: this.page, pageSize: this.size});
   }
 
@@ -87,7 +87,7 @@ export class MediaComponent implements OnInit, OnDestroy {
 
         // delete image from firebase storage
         this.data.deleteItemWithImage(media.image)
-          .subscribe(res => {
+          .then(res => {
             Swal.fire('Success', 'Inventory item deleted: ' + JSON.stringify(res), 'success');
             console.log(res);
           });
@@ -100,7 +100,7 @@ export class MediaComponent implements OnInit, OnDestroy {
 
   // function to add media
   addNew() {
-    this.bottomSheet.open(EditorComponent, {
+    this.dialog.open(EditorComponent, {
       data: {
         item: null,
         new: true,
@@ -111,7 +111,7 @@ export class MediaComponent implements OnInit, OnDestroy {
 
   // function to edit media
   editMediaItem(media: any) {
-    this.bottomSheet.open(EditorComponent, {
+    this.dialog.open(EditorComponent, {
       data: {
         item: media,
         new: false,
@@ -123,4 +123,24 @@ export class MediaComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.ref.unsubscribe();
   }
+
+  applyFilter(value) {
+    const temp = [];
+    // iterate entire media list
+    this.mediaList.forEach(media => {
+      // search title for occurances of value
+      if (media.title.search(value) !== -1) {
+        // push to temp array
+        temp.push(media);
+      }
+    });
+
+  //  check if temp array has entries
+    if (temp.length > 0) {
+      this.MEDIA_LIST = temp;
+      this.page = 1;
+    }
+  }
+
+
 }

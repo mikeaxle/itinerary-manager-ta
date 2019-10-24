@@ -1,57 +1,5 @@
 <!-- toolbar -->
-<mat-toolbar *ngIf="getItem('user') && router.url !== '/' " class="mat-elevation-z3" color="primary">
-      <button mat-button [routerLink]="['itineraries']">
-        <mat-icon>home</mat-icon>
-      </button>
-
-      <!-- normal menu -->
-      <div>
-        <button mat-button [routerLink]="['itineraries']">ITINERARIES</button>
-        <button mat-button [routerLink]="['clients']">CLIENTS</button>
-        <button mat-button [routerLink]="['inventory']">INVENTORY</button>
-        <button mat-button  [routerLink]="['agents']">AGENTS</button>
-<!--        <button *ngIf="(user | async)?.role === 'admin'" mat-button  [routerLink]="['agents']">AGENTS</button>-->
-        <button mat-button [routerLink]="['media']">MEDIA</button>
-      </div>
-
-      <!-- spacer -->
-      <span class="fill-remaining-space"></span>
-
-      <!-- company name -->
-<!--      <span-->
-<!--        *ngIf="user"-->
-<!--        fxLayout-->
-<!--        fxLayoutAlign="space-between center"-->
-<!--        fxLayoutGap="10px">-->
-
-  <!-- first name + last name -->
-  <sub>{{ getItem('user').firstname }} {{ getItem('user').lastname }}</sub>
-<div class="spacer"></div>
-
-        <!-- logo button -->
-        <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
-
-
-          <!-- logo -->
-          <img   class="avatar-image" [src]="getLogo()">
-
-        </button>
-
-<!--    </span>-->
-  <!-- collapsible menu -->
-  <mat-menu xPosition="before" #menu="matMenu">
-    <button mat-menu-item (click)="data.switchCompany()">
-      <mat-icon>person_outline</mat-icon>
-      <span *ngIf="getItem('company') === 'True Africa'">Switch to Planet Africa</span>
-      <span *ngIf="getItem('company') === 'Plant Africa'">Switch to True Africa</span>
-    </button>
-
-    <button mat-menu-item (click)="logout()">
-      <mat-icon>lock_open</mat-icon>
-      Logout
-    </button>
-  </mat-menu>
-</mat-toolbar>
+<app-toolbar></app-toolbar>
 
   <!-- router outlet -->
 <div class="router-wrapper">
