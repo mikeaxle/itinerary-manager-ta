@@ -1,16 +1,16 @@
 import {Component, Inject, OnInit} from '@angular/core';
-import {inventoryTypes} from '../../../model/inventory-types';
+import {inventoryTypes} from '../../../../model/inventory-types';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
 import { FormGroup } from '@angular/forms';
-import {DataService} from '../../../services/data.service';
+import {DataService} from '../../../../services/data.service';
 
 @Component({
   selector: 'app-comment',
-  styleUrls: ['./comment.component.css'],
-  templateUrl: './comment.component.html'
+  styleUrls: ['./comment-editor.component.css'],
+  templateUrl: './comment-editor.component.html'
 
 })
-export class CommentComponent implements OnInit {
+export class CommentEditorComponent implements OnInit {
   days;
   mapIterator: any;
   commentForm: FormGroup;
@@ -22,11 +22,11 @@ export class CommentComponent implements OnInit {
   ];
 
   constructor(public data: DataService,
-              public dialogRef: MatDialogRef<CommentComponent>,
+              public dialogRef: MatDialogRef<CommentEditorComponent>,
               @Inject(MAT_DIALOG_DATA) public params: any) { }
 
   ngOnInit() {
-    // get comment from params
+    // get comment-editor from params
     this.comment = this.params.comment ? this.params.comment : new Comment();
 
     // map iterator made from keys

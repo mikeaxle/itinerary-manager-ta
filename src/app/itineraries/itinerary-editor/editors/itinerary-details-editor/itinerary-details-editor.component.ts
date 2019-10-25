@@ -1,11 +1,11 @@
 import {Component, Inject, OnDestroy, OnInit} from '@angular/core';
 import {FormBuilder, FormControl, FormGroup} from '@angular/forms';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
-import {DataService} from '../../../services/data.service';
+import {DataService} from '../../../../services/data.service';
 import Swal from 'sweetalert2';
 import { snapshotChanges } from '@angular/fire/database';
 
-// assign day in milliseconds
+// assign day-editor in milliseconds
 const DAY_IN_MILLISECONDS = 1000 * 60 * 60 * 24;
 
 @Component({

@@ -5,19 +5,18 @@ import {CountryService} from '../../services/country.service';
 import {Router, ActivatedRoute} from '@angular/router';
 import {FormBuilder} from '@angular/forms';
 import {MatDialog, MatSnackBar} from '@angular/material';
-import {DragulaService} from 'ng2-dragula/ng2-dragula';
 import {SavePdfService} from '../../services/save-pdf.service';
-import {DayComponent} from './day/day.component';
-import {CommentComponent} from './comment/comment.component';
-import {PaymentComponent} from './payment/payment.component';
+import {DayEditorComponent} from './editors/day-editor/day-editor.component';
+import {CommentEditorComponent} from './editors/comment-editor/comment-editor.component';
+import {PaymentEditorComponent} from './editors/payment-editor/payment-editor.component';
 import {ImageSelectorComponent} from './image-selector/image-selector.component';
-import {AddCountryNumberComponent} from './add-country-number/add-country-number.component';
+import {CountryEditorComponent} from './editors/country-editor/country-editor.component';
 import {ConfirmComponent} from '../../shared/confirm/confirm.component';
 import {MONTHS} from '../../model/months';
 import {EXCLUSIONS} from '../../model/exclusions';
 import {CommonModule} from '@angular/common';
 import {STATUS} from '../../model/statuses';
-import {ItineraryDetailsEditorComponent} from './itinerary-details-editor/itinerary-details-editor.component';
+import {ItineraryDetailsEditorComponent} from './editors/itinerary-details-editor/itinerary-details-editor.component';
 import Swal from 'sweetalert2';
 import {generalInclusions} from '../../model/generalInclusions';
 import {CdkDragDrop, moveItemInArray} from '@angular/cdk/drag-drop';
@@ -87,7 +86,7 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
   generalInclusions = generalInclusions;
   private daysSubscription$;
   constructor(public router: Router, private route: ActivatedRoute, public data: DataService, public formbuilder: FormBuilder,
-              public dialog: MatDialog, private dragula: DragulaService, public savePdfService: SavePdfService, public snackBar: MatSnackBar,
+              public dialog: MatDialog, public savePdfService: SavePdfService, public snackBar: MatSnackBar,
               public http: HttpClient, public countryService: CountryService) {
 
   }
@@ -95,11 +94,12 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
   // drop event to initiate reorder of days
   drop(event: CdkDragDrop<string[]>) {
     const day = this.days[event.currentIndex];
-    // change position to current index
-    day[`position`] = event.currentIndex;
+    // // change position to current index
+    // day[`position`] = event.currentIndex;
 
     // write to database
-    this.daysRef$.update(day)
+    this.data.af.object(`days/${this.itinerary$.key}/${day.key}`)
+      .update({ position: event.currentIndex })
       .then(_ => {
         console.log('Day reordered');
       })
@@ -108,7 +108,7 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
       });
 
     // move item in array
-    moveItemInArray(this.days, event.previousIndex, event.currentIndex);
+    // moveItemInArray(this.days, event.previousIndex, event.currentIndex);
   }
 
   ngOnInit(): void {
@@ -256,21 +256,27 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
 
         // assign days array
         _.forEach((data) => {
-          // get day
+          // get day-editor
           const day = data.payload.val();
 
           // add key
           day[`key`] = data.key;
 
+          // add title
+          day[`title`] = this.getDayTitle('title', day);
+
+          // add dates
+          day[`dates`] = this.getDayTitle('dates', day);
+
           // add days to find out how many days are used
           this.usedDays += Math.round(parseInt(day[`days`], 10));
 
           // iterate days and store all inclusions from all accommodations in array
-          // check if accommodation is present for day
+          // check if accommodation is present for day-editor
           if (day[`accommodation`] !== undefined) {
             // iterate accommodation
             day[`accommodation`].forEach(accommodation => {
-              // copy day key into inclusions array
+              // copy day-editor key into inclusions array
               accommodation.day = day[`key`];
               _INCLUSIONS.push(accommodation);
             });
@@ -286,22 +292,9 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
       });
   }
 
-  // function to delete firebase objects
-  private deleteObjectFromFirebase(path: string, type: string) {
-    this.data.af.object(path)
-      .remove()
-      .then(_ => {
-        console.log(`${type} deleted.`);
-      })
-      .catch(err => {
-        console.log(err);
-        Swal.fire(`Delete ${type}`, err.message, 'error');
-      });
-  }
-
 // function to remove editor-components
   removeDay(key) {
-    this.deleteObjectFromFirebase(`days/${this.itineraryId}/${key}`, 'day');
+    this.data.deleteObjectFromFirebase(`days/${this.itineraryId}/${key}`, 'day');
   }
 
   // function to remove comment
@@ -506,7 +499,7 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
 
     if (mode === 'add') {
 
-      dialogRef = this.dialog.open(DayComponent, {
+      dialogRef = this.dialog.open(DayEditorComponent, {
         data: {
           itineraryId: this.itinerary$.key,
           lastUsedParams: this.lastUsedParams,          // pass object with days array and previously used country + region
@@ -520,7 +513,7 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
 
     } else if (mode === 'edit') {
 
-      dialogRef = this.dialog.open(DayComponent, {
+      dialogRef = this.dialog.open(DayEditorComponent, {
         data: {
           day,                                      // editor-components object
           itineraryId: this.itineraryId,
@@ -580,7 +573,7 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
     // check if add or edit mode
     if (mode === 'add') {
       // open comment modal in add mode
-      dialogRef = this.dialog.open(CommentComponent, {
+      dialogRef = this.dialog.open(CommentEditorComponent, {
         data: {
           comment: null,
           days: this.dayTitles,
@@ -591,7 +584,7 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
       });
     } else if (mode === 'edit') {
       // open modal in edit mode
-      dialogRef = this.dialog.open(CommentComponent, {
+      dialogRef = this.dialog.open(CommentEditorComponent, {
         data: {
           comment: data.payload.val(),
           days: this.dayTitles,
@@ -605,39 +598,39 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
 
     // function to run after dialog is close
     dialogRef.afterClosed().subscribe(comment => {
-      // check for comment
+      // check for comment-editor
       if (comment) {
         // save to firebase comments list
         if (mode === 'add') {
           this.data.saveItem('comments/' + this.itineraryId, comment)
             .then(() => {
-              console.log('new comment added.');
+              console.log('new comment-editor added.');
             })
             .catch((error) => {
               console.log(error);
-              Swal.fire('Comment editor', 'adding new comment failed', 'error');
+              Swal.fire('Comment editor', 'adding new comment-editor failed', 'error');
             });
 
         } else if (mode === 'edit') {
           this.commentsRef$.update(data.key, comment)
             .then(() => {
-              console.log('comment updated.');
+              console.log('comment-editor updated.');
             })
             .catch((error) => {
               console.log(error);
-              Swal.fire('Comment editor', 'Updating comment failed', 'error');
+              Swal.fire('Comment editor', 'Updating comment-editor failed', 'error');
             });
         }
       }
     });
   }
 
-  // function to open payment dialog
+  // function to open payment-editor dialog
   openPaymentDialog(mode: string, data: any) {
     let dialogRef: any;
     // check mode
     if (mode === 'add') {
-      dialogRef = this.dialog.open(PaymentComponent, {
+      dialogRef = this.dialog.open(PaymentEditorComponent, {
         data: {
           id: this.itineraryId,
           mode,
@@ -645,7 +638,7 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
         width: '480px'
       });
     } else if (mode === 'edit') {
-      dialogRef = this.dialog.open(PaymentComponent, {
+      dialogRef = this.dialog.open(PaymentEditorComponent, {
         data: {
           id: this.itineraryId,
           mode,
@@ -664,27 +657,27 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
             // convert date object to string
             payment.date = payment.date.toDateString();
 
-            // write payment to firebase
+            // write payment-editor to firebase
             this.paymentsRef$.update(data.key, payment)
               .then(() => {
-                console.log('payment updated');
+                console.log('payment-editor updated');
               })
               .catch((error) => {
                 console.log(error);
-                Swal.fire('Payment Editor', 'Updating payment failed', 'error');
+                Swal.fire('Payment Editor', 'Updating payment-editor failed', 'error');
               });
           }
 
           if (mode === 'add') {
             payment.date = payment.date.toDateString();
-            // write payment to firebase
+            // write payment-editor to firebase
             this.paymentsRef$.push(payment)
               .then(() => {
-                console.log('payment added');
+                console.log('payment-editor added');
               })
               .catch((error) => {
                 console.log(error);
-                Swal.fire('Payment Editor', 'Adding new payment failed', 'error');
+                Swal.fire('Payment Editor', 'Adding new payment-editor failed', 'error');
               });
           }
         }
@@ -696,13 +689,13 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
     let dialogRef: any;
 
     if (mode === 'add') {
-      dialogRef = this.dialog.open(AddCountryNumberComponent, {
+      dialogRef = this.dialog.open(CountryEditorComponent, {
         data: { id: this.itinerary$.key, mode },
         width: '580px',
 
       });
     } else {
-      dialogRef = this.dialog.open(AddCountryNumberComponent, {
+      dialogRef = this.dialog.open(CountryEditorComponent, {
         data: {
           country: data.payload.val(),
           id: data.key,

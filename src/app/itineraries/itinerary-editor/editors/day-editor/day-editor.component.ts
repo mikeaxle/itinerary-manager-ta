@@ -1,17 +1,17 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
 import {FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {CountryService} from '../../../services/country.service';
-import {Country} from '../../../model/country';
-import {Region} from '../../../model/region';
-import {DataService} from '../../../services/data.service';
+import {CountryService} from '../../../../services/country.service';
+import {Country} from '../../../../model/country';
+import {Region} from '../../../../model/region';
+import {DataService} from '../../../../services/data.service';
 
 @Component({
   selector: 'app-day',
-  styleUrls: ['./day.component.css'],
-  templateUrl: './day.component.html'
+  styleUrls: ['./day-editor.component.css'],
+  templateUrl: './day-editor.component.html'
 })
-export class DayComponent implements OnInit {
+export class DayEditorComponent implements OnInit {
   public dayForm: FormGroup;
   day: any;
   public remainingDays: any[];
@@ -29,7 +29,7 @@ export class DayComponent implements OnInit {
   constructor(private countryService: CountryService,
               private formBuilder: FormBuilder,
               public data: DataService,
-              public dialogRef: MatDialogRef<DayComponent>,
+              public dialogRef: MatDialogRef<DayEditorComponent>,
               @Inject(MAT_DIALOG_DATA) public params: any) { }
 
   ngOnInit() {
@@ -47,7 +47,7 @@ export class DayComponent implements OnInit {
       // load regions
       this.onSelect(this.day.country);
 
-      // check if day has accommodation and load into string
+      // check if day-editor has accommodation and load into string
       if (this.day.accommodation !== undefined) {
         this.accommodation = this.day.accommodation.reduce((totalText, currentText) => {
           // return joined string with trailing spaces and full stops removed
@@ -55,7 +55,7 @@ export class DayComponent implements OnInit {
         }, '');
       }
 
-      // check if day has services and load into string
+      // check if day-editor has services and load into string
       if (this.day.services !== undefined) {
         this.services = this.day.services.reduce((totalText, currentText) => {
           // return joined string with trailing spaces and full stops removed
@@ -64,7 +64,7 @@ export class DayComponent implements OnInit {
       }
 
 
-      // check if day has activities and load into string
+      // check if day-editor has activities and load into string
       if (this.day.activities !== undefined) {
         this.activities = this.day.activities.reduce((totalText, currentText) => {
           // return joined string with trailing spaces and full stops removed
@@ -180,7 +180,7 @@ export class DayComponent implements OnInit {
         });
       }
 
-      // console.log(`days ${this.day.days} \n country ${this.day.country} \n region ${this.day.region}`)
+      // console.log(`days ${this.day-editor.days} \n country ${this.day-editor.country} \n region ${this.day-editor.region}`)
       return this.formBuilder.group({
         // title: [''],
         days: [this.day.days, Validators.required],

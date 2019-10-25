@@ -1,15 +1,15 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {DataService} from '../../../services/data.service';
+import {DataService} from '../../../../services/data.service';
 
 @Component({
   selector: 'app-payment',
-  styleUrls: ['./payment.component.css'],
-  templateUrl: './payment.component.html'
+  styleUrls: ['./payment-editor.component.css'],
+  templateUrl: './payment-editor.component.html'
 
 })
-export class PaymentComponent implements OnInit {
+export class PaymentEditorComponent implements OnInit {
   public paymentForm: FormGroup;
   itineraryId: any;
   payment: any;
@@ -18,7 +18,7 @@ export class PaymentComponent implements OnInit {
 
   constructor(private formBuilder: FormBuilder,
               public data: DataService,
-              public dialogRef: MatDialogRef<PaymentComponent>,
+              public dialogRef: MatDialogRef<PaymentEditorComponent>,
               @Inject(MAT_DIALOG_DATA) public params: any) { }
 
 
@@ -28,18 +28,18 @@ export class PaymentComponent implements OnInit {
     // get itinerary id
     this.itineraryId = this.params.id;
 
-    // get payment from params if mode is edit
+    // get payment-editor from params if mode is edit
     if (this.params.mode === 'edit') {
       this.payment = this.params.payment;
 
       this.date = new Date(this.payment.date);
     }
 
-    // init payment form
+    // init payment-editor form
     this.paymentForm = this.initPayment();
   }
 
-  // function to init payment form
+  // function to init payment-editor form
   initPayment() {
     if (this.params.mode === 'add') {
       return this.formBuilder.group({

@@ -1,23 +1,23 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {CountryService} from '../../../services/country.service';
-import {Country} from '../../../model/country';
-import {DataService} from '../../../services/data.service';
+import {CountryService} from '../../../../services/country.service';
+import {Country} from '../../../../model/country';
+import {DataService} from '../../../../services/data.service';
 
 @Component({
   selector: 'app-add-country-number',
-  templateUrl: './add-country-number.component.html',
-  styleUrls: ['./add-country-number.component.css']
+  templateUrl: './country-editor.component.html',
+  styleUrls: ['./country-editor.component.css']
 })
-export class AddCountryNumberComponent implements OnInit {
+export class CountryEditorComponent implements OnInit {
   public addNumberForm: FormGroup;
   destinations: Country[];
 
   constructor(private formBuilder: FormBuilder,
               private countryService: CountryService,
               public data: DataService,
-              public dialogRef: MatDialogRef<AddCountryNumberComponent>,
+              public dialogRef: MatDialogRef<CountryEditorComponent>,
               @Inject(MAT_DIALOG_DATA) public params: any) { }
 
   ngOnInit() {

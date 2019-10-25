@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { AddCountryNumberComponent } from './add-country-number.component';
+import { CountryEditorComponent } from './country-editor.component';
 
 describe('AddCountryNumberComponent', () => {
-  let component: AddCountryNumberComponent;
-  let fixture: ComponentFixture<AddCountryNumberComponent>;
+  let component: CountryEditorComponent;
+  let fixture: ComponentFixture<CountryEditorComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ AddCountryNumberComponent ]
+      declarations: [ CountryEditorComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(AddCountryNumberComponent);
+    fixture = TestBed.createComponent(CountryEditorComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

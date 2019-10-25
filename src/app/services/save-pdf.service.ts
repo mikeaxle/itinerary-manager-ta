@@ -1,12 +1,10 @@
 import { Injectable } from '@angular/core';
-import {HttpClient, HttpHeaders} from '@angular/common/http';
+import {HttpClient} from '@angular/common/http';
 import {DataService} from './data.service';
 import {CountryService} from './country.service';
 import { saveAs } from 'file-saver';
 import { isArray } from 'util';
 import { MoneyPipe } from '../filter/money.pipe';
-import {async} from 'rxjs-compat/scheduler/async';
-import {snapshotChanges} from '@angular/fire/database';
 import {MatDialog, MatDialogRef} from '@angular/material';
 import {PdfDialogComponent} from '../shared/pdf-dialog/pdf-dialog.component';
 import Swal from 'sweetalert2';
@@ -1300,7 +1298,7 @@ if (lastIteneraryItemsHeight + quotHeight > quoteThreshold) {
     this.days.forEach(d => {
       const day = `
 
-				 <!-- day + comment -->
+				 comment-editor
 				 <li>
 				 <div class="legend">
 					 <p class="day">${this.dayTitleGenerator('title', d)}</p>
@@ -1426,7 +1424,7 @@ if (lastIteneraryItemsHeight + quotHeight > quoteThreshold) {
     return itinerary;
   }
 
-  // function to get comment
+  // function to get comment-editor
   getComments(day) {
     let comments = '';
     this.comments.forEach((c) => {
@@ -1438,7 +1436,7 @@ if (lastIteneraryItemsHeight + quotHeight > quoteThreshold) {
     return comments;
   }
 
-  // function to get icon comment
+  // function to get icon comment-editor
   commentIconGenerator(type: any) {
     let icon = '';
 

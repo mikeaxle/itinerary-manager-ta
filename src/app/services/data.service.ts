@@ -6,6 +6,7 @@ import { AngularFireStorage } from '@angular/fire/storage';
 import { finalize } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import 'rxjs-compat/add/observable/of';
+import Swal from "sweetalert2";
 
 
 @Injectable({
@@ -197,5 +198,18 @@ export class DataService {
   // function to get file path
   getFilePath(folder: string, imageName: string): string {
     return `/${folder}/${imageName}`;
+  }
+
+  // function to delete firebase objects
+   deleteObjectFromFirebase(path: string, type: string) {
+    this.af.object(path)
+      .remove()
+      .then(_ => {
+        console.log(`${type} deleted.`);
+      })
+      .catch(err => {
+        console.log(err);
+        Swal.fire(`Delete ${type}`, err.message, 'error');
+      });
   }
 }
