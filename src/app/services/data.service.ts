@@ -212,4 +212,17 @@ export class DataService {
         Swal.fire(`Delete ${type}`, err.message, 'error');
       });
   }
+
+   updateFirebaseObject(path: any, dataToUpdate, caller: string) {
+    this.af.object(path)
+      .update(dataToUpdate)
+      .then(_ => {
+        console.log(`updated ${caller}`);
+      })
+      .catch(err => {
+        console.log(err);
+        Swal.fire(`${caller} update`, err.message, 'error');
+      });
+  }
+
 }

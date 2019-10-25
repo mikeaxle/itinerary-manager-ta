@@ -2,12 +2,11 @@
 <form [formGroup]="dayForm" fxLayout="column">
 
   <!-- days -->
-  <mat-select
-    placeholder="Days"
-    formControlName="days"
-    required>
-    <mat-option *ngFor="let d of remainingDays" [value]="d+1">{{d + 1}}</mat-option>
-  </mat-select>
+  <mat-form-field>
+    <label>
+      <input matInput formControlName="days" placeholder="length in days" type="number" required>
+    </label>
+  </mat-form-field>
 
   <!-- country  -->
   <mat-select

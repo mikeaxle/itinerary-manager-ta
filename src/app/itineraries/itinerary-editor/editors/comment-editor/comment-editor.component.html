@@ -9,8 +9,8 @@
     required>
     <mat-option
       *ngFor="let d of days"
-      [value]="d[0]">
-      {{ d[1] }}
+      [value]="d.key">
+      {{ d.title}}
     </mat-option>
   </mat-select>
 

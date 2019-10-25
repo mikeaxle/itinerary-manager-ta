@@ -1,10 +1,8 @@
 <!-- day  -->
 <div  fxLayout="row" fxFlexAlign="space-between base-line" class="day">
-
   <!-- left column -->
   <span fxLayout="column" fxLayoutAlign="flex-flex-start center" fxFlex="18" fxLayoutGap="10px">
             <mat-chip-list>
-              <!-- color hack: AM2 seems to be broken -->
               <mat-chip fxLayoutAlign="center center" [selected]="true" [style.background-color]=data.color class="chip">{{ day.title }}</mat-chip>
             </mat-chip-list>
             <span style="font-size:12px">{{ day.dates }}</span>
@@ -32,4 +30,35 @@
       <svg-icon src="../assets/icons/trash.svg" [style.fill]=data.color></svg-icon>
     </button>
   </span>
+</div>
+
+<!--  comments-->
+<div *ngIf="comments | async as commentsArray" fxLayout="column" fxFlexAlign="space-between base-line">
+  <!-- iterate comments array -->
+  <div *ngFor="let comment of commentsArray | commentsFilter: day.key" fxLayout="row" class="day">
+    <!-- left column -->
+    <span fxLayoutAlign="space-around center" fxFlex="18" fxLayoutGap="5px">
+              <img [src]="getCommentIcon(comment.payload.val().type)" />
+            </span>
+
+    <!-- middle column -->
+    <span fxFlex="80" fxFlexAlign="flex-start">
+              <span>{{comment.payload.val().comment}}</span>
+            </span>
+
+    <!-- right column -->
+    <span fxLayout="row" fxLayoutAlign="space-between center" fxFlex fxLayout.xs="column" fxLayout.sm="column">
+              <span style="width:40px"></span>
+              <button mat-icon-button (click)="openCommentDialog('edit', comment)">
+                <svg-icon src="../assets/icons/edit.svg" [style.fill]=data.color> </svg-icon>
+              </button>
+
+      <!-- remove comment button -->
+              <button mat-icon-button (click)="removeComment(comment.key)">
+                  <svg-icon src="../assets/icons/trash.svg" [style.fill]=data.color></svg-icon>
+              </button>
+          </span>
+
+  </div>
+
 </div>

@@ -142,45 +142,9 @@
     </div>
 
     <!-- days come here -->
-
     <div cdkDropList   [cdkDropListData]="days" (cdkDropListDropped)="drop($event)" *ngIf="days">
-
-<!--        <div class="example-box" cdkDrag>-->
-<!--      {{ day.title }} {{ day.dates }}-->
-<!--        </div>-->
-        <app-day cdkDrag *ngFor="let day of days; let i = index;" [day]="day"></app-day>
-
-
-        <!-- comments added from modal -->
-<!--        <div *ngIf="comments | async as commentArray" fxLayout="column" fxFlexAlign="space-between base-line">-->
-<!--          &lt;!&ndash; iterate comments array &ndash;&gt;-->
-<!--          <div *ngFor="let comment of commentArray | commentsFilter: day.key;" fxLayout="row" class="day">-->
-<!--            &lt;!&ndash; left column &ndash;&gt;-->
-<!--            <span fxLayoutAlign="space-around center" fxFlex="18" fxLayoutGap="5px">-->
-<!--              <img [src]="getCommentIcon(comment.payload.val().type)" />-->
-<!--            </span>-->
-
-<!--            &lt;!&ndash; middle column &ndash;&gt;-->
-<!--            <span fxFlex="80" fxFlexAlign="flex-start">-->
-<!--              <span>{{comment.payload.val().comment}}</span>-->
-<!--            </span>-->
-
-<!--            &lt;!&ndash; right column &ndash;&gt;-->
-<!--            <span fxLayout="row" fxLayoutAlign="space-between center" fxFlex fxLayout.xs="column" fxLayout.sm="column">-->
-<!--              <span style="width:40px"></span>-->
-<!--              <button mat-icon-button (click)="openCommentDialog('edit', comment)">-->
-<!--                <svg-icon src="../assets/icons/edit.svg" [style.fill]=color> </svg-icon>-->
-<!--              </button>-->
-
-<!--              &lt;!&ndash; remove comment button &ndash;&gt;-->
-<!--              <button mat-icon-button (click)="removeComment(comment.key)">-->
-<!--                  <svg-icon src="../assets/icons/trash.svg" [style.fill]=color></svg-icon>-->
-<!--              </button>-->
-<!--          </span>-->
-
-<!--            </div>-->
-
-<!--          </div>-->
+      <!-- day component -->
+        <app-day cdkDrag *ngFor="let day of days; let i = index;" [day]="day" [comments]="comments" (openDayEditor)="openDayDialog('edit', $event)" (openCommentEditor)="openCommentDialog('edit', $event)" (deleteDay)="removeDay($event)" [itineraryId]="itineraryId"></app-day>
       </div>
 
     <!-- editor-components editor button -->

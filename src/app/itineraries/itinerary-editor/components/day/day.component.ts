@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {DayEditorComponent} from '../../editors/day-editor/day-editor.component';
 import Swal from 'sweetalert2';
 import {DataService} from '../../../../services/data.service';
@@ -12,6 +12,11 @@ import {MONTHS} from '../../../../model/months';
 })
 export class DayComponent implements OnInit {
   @Input() day;
+  @Input() comments;
+  @Input() itineraryId;
+  @Output() openDayEditor = new EventEmitter<any>();
+  @Output() openCommentEditor = new EventEmitter<any>();
+  @Output() deleteDay = new EventEmitter<any>();
 
   constructor(public data: DataService, public dialog: MatDialog) {
   }
@@ -20,18 +25,18 @@ export class DayComponent implements OnInit {
   }
 
   removeDay(key) {
-    // delete day from firebase
-    // this.data.deleteObjectFromFirebase(`days/${this.itinerary.key}/${key}`, 'day');
-  //  emit event
+   // emit event
+    this.deleteDay.emit(key);
   }
 
   // function to open dialog
-  openDayDialog(day: any) {
+  openDayDialog(day) {
   // emit event
+    this.openDayEditor.emit(day);
   }
 
   // function to get itinerary descriptions from editor-components
-  getItineraryDescriptions (day: any) {
+  getItineraryDescriptions(day: any) {
     // string to store all itinerary item descriptions
     let itinerary = '';
 
@@ -69,4 +74,32 @@ export class DayComponent implements OnInit {
     return itinerary;
   }
 
+  openCommentDialog(edit: string, comment: any) {
+    this.openCommentEditor.emit(comment);
+  }
+
+  removeComment(key) {
+    this.data.deleteObjectFromFirebase(`comments/${this.itineraryId}/${key}`, 'comment');
+  }
+
+  // function to get icon comment
+  getCommentIcon(type: any) {
+    let icon = '';
+
+    switch (type) {
+      case 'Activity':
+        icon = '../../../../../assets/icons/comment-activity.svg';
+        break;
+      case 'Flight':
+        icon = '../../../../../assets/icons/comment-flight.svg';
+        break;
+      case 'Info':
+        icon = '../../../../../assets/icons/comment-info.svg';
+        break;
+      default:
+        break;
+    }
+
+    return icon;
+  }
 }

@@ -1297,8 +1297,6 @@ if (lastIteneraryItemsHeight + quotHeight > quoteThreshold) {
 
     this.days.forEach(d => {
       const day = `
-
-				 comment-editor
 				 <li>
 				 <div class="legend">
 					 <p class="day">${this.dayTitleGenerator('title', d)}</p>
@@ -1424,7 +1422,7 @@ if (lastIteneraryItemsHeight + quotHeight > quoteThreshold) {
     return itinerary;
   }
 
-  // function to get comment-editor
+  // function to get comment
   getComments(day) {
     let comments = '';
     this.comments.forEach((c) => {
@@ -1436,7 +1434,7 @@ if (lastIteneraryItemsHeight + quotHeight > quoteThreshold) {
     return comments;
   }
 
-  // function to get icon comment-editor
+  // function to get icon comment
   commentIconGenerator(type: any) {
     let icon = '';
 

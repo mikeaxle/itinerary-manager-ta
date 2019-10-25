@@ -14,7 +14,6 @@ import {DataService} from '../../../../services/data.service';
 export class DayEditorComponent implements OnInit {
   public dayForm: FormGroup;
   day: any;
-  public remainingDays: any[];
   inventory: any;
   destinations: Country[];
   regions: Region[];
@@ -75,10 +74,6 @@ export class DayEditorComponent implements OnInit {
 
     // init editor-components form
     this.dayForm = this.initDay();
-
-
-    // init days array
-    this.remainingDays = Array.from(Array(100).keys());
 
     // init previously used country and region params
     this.lastUsedParams = this.params.lastUsedParams

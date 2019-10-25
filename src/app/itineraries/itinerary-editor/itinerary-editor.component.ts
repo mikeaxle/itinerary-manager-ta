@@ -93,22 +93,19 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
 
   // drop event to initiate reorder of days
   drop(event: CdkDragDrop<string[]>) {
-    const day = this.days[event.currentIndex];
+    const previousDay = this.days[event.currentIndex];
+    const day = this.days[event.previousIndex];
+
     // // change position to current index
-    // day[`position`] = event.currentIndex;
+    day[`position`] = event.currentIndex + 1;
+    previousDay[`position`] = event.previousIndex + 1;
 
-    // write to database
-    this.data.af.object(`days/${this.itinerary$.key}/${day.key}`)
-      .update({ position: event.currentIndex })
-      .then(_ => {
-        console.log('Day reordered');
-      })
-      .catch(err => {
-        Swal.fire('Day Order', err.message, 'error');
-      });
+    const dataToUpdate = {};
+    dataToUpdate[day.key] = day;
+    dataToUpdate[previousDay.key] = previousDay;
 
-    // move item in array
-    // moveItemInArray(this.days, event.previousIndex, event.currentIndex);
+    // update inclusion
+    this.data.updateFirebaseObject(`days/${this.itineraryId}/`, dataToUpdate, 'day order');
   }
 
   ngOnInit(): void {
@@ -336,66 +333,6 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
       });
   }
 
-  // function to get itinerary descriptions from editor-components
-  getItineraryDescriptions(day: any) {
-    // string to store all itinerary item descriptions
-    let itinerary = '';
-
-    // check if any services were added to editor-components
-    if (day.services !== undefined && day.services !== 'undefined') {
-      if (day.services.length !== 0) {
-        day.services.forEach(d => {
-          // concat service
-          itinerary += d.service.replace(/^[.\s]+|[.\s]+$/g, '') + '. ';
-        });
-      }
-    }
-
-    // check if any activities were added to editor-components
-    if (day.activities !== undefined && day.activities !== 'undefined') {
-      if (day.activities.length !== 0) {
-        day.activities.forEach(d => {
-          // concat activity
-          itinerary += d.activity.replace(/^[.\s]+|[.\s]+$/g, '') + '. ';
-        });
-      }
-    }
-
-    // // check if any accommodation wa added to editor-components
-    if (day.accommodation !== undefined && day.accommodation !== 'undefined') {
-      if (day.accommodation.length !== 0) {
-
-        day.accommodation.forEach(d => {
-          // concat accommodation
-          // console.log(d.accommodation)
-          itinerary += d.description.replace(/^[.\s]+|[.\s]+$/g, '') + '. ';
-        });
-      }
-    }
-    return itinerary;
-  }
-
-  // function to get icon comment
-  getCommentIcon(type: any) {
-    let icon = '';
-
-    switch (type) {
-      case 'Activity':
-        icon = '../assets/icons/comment-activity.svg';
-        break;
-      case 'Flight':
-        icon = '../assets/icons/comment-flight.svg';
-        break;
-      case 'Info':
-        icon = '../assets/icons/comment-info.svg';
-        break;
-      default:
-        break;
-    }
-
-    return icon;
-  }
-
   // function to generate editor-components title
   // function to generate editor-components title
   getDayTitle(type: string, day: any) {
@@ -576,7 +513,7 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
       dialogRef = this.dialog.open(CommentEditorComponent, {
         data: {
           comment: null,
-          days: this.dayTitles,
+          days: this.days,
           itineraryId: this.itinerary$.key,
           mode: 'add',
         },
@@ -587,7 +524,7 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
       dialogRef = this.dialog.open(CommentEditorComponent, {
         data: {
           comment: data.payload.val(),
-          days: this.dayTitles,
+          days: this.days,
           itineraryId: this.itineraryId,
           mode: 'edit'
         },
@@ -827,20 +764,9 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
     dataToUpdate['accommodation/' + 0 + '/inclusions'] = event.target.value;
 
     // update inclusion
-    this.updateFirebaseObject(`days/${this.itineraryId}/${data.day}/`, dataToUpdate, 'inclusion');
+    this.data.updateFirebaseObject(`days/${this.itineraryId}/${data.day}/`, dataToUpdate, 'inclusion');
   }
 
-  private updateFirebaseObject(path: any, dataToUpdate, caller: string) {
-    this.data.af.object(path)
-      .update(dataToUpdate)
-      .then(_ => {
-        console.log(`updated ${caller}`);
-      })
-      .catch(err => {
-        console.log(err);
-        Swal.fire(`${caller} update`, `Failed to update ${caller}. ${err.message}`, 'error');
-      });
-  }
 
 // function to save quote details to firebase on blur or press enter
   onKeyUpSave(type: string) {
@@ -848,27 +774,27 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
     // check which control called the function
     switch (type) {
       case 'total':
-        this.updateFirebaseObject(`itineraries/${this.data.company}/${this.itineraryId}`,
+        this.data.updateFirebaseObject(`itineraries/${this.data.company}/${this.itineraryId}`,
           { total: this.itinerary$.total },
           'itinerary total');
         break;
       case 'deposit':
-        this.updateFirebaseObject(`itineraries/${this.data.company}/${this.itineraryId}`,
+        this.data.updateFirebaseObject(`itineraries/${this.data.company}/${this.itineraryId}`,
           { deposit: this.itinerary$.deposit },
           'itinerary deposit');
         break;
       case 'discount':
-        this.updateFirebaseObject(`itineraries/${this.data.company}/${this.itineraryId}`,
+        this.data.updateFirebaseObject(`itineraries/${this.data.company}/${this.itineraryId}`,
           { discount: this.itinerary$.discount },
           'itinerary discount');
         break;
       case 'exclusions':
-        this.updateFirebaseObject(`itineraries/${this.data.company}/${this.itineraryId}`,
+        this.data.updateFirebaseObject(`itineraries/${this.data.company}/${this.itineraryId}`,
           { exclusions: this.itinerary$.exclusions },
           'exclusions');
         break;
       case 'generalInclusions':
-        this.updateFirebaseObject(`itineraries/${this.data.company}/${this.itineraryId}`,
+        this.data.updateFirebaseObject(`itineraries/${this.data.company}/${this.itineraryId}`,
           { generalInclusions: this.itinerary$.generalInclusions },
           'generalInclusions');
         break;
