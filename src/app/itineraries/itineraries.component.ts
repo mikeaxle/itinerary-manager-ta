@@ -20,7 +20,7 @@ export class ItinerariesComponent implements OnInit, OnDestroy {
   itineraries;
   @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
   // @ViewChild(MatSort, {static: true}) sort: MatSort;
-  private error: any
+  private error: any;
   ref;
 
   constructor(public data: DataService, private matDialog: MatDialog, public router: Router) {
@@ -31,8 +31,8 @@ export class ItinerariesComponent implements OnInit, OnDestroy {
     this.itineraries = [];
 
     // get itineraries
-    // this.ref = this.data.af.list(`itineraries/${this.data.company}/`, ref => ref.limitToLast(250))
-    this.ref = this.data.af.list(`itineraries/${this.data.company}/`)
+    this.ref = this.data.af.list(`itineraries/${this.data.company}/`, ref => ref.limitToLast(250))
+    // this.ref = this.data.af.list(`itineraries/${this.data.company}/`)
     .snapshotChanges()
       .subscribe(snapshots => {
 
@@ -44,6 +44,17 @@ export class ItinerariesComponent implements OnInit, OnDestroy {
 
           // get key
           itinerary[`key`] = snapshot.key;
+
+          // check if client is string
+          if (this.checkIfObjectIsString(itinerary[`client`])) {
+            itinerary[`fullName`] = this.data.af.object(`clients/${this.data.company}/${itinerary[`client`]}`).valueChanges();
+          } else if (typeof itinerary[`client`] == 'object') {
+            itinerary[`fullName`] = itinerary[`client`][`firstname`] + ' ' + itinerary[`client`][`lastname`];
+          } else {
+            itinerary[`fullName`] = 'N/A';
+          }
+
+
 
           // push to itineraries array
           this.itineraries.push(itinerary);
@@ -61,20 +72,11 @@ export class ItinerariesComponent implements OnInit, OnDestroy {
 
   }
 
-  // function to get client name
-  getName(key: string, type: string) {
-    // client\agent name string
-    // let string = '';
-    // get from firebase
-    // this.data.getSingleItem(key, `${type}/${this.data.company}/`)
-    //   .valueChanges()
-    //   .subscribe((res) => {
-    //     const client = res;
-    //     // concat first name and last name
-    //     return client[`firstname`]  + ' ' + client[`lastname`] ;
-    //   });
-    // return full name
-    // return string;
+
+
+  // function to check if an object is a string
+  checkIfObjectIsString(object) {
+    return typeof object == 'string';
   }
 
   // function to delete item
