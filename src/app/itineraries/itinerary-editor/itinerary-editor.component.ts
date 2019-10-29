@@ -805,7 +805,7 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
 
   // function to write status to firebase when status is selected
   onSelect(status) {
-    this.itineraryRef$.update({status});
+    this.data.updateFirebaseObject(`itineraries/${this.data.company}/${this.itineraryId}`, { status: status }, 'itinerary status')
   }
 
   // function to delete itinerary

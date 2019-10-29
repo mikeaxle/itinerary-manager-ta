@@ -532,3 +532,8 @@ ngx-auth-firebaseui-login #login-form-wrapper #login-form img {
 .planet-africa-theme .mat-raised-button.mat-primary, .planet-africa-theme .mat-fab.mat-primary, .planet-africa-theme .mat-mini-fab.mat-primary {
   color: white !important;
 }
+
+
+.mat-select-panel {
+  max-height: 100% !important;
+}
