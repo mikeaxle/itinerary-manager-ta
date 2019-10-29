@@ -11,7 +11,7 @@
 <app-progress-bar [listLength]="itineraries.length"></app-progress-bar>
 
 <!-- data table-->
-<table *ngIf="itineraries.length > 0" mat-table [dataSource]="dataSource" class="mat-elevation-z4">
+<table *ngIf="itineraries.length > 0" mat-table [dataSource]="dataSource" class="mat-elevation-z4" matSort>
   <!-- Invoice Number Column -->
   <ng-container matColumnDef="#">
     <th mat-header-cell *matHeaderCellDef> #</th>

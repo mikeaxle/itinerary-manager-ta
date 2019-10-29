@@ -110,6 +110,7 @@ export class EditorComponent implements OnInit {
 
   // initialize new itinerary form
   initNewItinerary() {
+
     this.itineraryForm = this.formBuilder.group({
       adults: [null, Validators.required],
       agent: [null, Validators.required],
@@ -120,6 +121,14 @@ export class EditorComponent implements OnInit {
       startdate: [null, Validators.required],
       title: [null, Validators.required]
     });
+
+                          // init filtered clients  and subscribe to client form control on itinerary form
+                          this.filteredClients = this.itineraryForm.controls.client
+                          .valueChanges
+                          .pipe(
+                            startWith(''),
+                            map(client => client ? this._filterClients(client) : this.clients.slice())
+                          );
 
     // get company invoice details
     this.data.af.object(`companies/${this.data.company}`)
@@ -149,15 +158,9 @@ export class EditorComponent implements OnInit {
           client[`key`] = snapshot.key;
           this.clients.push(client);
         });
+        
+      })
 
-        // init filtered clients  and subscribe to client form control on itinerary form
-        this.filteredClients = this.itineraryForm.controls.client
-          .valueChanges
-          .pipe(
-            startWith(''),
-            map(client => client ? this._filterClients(client) : this.clients.slice())
-          );
-      });
 
     // make numbers
     this.numbers = Array.from(Array(20).keys());
