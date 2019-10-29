@@ -424,15 +424,7 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
     let dialogRef: any;
 
     // variable to store editor-components position
-    let position = 1;
-
-    this.days.forEach((dy, index) => {
-        // check if there are any days
-        // if (res.length !== undefined) {
-          // add length of days array to position to come up with position for new editor-components
-          position += index; // may have to match the pos and index before assigning the two
-        // }
-      });
+    let position = this.days.length + 1;
 
     if (mode === 'add') {
 
