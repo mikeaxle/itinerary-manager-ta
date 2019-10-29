@@ -410,6 +410,10 @@ footer p:last-of-type{
 
         ${this.getInclusions(this.accommodation)}
 
+
+        <h2>General Inclusions</h2>
+        <p class="exclusion-item">${this.itinerary.generalInclusions}</p>
+
         <h2>Exclusions</h2>
         <p class="exclusion-item">${this.itinerary.exclusions}</p>
 
@@ -834,6 +838,9 @@ footer p:last-of-type{
         <h2>Inclusions</h2>
 
         ${this.getInclusions(this.accommodation)}
+
+        <h2>General Inclusions</h2>
+        <p class="exclusion-item">${this.itinerary.generalInclusions}</p>
 
         <h2>Exclusions</h2>
         <p class="exclusion-item">${this.itinerary.exclusions}</p>
