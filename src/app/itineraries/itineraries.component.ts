@@ -10,7 +10,6 @@ import Swal from 'sweetalert2';
 import {STATUS} from '../model/statuses';
 import {BehaviorSubject, Observable, Subject} from 'rxjs';
 import {switchMap} from 'rxjs/operators';
-import {AngularFireAction} from '@angular/fire/database';
 
 @Component({
   selector: 'app-itineraries',
@@ -26,14 +25,16 @@ export class ItinerariesComponent implements OnInit, OnDestroy {
   private error: any;
   itinerariesRef$;
   status$: BehaviorSubject<string | null>;
+  status = 'Provisional';
   itinerariesSubscription$: any;
+  STATUS = STATUS;
 
   constructor(public data: DataService, private matDialog: MatDialog, public router: Router) {
     this.status$ = new BehaviorSubject('Provisional');
     this.itinerariesRef$ = this.status$.pipe(
       switchMap(status =>
         this.data.af.list(`itineraries/${this.data.company}`, ref =>
-          status ? ref.orderByChild('status').equalTo(status).limitToLast(500) : ref
+          status ? ref.limitToLast(30).orderByChild('status').equalTo(status) : ref
         ).snapshotChanges()
       )
     );
@@ -117,12 +118,9 @@ export class ItinerariesComponent implements OnInit, OnDestroy {
 
   // function to filter by status
   onFilterChange(event) {
-    this.getItineraries(event.source.value);
-  }
-
-  // function to get itineraries
-  getItineraries(child) {
-    console.log(child);
+    this.itineraries = [];
+    this.status$.next(event.source.value);
+    Swal.fire('Reloading Itineraries', `Filtering by status: "${event.source.value}"`, 'info');
   }
 
   ngOnDestroy(): void {
