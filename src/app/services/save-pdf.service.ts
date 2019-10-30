@@ -120,6 +120,8 @@ export class SavePdfService {
     // payments
     this.payments = itineraryData.payments;
 
+    this.totalPayments =  itineraryData.totalPayments;
+
     // phone numbers associated with itinerary
     this.phone_numbers = itineraryData.phoneNumbers;
 

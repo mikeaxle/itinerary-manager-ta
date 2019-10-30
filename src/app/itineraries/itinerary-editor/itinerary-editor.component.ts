@@ -232,6 +232,7 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
     this.commentsRef$ = this.data.af.list('comments/' + this.itineraryId);
     this.comments = this.commentsRef$.snapshotChanges();
     this.commentsSubscription$ = this.comments.subscribe(_ => {
+      this.commentsPdf = [];
       _.forEach(snapshot => {
         const comment = snapshot.payload.val();
         comment.key = snapshot.key;
@@ -943,6 +944,7 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
           itinerary: this.itinerary$,
           payments: this.paymentsPdf,
           phoneNumbers: this.countriesPdf,
+          totalPayments: this.totalPayments
         }, type, this.usedDays);
     } else {
       Swal.fire('Generate PDF', 'Please add all 7 images in order to print the full pdf', 'error');
@@ -958,6 +960,7 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
       itinerary: this.itinerary$,
       payments: this.paymentsPdf,
       phoneNumbers: this.countriesPdf,
+      totalPayments: this.totalPayments
     }, 1, this.usedDays);
   }
 

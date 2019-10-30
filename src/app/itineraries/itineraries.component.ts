@@ -7,6 +7,10 @@ import {MatTableDataSource} from '@angular/material/table';
 import {Router} from '@angular/router';
 import {EditorComponent} from '../shared/editor/editor.component';
 import Swal from 'sweetalert2';
+import {STATUS} from '../model/statuses';
+import {BehaviorSubject, Observable, Subject} from 'rxjs';
+import {switchMap} from 'rxjs/operators';
+import {AngularFireAction} from '@angular/fire/database';
 
 @Component({
   selector: 'app-itineraries',
@@ -19,23 +23,30 @@ export class ItinerariesComponent implements OnInit, OnDestroy {
   dataSource: MatTableDataSource<any>;
   itineraries;
   @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
-  @ViewChild(MatSort, {static: true}) sort: MatSort;
   private error: any;
-  ref;
+  itinerariesRef$;
+  status$: BehaviorSubject<string | null>;
+  itinerariesSubscription$: any;
 
   constructor(public data: DataService, private matDialog: MatDialog, public router: Router) {
+    this.status$ = new BehaviorSubject('Provisional');
+    this.itinerariesRef$ = this.status$.pipe(
+      switchMap(status =>
+        this.data.af.list(`itineraries/${this.data.company}`, ref =>
+          status ? ref.orderByChild('status').equalTo(status).limitToLast(500) : ref
+        ).snapshotChanges()
+      )
+    );
   }
 
   ngOnInit() {
-    // init itineraries array
+
     this.itineraries = [];
 
-    // get itineraries
-    this.ref = this.data.af.list(`itineraries/${this.data.company}/`, ref => ref.limitToLast(250))
-    // this.ref = this.data.af.list(`itineraries/${this.data.company}/`)
-    .snapshotChanges()
+      // this.data.af.list(`itineraries/${this.data.company}/`, ref => ref.orderByChild('status').equalTo('Provisional').limitToLast(250))
+    // // this.ref = this.data.af.list(`itineraries/${this.data.company}/`)
+    this.itinerariesSubscription$ = this.itinerariesRef$
       .subscribe(snapshots => {
-
         // iterate snapshots
         snapshots.forEach(snapshot => {
           // get itinerary
@@ -54,8 +65,6 @@ export class ItinerariesComponent implements OnInit, OnDestroy {
             itinerary[`fullName`] = 'N/A';
           }
 
-
-
           // push to itineraries array
           this.itineraries.push(itinerary);
         });
@@ -65,9 +74,6 @@ export class ItinerariesComponent implements OnInit, OnDestroy {
 
         // init data source
         this.dataSource.paginator = this.paginator;
-
-        // init sort
-        this.dataSource.sort = this.sort;
       });
 
   }
@@ -109,7 +115,18 @@ export class ItinerariesComponent implements OnInit, OnDestroy {
     this.router.navigate(['/itinerary-editor', itinerary.key]);
   }
 
+  // function to filter by status
+  onFilterChange(event) {
+    this.getItineraries(event.source.value);
+  }
+
+  // function to get itineraries
+  getItineraries(child) {
+    console.log(child);
+  }
+
   ngOnDestroy(): void {
-    this.ref.unsubscribe();
+    this.itinerariesRef$ = null;
+    this.itinerariesSubscription$.unsubscribe();
   }
 }
