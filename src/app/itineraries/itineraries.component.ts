@@ -33,8 +33,7 @@ export class ItinerariesComponent implements OnInit, OnDestroy {
     this.status$ = new BehaviorSubject('Provisional');
     this.itinerariesRef$ = this.status$.pipe(
       switchMap(status =>
-        this.data.af.list(`itineraries/${this.data.company}`, ref =>
-          status ? ref.limitToLast(30).orderByChild('status').equalTo(status) : ref
+        this.data.af.list(`itineraries/${this.data.company}`, ref => status ? ref.orderByChild('status').equalTo(status) : ref
         ).snapshotChanges()
       )
     );
