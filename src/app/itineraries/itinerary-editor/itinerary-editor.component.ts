@@ -187,7 +187,7 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
   private getContactNumbersForCountries() {
     this.countriesRef$ = this.data.af.list(`phone_numbers/${this.itineraryId}`);
     this.countries = this.countriesRef$.snapshotChanges();
-
+    this.countriesPdf = [];
     this.countriesSubscription$ = this.countries.subscribe(_ => {
       _.forEach(snapshot => {
         const country = snapshot.payload.val();
