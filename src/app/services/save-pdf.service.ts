@@ -373,11 +373,11 @@ footer p:last-of-type{
         </li>
         <li>
           <p class="title">Adults</p>
-          <p class="field">${ isArray(this.itinerary.adults) ? this.getAdultDetails('adults') : this.itinerary.adults }</p>
+          <p class="field">${ this.itinerary.adults ? this.getAdultDetails('adults') : 'none' }</p>
         </li>
         <li>
         <p class="title">Children</p>
-        <p class="field">${ isArray(this.itinerary.children) ? this.getAdultDetails('children') : this.itinerary.children }</p>
+        <p class="field">${ this.itinerary.children ? this.getAdultDetails('children') : 'none' }</p>
         </li>
 
         <li>
@@ -762,12 +762,12 @@ footer p:last-of-type{
       </li>
       <li>
         <p class="title">Adults</p>
-        <p class="field">${ isArray(this.itinerary.adults) ? this.getAdultDetails('adults') : this.itinerary.adults }</p>
+        <p class="field">${ this.itinerary.adults ? this.getAdultDetails('adults') : 'none' }</p>
       </li>
       <li>
       <li>
       <p class="title">Children</p>
-      <p class="field">${ isArray(this.itinerary.children) ? this.getAdultDetails('children') : this.itinerary.childern }</p>
+      <p class="field">${ this.itinerary.children ? this.getAdultDetails('children') : 'none' }</p>
       </li>
 
       </li>
@@ -1099,11 +1099,11 @@ if (lastIteneraryItemsHeight + quotHeight > quoteThreshold) {
           </li>
           <li>
             <p class="title">Adults</p>
-            <p class="field">${ isArray(this.itinerary.adults) ? this.getAdultDetails('adults') : this.itinerary.adults }</p>
+            <p class="field">${ this.itinerary.adults ? this.getAdultDetails('adults') : 'none' }</p>
           </li>
           <li>
           <p class="title">Children</p>
-          <p class="field">${ isArray(this.itinerary.children) ? this.getAdultDetails('children') : this.itinerary.children }</p>
+          <p class="field">${ this.itinerary.children ? this.getAdultDetails('children') : 'none' }</p>
           </li>
 
           </li>
