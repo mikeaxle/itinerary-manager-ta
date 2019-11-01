@@ -383,7 +383,7 @@ footer p:last-of-type{
         </li>
       </ul>
 
-      <!-- ITENERARY ITEMS -->
+      <!-- ITNERARY ITEMS -->
       <ul class="itenerary-items">
         ${this.getDays()}
       </ul>
