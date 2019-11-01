@@ -13,7 +13,6 @@ import Swal from 'sweetalert2';
   providedIn: 'root'
 })
 export class SavePdfService {
-
   constructor(private data: DataService, private http: HttpClient, private countryService: CountryService, public dialog: MatDialog) {
     this.regions = this.countryService.getRegions();
     this.countries = this.countryService.getCountries();
@@ -41,12 +40,10 @@ export class SavePdfService {
   destinations = [];
   // variable to store height threshold for itinerary page
   heightThreshold = 0;
-
   logo: any;
   headerLogoSrc: any;
   headerLogoWidth: any;
   logoFull: any;
-
   date_months = [
     'JAN',
     'FEB',
@@ -61,6 +58,7 @@ export class SavePdfService {
     'NOV',
     'DEC'
   ];
+  agent: any;
 
   isArray = isArray;
   private dialogRef: MatDialogRef<PdfDialogComponent>;
@@ -127,6 +125,9 @@ export class SavePdfService {
 
     // assign used days
     this.usedDays = usedDays;
+
+    // get agent
+    this.agent = itineraryData.agent;
 
     // get inventory list
     this.data.af.list('inventory')
@@ -364,7 +365,7 @@ footer p:last-of-type{
         </li>
         <li>
           <p class="title">Safari Specialist</p>
-          <p class="field">${this.nameGenerator(this.itinerary.agent, 'users')}</p>
+          <p class="field">${this.agent.firstname} ${this.agent.lastname}</p>
         </li>
         <li>
           <p class="title">Travel Dates</p>
@@ -753,7 +754,7 @@ footer p:last-of-type{
       </li>
       <li>
         <p class="title">Safari Specialist</p>
-        <p class="field">${this.nameGenerator(this.itinerary.agent, 'users')}</p>
+        <p class="field">${this.agent.firstname} ${this.agent.lastname}</p>
       </li>
       <li>
         <p class="title">Travel Dates</p>
@@ -1090,7 +1091,7 @@ if (lastIteneraryItemsHeight + quotHeight > quoteThreshold) {
           </li>
           <li>
             <p class="title">Safari Specialist</p>
-            <p class="field">${this.nameGenerator(this.itinerary.agent, 'users')}</p>
+            <p class="field">${this.agent.firstname} ${this.agent.lastname}</p>
           </li>
           <li>
             <p class="title">Travel Dates</p>

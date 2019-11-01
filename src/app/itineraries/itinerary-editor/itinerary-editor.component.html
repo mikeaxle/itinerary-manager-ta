@@ -121,11 +121,11 @@
         <tr>
           <td>
             <h5>Adults</h5>
-            <b> {{ isArray(itinerary$.adults) ? itinerary$.adults.length : itinerary$.adults }} </b>
+            <b> {{ itinerary$.adults ? itinerary$.adults.length : 0 }} </b>
           </td>
           <td>
             <h5>Children</h5>
-            <b> {{ isArray(itinerary$.children) ? itinerary$.children.length : itinerary$.children }}</b>
+            <b> {{ itinerary$.children ? itinerary$.children.length : 0 }}</b>
           </td>
           <td>
             <h5>Travel dates</h5>

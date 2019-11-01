@@ -939,6 +939,7 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
 
     if (canPrint) {
         this.savePdfService.savePDF({
+          agent: this.agent,
           comments: this.commentsPdf,
           days: this.days,
           itinerary: this.itinerary$,
@@ -955,6 +956,7 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
   // save partial pdf
   saveAsPdfPartial() {
     this.savePdfService.savePDF( {
+      agent: this.agent,
       comments: this.commentsPdf,
       days: this.days,
       itinerary: this.itinerary$,
