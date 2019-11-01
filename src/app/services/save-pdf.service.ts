@@ -142,20 +142,17 @@ export class SavePdfService {
         day.accommodation.forEach((a) => {
           // add accommodation
           this.accommodation.push(a);
+
+          // add destination to destinations array
+          if (!this.destinations.includes(this.showDestination(a.destination))) {
+            this.destinations.push(this.showDestination(a.destination));
+          }
         });
       }
     });
 
     // filter accommodation to only have unique values
-    this.accommodation = this.accommodation.filter((obj, pos, arr) => {
-
-      // add destination to destinations array
-      if (!this.destinations.includes(this.showDestination(obj.destination))) {
-        this.destinations.push(this.showDestination(obj.destination));
-      }
-
-      return arr.map(mapObj => mapObj.key).indexOf(obj.key) === pos;
-    });
+    this.accommodation = removeDuplicates(this.accommodation, 'imageUrl');
 
     // get exclusions
     if (this.itinerary.exclusions === undefined) {
@@ -1788,4 +1785,10 @@ if (lastIteneraryItemsHeight + quotHeight > quoteThreshold) {
 
     return deets;
   }
+}
+
+function removeDuplicates(myArr, prop) {
+  return myArr.filter((obj, pos, arr) => {
+    return arr.map(mapObj => mapObj[prop]).indexOf(obj[prop]) === pos;
+  });
 }

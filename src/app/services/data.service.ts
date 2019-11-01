@@ -70,6 +70,7 @@ export class DataService {
     // observe percentage changes
     this.uploadPercent = task.percentageChanges();
 
+    // todo: save data to item
     // get notified when the download URL is available
     return task.snapshotChanges().pipe(finalize(() => this.downloadURL = fileRef.getDownloadURL()));
   }
@@ -106,6 +107,7 @@ export class DataService {
     this.uploadPercent = task.percentageChanges();
 
     // get notified when the download URL is available
+    // todo: save data to item
     return task.snapshotChanges().pipe(finalize(() => this.downloadURL = fileRef.getDownloadURL()))
       .subscribe();
   }
