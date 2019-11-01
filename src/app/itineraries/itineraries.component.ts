@@ -20,7 +20,7 @@ import {switchMap} from 'rxjs/operators';
 export class ItinerariesComponent implements OnInit, OnDestroy {
   displayedColumns = ['#', 'Date', 'Client', 'Itinerary', 'Value', 'Status'];
   dataSource: MatTableDataSource<any>;
-  itineraries;
+  itineraries = [];
   @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
   private error: any;
   itinerariesRef$;
@@ -41,12 +41,13 @@ export class ItinerariesComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
 
-    this.itineraries = [];
+
 
       // this.data.af.list(`itineraries/${this.data.company}/`, ref => ref.orderByChild('status').equalTo('Provisional').limitToLast(250))
     // // this.ref = this.data.af.list(`itineraries/${this.data.company}/`)
     this.itinerariesSubscription$ = this.itinerariesRef$
       .subscribe(snapshots => {
+        this.itineraries = [];
         // iterate snapshots
         snapshots.forEach(snapshot => {
           // get itinerary
