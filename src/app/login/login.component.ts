@@ -39,14 +39,13 @@ export class LoginComponent implements OnDestroy  {
         }
 
                     // set logged in user
-        this.user$ = this.data.firestore.doc('users/' + auth[`uid`])
+        this.user$ = this.data.firestore.doc(`users/${auth[`uid`]}`)
                     .snapshotChanges()
-                    .subscribe((user) => {
-
-                      const obj = user.payload.data();
-                      obj[`key`] = user.payload.id;
+                    .subscribe((_) => {
+                      const user = _.payload.data();
+                      user[`key`] = _.payload.id;
                       // set logged in user
-                      localStorage.setItem('user', JSON.stringify(obj));
+                      localStorage.setItem('user', JSON.stringify(user));
                     });
 
 
@@ -90,9 +89,11 @@ export class LoginComponent implements OnDestroy  {
             // set logged in user
     this.user$ = this.data.firestore.doc('users/' + auth[`uid`])
             .snapshotChanges()
-            .subscribe((user) => {
+            .subscribe((_) => {
+              const user = _.payload.data();
+              user[`key`] = _.payload.id;
               // set logged in user
-              localStorage.setItem('user', JSON.stringify(user.payload.data()));
+              localStorage.setItem('user', JSON.stringify(user));
             });
 
 

@@ -10,12 +10,12 @@
 <!--    required>-->
 <!--    <mat-option-->
 <!--      [value]="agent">-->
-<!--      {{agent.firstname }} {{agent.lastname}} <span *ngIf="user.key === agent.key" [style.color]="data.color">(You)</span>-->
+<!--      {{agent.firstName }} {{agent.lastName}} <span *ngIf="user.key === agent.key" [style.color]="data.color">(You)</span>-->
 <!--    </mat-option>-->
 <!--  </mat-select>-->
   <mat-form-field>
     <label>
-      <input placeholder="Agent"  [value]="agent.firstname + '' + agent.lastname" matInput readonly/>
+      <input placeholder="Agent"  [value]="agent.firstName + '' + agent.lastName" matInput readonly/>
     </label>
   </mat-form-field>
 
@@ -27,13 +27,13 @@
 <!--    required>-->
 <!--    <mat-option-->
 <!--      [value]="client">-->
-<!--      {{client.firstname}} {{client.lastname}}-->
+<!--      {{client.firstName}} {{client.lastName}}-->
 <!--    </mat-option>-->
 <!--  </mat-select>-->
 
   <mat-form-field>
     <label>
-      <input placeholder="Client"  [value]="client.firstname + '' + client.lastname" matInput readonly/>
+      <input placeholder="Client"  [value]="client.firstName + '' + client.lastName" matInput readonly/>
     </label>
   </mat-form-field>
 

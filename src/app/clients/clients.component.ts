@@ -39,7 +39,7 @@ export class ClientsComponent implements OnInit, OnDestroy {
     this.clients = [];
 
     // get clients
-    this.ref = this.data.firestore.collection(`clients`, ref => ref.where('company', '==', this.data.company.id))
+    this.ref = this.data.firestore.collection(`clients`)
       .snapshotChanges()
       .subscribe(snapshots => {
         snapshots.forEach(snapshot => {

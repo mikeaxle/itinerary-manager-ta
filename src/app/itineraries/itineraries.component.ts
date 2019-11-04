@@ -33,7 +33,7 @@ export class ItinerariesComponent implements OnInit, OnDestroy {
     this.status$ = new BehaviorSubject('Provisional');
     this.itinerariesRef$ = this.status$.pipe(
       switchMap(status =>
-        this.data.firestore.collection(`itineraries/${this.data.company}`, ref => status ? ref.where('status', '==', status) : ref
+        this.data.firestore.collection(`itineraries`, ref => status ? ref.where('company', '==', '9MZBVwEmR28enTGLIi1p').where('status', '==', status) : ref
         ).snapshotChanges()
       )
     );

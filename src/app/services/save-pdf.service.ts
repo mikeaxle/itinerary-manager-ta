@@ -130,7 +130,7 @@ export class SavePdfService {
     this.agent = itineraryData.agent;
 
     // get inventory list
-    this.data.af.list('inventory')
+    this.data.firestore.collection('inventory')
       .valueChanges()
       .subscribe(res => this.inventory = res);
 
@@ -362,7 +362,7 @@ footer p:last-of-type{
         </li>
         <li>
           <p class="title">Safari Specialist</p>
-          <p class="field">${this.agent.firstname} ${this.agent.lastname}</p>
+          <p class="field">${this.agent.firstName} ${this.agent.lastName}</p>
         </li>
         <li>
           <p class="title">Travel Dates</p>
@@ -751,7 +751,7 @@ footer p:last-of-type{
       </li>
       <li>
         <p class="title">Safari Specialist</p>
-        <p class="field">${this.agent.firstname} ${this.agent.lastname}</p>
+        <p class="field">${this.agent.firstName} ${this.agent.lastName}</p>
       </li>
       <li>
         <p class="title">Travel Dates</p>
@@ -1088,7 +1088,7 @@ if (lastIteneraryItemsHeight + quotHeight > quoteThreshold) {
           </li>
           <li>
             <p class="title">Safari Specialist</p>
-            <p class="field">${this.agent.firstname} ${this.agent.lastname}</p>
+            <p class="field">${this.agent.firstName} ${this.agent.lastName}</p>
           </li>
           <li>
             <p class="title">Travel Dates</p>
@@ -1497,11 +1497,11 @@ if (lastIteneraryItemsHeight + quotHeight > quoteThreshold) {
     let string = '';
 
     // get from firebase
-    this.data.getSingleItem(key, type)
+    this.data.firestore.doc(`${type}/${key}`)
       .valueChanges()
       .subscribe((res) => {
         // concat first name and last name
-        string = `${res[`firstname`]} ${res[`lastname`]}`;
+        string = `${res[`firstName`]} ${res[`lastName`]}`;
       });
 
 
@@ -1512,11 +1512,11 @@ if (lastIteneraryItemsHeight + quotHeight > quoteThreshold) {
   // function to get accommodation
   getAccommodation(accommodation: any[]) {
 
-    let _accomodations = '';
+    let accomodations = '';
 
     accommodation.forEach(a => {
       // console.log(a)
-      const _currentAcc = `
+      const currentAcc = `
       <div class="wrapper">
         <div class="img-block" style="background-image:url('${a.imageUrl}')"></div>
         <div class="accom-desc">
@@ -1527,41 +1527,41 @@ if (lastIteneraryItemsHeight + quotHeight > quoteThreshold) {
       </div>`;
 
       // add current accommodation to temp accommodations array
-      _accomodations += _currentAcc;
+      accomodations += currentAcc;
 
 
     });
 
-    return _accomodations;
+    return accomodations;
   }
 
   // function to print destinations in string
   getDestinations() {
-    const _countries = [];
+    const countries = [];
 
     this.phone_numbers.forEach(d => {
-      _countries.push(this.countryService.getDestination(d.country_id).name);
+      countries.push(this.countryService.getDestination(d.country_id).name);
     });
 
-    let _dest = '';
-    _dest = [_countries.slice(0, -1).join(', '), _countries.slice(-1)[0]].join(_countries.length < 2 ? '' : ' & ');
-    return _dest;
+    let dest = '';
+    dest = [countries.slice(0, -1).join(', '), countries.slice(-1)[0]].join(countries.length < 2 ? '' : ' & ');
+    return dest;
   }
 
   // function to loop thru and print inclusion
   getInclusions(accommodation: any[]) {
-    let _inclusions = '';
+    let inclusions = '';
 
     accommodation.forEach((a) => {
-      const _inc = `
+      const inc = `
       <p >
       <b>Included at ${a.name.replace(/\-.*/, '')}:</b> ${a.inclusions}
       </p>`;
 
-      _inclusions += _inc;
+      inclusions += inc;
     });
 
-    return _inclusions;
+    return inclusions;
   }
 
   // function to diplay destination names
@@ -1658,18 +1658,18 @@ if (lastIteneraryItemsHeight + quotHeight > quoteThreshold) {
 
   // function to get contact details
   getContacts() {
-    let _html = '';
+    let html = '';
 
     this.phone_numbers.forEach((pn) => {
 
-      let _contactBlock = `
+      let contactBlock = `
            <div class="contact-block">
         <p class="heading">${this.countryService.getDestination(pn.country_id).name}</p>
         <div class="details">`;
 
       // check if office hours is set & add to contact block
       if (pn.office_hours !== '') {
-        _contactBlock += `
+        contactBlock += `
           <!-- office hours -->
           <p class="field">Office Hours</p>
           <p class="value">${pn.office_hours}</p>
@@ -1678,7 +1678,7 @@ if (lastIteneraryItemsHeight + quotHeight > quoteThreshold) {
 
       // check if after hours is set & add to contact block
       if (pn.after_hours !== '') {
-        _contactBlock += `<!-- after hours -->
+        contactBlock += `<!-- after hours -->
           <p class="field">After Hours</p>
           <p class="value">${pn.after_hours}</p>
           <br>`;
@@ -1686,21 +1686,21 @@ if (lastIteneraryItemsHeight + quotHeight > quoteThreshold) {
 
       // check if alt after hours is set & add to contact block
       if (pn.alt_after_hours !== '') {
-        _contactBlock += `            <!-- after hours -->
+        contactBlock += `            <!-- after hours -->
           <p class="field">Alternative After Hours</p>
           <p class="value">${pn.alt_after_hours}</p>
           <br>`;
       }
 
-      _contactBlock += '</div></div>';
+      contactBlock += '</div></div>';
 
-      _html += _contactBlock;
+      html += contactBlock;
     });
 
 
     switch (this.data.company) {
       case 'True Africa':
-        _html += `
+        html += `
         <h2 class="sub-header">True Africa - The Safari Company</h2>
         <div class="contact-block">
           <p class="heading">Cape Town Office</p>
@@ -1718,7 +1718,7 @@ if (lastIteneraryItemsHeight + quotHeight > quoteThreshold) {
         </div>`;
         break;
       case 'Planet Africa':
-        _html += `
+        html += `
         <h2 class="sub-header">Planet Africa Safaris - Tailor Made Safaris in East and Southern Africa</h2>
         <div class="contact-block">
           <p class="heading">Cape Town Office</p>
@@ -1740,7 +1740,7 @@ if (lastIteneraryItemsHeight + quotHeight > quoteThreshold) {
     }
 
 
-    return _html;
+    return html;
 
 
   }
@@ -1748,11 +1748,11 @@ if (lastIteneraryItemsHeight + quotHeight > quoteThreshold) {
 
   showDiscountAndDeposit() {
 
-    let _html = '';
+    let html = '';
 
     if (this.itinerary.discount > 0) {
       // check if discount is more than 0
-      _html += `
+      html += `
               <tr class="discount">
           <td class="description">Discount applied off normal rates</td>
           <td class="currency">USD</td>
@@ -1763,7 +1763,7 @@ if (lastIteneraryItemsHeight + quotHeight > quoteThreshold) {
 
     // check if deposit is more than 0
     if (this.itinerary.deposit > 0) {
-      _html += `<tr class="deposit" >
+      html += `<tr class="deposit" >
           <td class="description">Deposit Required</td>
           <td class="currency">USD</td>
           <td class="amount">${this.filter.transform(this.itinerary.deposit)}</td>
@@ -1771,7 +1771,7 @@ if (lastIteneraryItemsHeight + quotHeight > quoteThreshold) {
         `;
     }
 
-    return _html;
+    return html;
 
 
   }

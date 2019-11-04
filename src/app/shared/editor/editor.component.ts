@@ -18,6 +18,7 @@ import {MatDialogConfig} from '@angular/material';
 import {Observable} from 'rxjs';
 import {map, startWith} from 'rxjs/operators';
 import {generalInclusions} from '../../model/generalInclusions';
+import * as firebase from 'firebase-admin';
 
 // interface for country codes
 export interface CountryCodes {
@@ -36,8 +37,8 @@ export class EditorComponent implements OnInit {
   clientForm: any;
   inventoryForm: any;
   itinerary: Itinerary;
-  agent: Agent;
-  client: Client;
+  agent: any;
+  client: any;
   numbers: any;
   agents = [];
   clients = [];
@@ -73,7 +74,7 @@ export class EditorComponent implements OnInit {
   // getter to return filtered country codes
   private _filterClients(value): CountryCodes[] {
     const filterValue = value.toLowerCase();
-    return this.clients.filter(client => `${client.firstname} ${client.lastname}`.toLowerCase().indexOf(filterValue) === 0);
+    return this.clients.filter(client => `${client.firstName} ${client.lastName}`.toLowerCase().indexOf(filterValue) === 0);
   }
 
   ngOnInit() {
@@ -123,15 +124,14 @@ export class EditorComponent implements OnInit {
     });
 
                           // init filtered clients  and subscribe to client form control on itinerary form
-                          this.filteredClients = this.itineraryForm.controls.client
-                          .valueChanges
-                          .pipe(
-                            startWith(''),
-                            map(client => client ? this._filterClients(client) : this.clients.slice())
-                          );
+    this.filteredClients = this.itineraryForm.controls.client
+      .valueChanges
+      .pipe(
+        startWith(''),
+        map(client => client ? this._filterClients(client) : this.clients.slice()));
 
     // get company invoice details
-    this.data.af.object(`companies/${this.data.company}`)
+    this.data.firestore.doc(`companies/${this.data.company.key}`)
       .valueChanges()
       .subscribe((res) => {
         // this.data.list('company/True Africa')
@@ -139,27 +139,27 @@ export class EditorComponent implements OnInit {
       });
 
     // get agents list
-    this.data.af.list('users')
+    this.data.firestore.collection('users')
       .snapshotChanges()
       .subscribe((_) => {
         _.forEach(snapshot => {
-          const agent = snapshot.payload.val();
-          agent[`key`] = snapshot.key;
+          const agent = snapshot.payload.doc.data();
+          agent[`key`] = snapshot.payload.doc.id;
           this.agents.push(agent);
         });
       });
 
     // get client list
-    this.data.af.list(`clients/${this.data.company}/`)
+    this.data.firestore.collection(`clients`, ref => ref.where('company', '==', this.data.company.key))
       .snapshotChanges()
       .subscribe(_ => {
         _.forEach(snapshot => {
-          const client = snapshot.payload.val();
-          client[`key`] = snapshot.key;
+          const client = snapshot.payload.doc.data();
+          client[`key`] = snapshot.payload.doc.id;
           this.clients.push(client);
         });
-        
-      })
+
+      });
 
 
     // make numbers
@@ -170,8 +170,8 @@ export class EditorComponent implements OnInit {
   initNewClient() {
     this.clientForm = this.args.new ? this.formBuilder.group({
       email: [null, Validators.required],
-      firstname: [null, Validators.required],
-      lastname: [null, Validators.required],
+      firstName: [null, Validators.required],
+      lastName: [null, Validators.required],
       nationality: [null, Validators.required],
       phone: [null, Validators.required]
     }) : this.formBuilder.group(this.client);
@@ -189,8 +189,8 @@ export class EditorComponent implements OnInit {
   initNewAgent() {
     this.agentForm = this.args.new ? this.formBuilder.group({
       email: [null, Validators.required],
-      firstname: [null, Validators.required],
-      lastname: [null, Validators.required],
+      firstName: [null, Validators.required],
+      lastName: [null, Validators.required],
       password: [null, Validators.required],
       role: [null, Validators.required],
     }) : this.formBuilder.group(this.agent);
@@ -252,13 +252,23 @@ export class EditorComponent implements OnInit {
       this.itineraryForm.value.invoice_number = `${this.invoiceDetails.prefix}-${this.invoiceDetails.invoice_number}`;
 
       // push to firebase
-      this.data.saveItem(`itineraries/${this.data.company}`, this.itineraryForm.value)
+      this.data.firestore.collection(`itineraries`)
+        .add(this.itineraryForm.value)
         .then((res) => {
           // update invoice number in firebase
-          this.data.updateItem(this.data.company, 'companies', this.invoiceDetails);
+          this.data.firestore.doc(`companies/${this.data.company.key}`)
+            .update({
+              invoiceNumber: this.invoiceDetails.invoice_number
+            })
+            .then(_ => {
+              console.log('invoice number updated');
+            })
+            .catch(err => {
+              console.log('an error has occured');
+            });
 
           // go to itinerary editor with new itinerary
-          this.router.navigate(['/itinerary-editor', res.key])
+          this.router.navigate(['/itinerary-editor', res.id])
             .then(() => {
               Swal.fire('Success!', 'New itinerary successfully added', 'success')
                 .then(_ => {
@@ -309,7 +319,8 @@ export class EditorComponent implements OnInit {
       if (this.inventoryItem.image === undefined) {
 
         // call normal firebase save function
-        this.data.saveItem('inventory', inventoryForm.value)
+        this.data.firestore.collection('inventory')
+          .add(inventoryForm.value)
           .then(() => {
             // swal
             Swal.fire('Success', 'New inventory item successfully added', 'success');
@@ -389,6 +400,52 @@ export class EditorComponent implements OnInit {
     this.bottomSheetRef.close();
   }
 
+  addClient(client) {
+    if (this.args.new) {
+      // add company to client
+      // add agent to client
+      // write to firebase
+      this.data.firestore.collection('clients')
+        .add(client)
+        .then(_ => {
+          console.log('new client id: ' + _.id);
+          Swal.fire('Client editor', 'new client added.', 'success');
+        })
+        .catch(err => {
+          console.log(err);
+          Swal.fire('Client editor', err.message, 'error');
+        });
+    } else {
+      // write to firebase
+      this.data.firestore.doc(`clients/${this.client.key}`)
+        .update({
+          email: client.email,
+          firstName: client.firstName,
+          lastName: client.lastName,
+          nationality: client.nationality,
+          phone: client.phone,
+          updated: firebase.firestore.Timestamp.now()
+        })
+        .then(_ => {
+          console.log(_);
+        })
+        .catch(err => {
+          console.log(err);
+        });
+      // this.data.firestore.doc(`clients/${this.client.key}`)
+      //   .update(client)
+      //   .then(_ => {
+      //     console.log('client updated.');
+      //     Swal.fire('Client editor', 'client update.', 'success');
+      //   })
+      //   .catch(err => {
+      //     console.log(err);
+      //     Swal.fire('Client editor', err.message, 'error');
+      //   });
+    }
+
+  }
+
 
   // function to save single item to list
   saveItem(data) {
@@ -403,7 +460,7 @@ export class EditorComponent implements OnInit {
       case 'clients':
         itemId = this.client ? this.client[`key`] : null;
         data.agent = this.user[`key`];
-        databasePath += `${this.data.company}/`;
+        databasePath += `${this.data.company.key}/`;
         break;
       case 'inventory':
         itemId = this.inventoryItem ? this.inventoryItem[`key`] : null;
@@ -422,8 +479,9 @@ export class EditorComponent implements OnInit {
     // check if new item
     if (this.args.new) {
       // write to database
-      this.data.saveItem(databasePath, data)
-      .then(_ => {
+      this.data.firestore.collection(databasePath)
+        .add(data)
+        .then(_ => {
         // Swal
         Swal.fire('Success', `New ${this.args.type.slice(0, this.args.type.length - 1)} successfully added`, 'success');
 
@@ -441,7 +499,7 @@ export class EditorComponent implements OnInit {
       });
     } else {
       // push to firebase
-      this.data.af.object( `${databasePath}${itemId}`)
+      this.data.firestore.doc( `${databasePath}/${itemId}`)
         .update(data)
         .then(_ => {
           // Swal

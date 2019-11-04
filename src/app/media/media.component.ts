@@ -25,16 +25,16 @@ export class MediaComponent implements OnInit, OnDestroy {
   ngOnInit() {
     // get media list
 
-     this.ref = this.data.af.list('media')
+     this.ref = this.data.firestore.collection('media')
       .snapshotChanges()
       .subscribe((snapshots) => {
         // iterate snapshots
         snapshots.forEach(snapshot => {
           // get media item
-          const mediaItem = snapshot.payload.val();
+          const mediaItem = snapshot.payload.doc.data()
 
           // get key
-          mediaItem[`$key`] = snapshot.key;
+          mediaItem[`$key`] = snapshot.payload.doc.id
 
           // push to media list array
           this.mediaList.push(mediaItem);
@@ -81,7 +81,7 @@ export class MediaComponent implements OnInit, OnDestroy {
 
   // function to delete media
   deleteMedia(media) {
-    this.data.deleteItem(media.$key, 'media')
+    this.ref.remove(media.$key)
       .then(() => {
         console.log('media deleted');
 

@@ -44,7 +44,7 @@ export class ItineraryDetailsEditorComponent implements OnInit, OnDestroy {
     this.agent = this.params.agent;
 
     //  get from params
-    this.client = this.params.client
+    this.client = this.params.client;
 
     // create start date and end date objects
     this.startdate = new Date(this.itinerary.startdate);
@@ -123,7 +123,8 @@ export class ItineraryDetailsEditorComponent implements OnInit, OnDestroy {
     }
 
     // push to firebase
-    this.data.updateItem(this.itinerary[`key`], `itineraries/${this.data.company}/`, this.itineraryForm.value)
+    this.data.firestore.doc(`itineraries/${this.itinerary.key}`)
+      .update(this.itineraryForm.value)
       .then(() => {
         Swal.fire('Itinerary Editor', 'Itinerary details updated', 'success');
         this.dialogRef.close();

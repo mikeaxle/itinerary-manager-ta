@@ -20,7 +20,7 @@ export class ImageSelectorComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     // get image list from firebase
-    this.mediaListSubscription$ = this.data.af.list('media').valueChanges()
+    this.mediaListSubscription$ = this.data.firestore.collection('media').valueChanges()
       .subscribe(_ => {
         this.mediaList = _;
         this.MEDIA_LIST =  [...this.mediaList];

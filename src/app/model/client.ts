@@ -1,6 +1,6 @@
 export class Client {
-  firstname = '';
-  lastname = '';
+  firstName = '';
+  lastName = '';
   email = '';
   phone = '';
   nationality = '';
