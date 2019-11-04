@@ -40,13 +40,13 @@ export class InventoryComponent implements OnInit, OnDestroy {
     this.inventory = [];
 
     // get inventory
-    this.ref = this.data.getList('inventory')
+    this.ref = this.data.firestore.collection('inventory')
       .snapshotChanges()
       .subscribe(snapshots => {
         snapshots.forEach(snapshot => {
           let item = {};
-          item = snapshot.payload.val();
-          item[`key`] = snapshot.key;
+          item = snapshot.payload.doc.data();
+          item[`key`] = snapshot.payload.doc.id;
           this.inventory.push(item);
         });
 
@@ -107,14 +107,11 @@ export class InventoryComponent implements OnInit, OnDestroy {
   // function to delete item
   deleteInventory(item) {
 
-    this.data.deleteItem(item.$key, 'inventory')
+    this.data.firestore.doc(`inventory/${item.key}`)
+      .delete()
       .then(() => {
-
-        console.log('inventory item deleted');
-
         // check if inventory item has an image
         if (item.image !== undefined && item.image !== 'undefined') {
-
           // delete image from firebase storage
             this.data.deleteItemWithImage(item.image)
               .then((res) => {
@@ -128,8 +125,8 @@ export class InventoryComponent implements OnInit, OnDestroy {
         }
       })
       .catch((error) => {
-
         this.error = error.message;
+        Swal.fire('Failed', error.message, 'error');
       });
   }
 

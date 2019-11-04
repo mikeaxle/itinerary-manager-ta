@@ -4,7 +4,6 @@ import {MatBottomSheet, MatDialog, MatPaginator, MatSort, MatTable, MatTableData
 import {ConfirmComponent} from '../shared/confirm/confirm.component';
 import {PermissionDeniedDialogComponent} from '../shared/permission-denied-dialog/permission-denied-dialog.component';
 import {EditorComponent} from '../shared/editor/editor.component';
-import {snapshotChanges} from '@angular/fire/database';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -40,12 +39,12 @@ export class ClientsComponent implements OnInit, OnDestroy {
     this.clients = [];
 
     // get clients
-    this.ref = this.data.getList(`clients/${this.data.company}` )
+    this.ref = this.data.firestore.collection(`clients`, ref => ref.where('company', '==', this.data.company.id))
       .snapshotChanges()
       .subscribe(snapshots => {
         snapshots.forEach(snapshot => {
-          const client = snapshot.payload.val();
-          client[`key`] = snapshot.key;
+          const client = snapshot.payload.doc.data();
+          client[`key`] = snapshot.payload.doc.id;
           this.clients.push(client);
         });
         // init data source
@@ -105,8 +104,11 @@ export class ClientsComponent implements OnInit, OnDestroy {
     //         });
     //     }
     //   });
+    // todo: check if user has itineraries
 
-    this.data.deleteItem(id, `clients/${this.data.company}/`)
+    // delete client
+    this.data.firestore.doc(`clients/${id}`)
+      .delete()
       .then(() => {
         console.log('client deleted');
         Swal.fire('Client Editor', 'Client deleted: ' + id, 'error');
@@ -117,6 +119,7 @@ export class ClientsComponent implements OnInit, OnDestroy {
       });
   }
 
+  // function to add client
   addNew() {
     // todo: add arguments to editor component for type, mode, and data
     this.dialog.open(EditorComponent, {

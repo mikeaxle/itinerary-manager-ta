@@ -4,6 +4,7 @@ import {DataService} from '../services/data.service';
 import {Router} from '@angular/router';
 import Swal from 'sweetalert2';
 import {AuthProvider} from 'ngx-auth-firebaseui';
+import {consoleTestResultHandler} from 'tslint/lib/test';
 
 @Component({
   selector: 'app-login',
@@ -38,12 +39,12 @@ export class LoginComponent implements OnDestroy  {
         }
 
                     // set logged in user
-        this.user$ = this.data.af.object('users/' + auth[`uid`])
+        this.user$ = this.data.firestore.doc('users/' + auth[`uid`])
                     .snapshotChanges()
                     .subscribe((user) => {
 
-                      const obj = user.payload.val();
-                      obj[`key`] = user.key;
+                      const obj = user.payload.data();
+                      obj[`key`] = user.payload.id;
                       // set logged in user
                       localStorage.setItem('user', JSON.stringify(obj));
                     });
@@ -87,11 +88,11 @@ export class LoginComponent implements OnDestroy  {
 
     // set user
             // set logged in user
-    this.user$ = this.data.af.object('users/' + auth[`uid`])
+    this.user$ = this.data.firestore.doc('users/' + auth[`uid`])
             .snapshotChanges()
             .subscribe((user) => {
               // set logged in user
-              localStorage.setItem('user', JSON.stringify(user.payload.val()));
+              localStorage.setItem('user', JSON.stringify(user.payload.data()));
             });
 
 

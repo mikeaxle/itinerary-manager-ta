@@ -113,17 +113,17 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
     this.itineraryId = this.route.snapshot.paramMap.get('id');
 
     // get itinerary firebase reference
-    this.itineraryRef$ = this.data.af.object(`itineraries/${this.data.company}/${this.itineraryId}`).snapshotChanges();
+    this.itineraryRef$ = this.data.firestore.doc(`itineraries/${this.itineraryId}`).snapshotChanges();
 
     // subscribe to itinerary ref
     this.itineraryRef$
       .subscribe(_ => {
         if (_.payload.val()) {
           // get itinerary payload
-          const it = _.payload.val();
+          const it = _.payload.doc.data();
 
           // get itinerary key
-          it[`key`] = _.payload.key;
+          it[`key`] = _.payload.doc.id;
 
           // assign to local itinerary object for manipulation
           this.itinerary$ = it;
@@ -162,8 +162,6 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
           // get agent
           this.getAgent();
 
-
-
           // get contact numbers associated with itinerary
           this.getContactNumbersForCountries();
 
@@ -184,8 +182,9 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
   }
 
 // get contact numbers to associated countries related to itinerary
+  // todo: move contract numbers to itinerary.contactNumbers
   private getContactNumbersForCountries() {
-    this.countriesRef$ = this.data.af.list(`phone_numbers/${this.itineraryId}`);
+    this.countriesRef$ = this.data.firestore.collection(`phone_numbers/${this.itineraryId}`);
     this.countries = this.countriesRef$.snapshotChanges();
     this.countriesPdf = [];
     this.countriesSubscription$ = this.countries.subscribe(_ => {
@@ -200,7 +199,7 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
   // get payments related to itinerary
   private getPayments(itinerary) {
     // init payments firebase list reference
-    this.paymentsRef$ = this.data.af.list('payments/' + this.itineraryId);
+    this.paymentsRef$ = this.data.firestore.collection('payments', ref => ref.where('itinerary', '==', this.itineraryId));
 
     // init payments snapshot array
     this.payments = this.paymentsRef$.snapshotChanges();
@@ -213,9 +212,10 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
       this.averageCost = 0;
 
       _.forEach(snapshot => {
-        const payment = snapshot.payload.val();
-        payment.key = snapshot.key;
-          // increment total payments
+        const payment = snapshot.payload.doc.data();
+        payment.key = snapshot.payload.doc.id;
+
+        // increment total payments
         this.totalPayments += parseFloat(payment.amount);
 
           // add to array for pdf
@@ -229,13 +229,13 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
 
   // get comments related to itinerary
   private getComments() {
-    this.commentsRef$ = this.data.af.list('comments/' + this.itineraryId);
+    this.commentsRef$ = this.data.firestore.collection('comments/', ref => ref.where('itinerary', '==', this.itineraryId));
     this.comments = this.commentsRef$.snapshotChanges();
     this.commentsSubscription$ = this.comments.subscribe(_ => {
       this.commentsPdf = [];
       _.forEach(snapshot => {
-        const comment = snapshot.payload.val();
-        comment.key = snapshot.key;
+        const comment = snapshot.payload.doc.data();
+        comment.key = snapshot.payload.doc.id;
         this.commentsPdf.push(comment);
       });
     });
@@ -244,7 +244,8 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
   // get days related to itinerary
    private  getDays() {
     this.days = [];
-    this.daysRef$ = this.data.af.list('days/' + this.itineraryId, ref => ref.orderByChild('position')).snapshotChanges();
+    this.daysRef$ = this.data.firestore.collection('days', ref => ref.where('itinerary', '==', this.itineraryId).orderBy('position'))
+      .snapshotChanges();
 
     this.daysSubscription$ = this.daysRef$.subscribe(_ => {
         // reset temp inclusions array, used days and temp days array
@@ -255,10 +256,10 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
         // assign days array
         _.forEach((data) => {
           // get day-editor
-          const day = data.payload.val();
+          const day = data.payload.doc.data();
 
           // add key
-          day[`key`] = data.key;
+          day[`key`] = data.payload.doc.id;
 
           // add title
           day[`title`] = this.getDayTitle('title', day);
@@ -316,21 +317,21 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
 
   // gets agent object
   getAgent() {
-    this.agentRef$ = this.data.af.object(`users/${this.itinerary$.agent}`)
+    this.agentRef$ = this.data.firestore.doc(`users/${this.itinerary$.agent}`)
       .snapshotChanges()
       .subscribe(_ => {
-        this.agent = _.payload.val();
-        this.agent[`key`] = _.key;
+        this.agent = _.payload.data();
+        this.agent[`key`] = _.payload.id;
       });
   }
 
   // gets client
   getClient() {
-    this.clientRef$ = this.data.af.object(`clients/${this.data.company}/${this.itinerary$.client}`)
+    this.clientRef$ = this.data.firestore.doc(`clients/${this.itinerary$.client}`)
       .snapshotChanges()
       .subscribe(_ => {
-        this.client = _.payload.val();
-        this.client[`key`] =  _.key;
+        this.client = _.payload.data();
+        this.client[`key`] =  _.payload.id;
       });
   }
 
@@ -339,16 +340,16 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
   getDayTitle(type: string, day: any) {
     // variables related to editor-components tile
     let title = '';
-    let first_day = 0;
-    let last_day = 0;
+    let firstDay = 0;
+    let lastDay = 0;
 
     // variables related to dates
-    let start_date: any;
-    let end_date: any;
+    let startDate: any;
+    let endDate: any;
     let dates = '';
 
     if (day.position < 1) {
-      first_day = 1;
+      firstDay = 1;
     } else {
       // iterate days array
       this.days.every((d, i) => {
@@ -357,42 +358,42 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
           return false;
         }
         // add all days of days before to current
-        first_day += d.days;
+        firstDay += d.days;
         return true;
       });
 
       // add 1 to editor-components
-      first_day += 1;
+      firstDay += 1;
     }
 
     // add first editor-components to title
-    title += `Day ${first_day}`;
+    title += `Day ${firstDay}`;
 
     // init start date to itinerary start date
-    start_date = new Date(this.itinerary$.startdate);
+    startDate = new Date(this.itinerary$.startdate);
 
     // add number of days before current editor-components to start date to get current start date
-    start_date.setDate(start_date.getDate() + (first_day - 1));
+    startDate.setDate(startDate.getDate() + (firstDay - 1));
 
     // add start_date to date string
-    dates += `${start_date.getDate()} ${this.DATE_MONTHS[start_date.getMonth()]}`;
+    dates += `${startDate.getDate()} ${this.DATE_MONTHS[startDate.getMonth()]}`;
 
     // if editor-components contains more than 1 editor-components
     if (day.days > 1) {
       // last editor-components is first editor-components + total days - 1
-      last_day = first_day + day.days - 1;
+      lastDay = firstDay + day.days - 1;
 
       // add last editor-components to title
-      title += ` - ${last_day}`;
+      title += ` - ${lastDay}`;
 
       // init end_date to start_date
-      end_date = start_date;
+      endDate = startDate;
 
       // add number of days
-      end_date.setDate(end_date.getDate() + day.days - 1);
+      endDate.setDate(endDate.getDate() + day.days - 1);
 
       // add to dates string
-      dates += ` - ${end_date.getDate()} ${this.DATE_MONTHS[end_date.getMonth()]}`;
+      dates += ` - ${endDate.getDate()} ${this.DATE_MONTHS[endDate.getMonth()]}`;
     }
 
     // check type
@@ -425,7 +426,7 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
     let dialogRef: any;
 
     // variable to store editor-components position
-    let position = this.days.length + 1;
+    const position = this.days.length + 1;
 
     if (mode === 'add') {
 
@@ -470,7 +471,7 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
           days.dayForm.position = position;
 
           // push new editor-components to firebase
-          this.data.saveItem('days/' + this.itineraryId, days.dayForm)
+          this.daysSubscription$.add(days.dayForm)
             .then(_ => {
               console.log('new days added.');
             })
@@ -482,7 +483,8 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
         } else if (mode === 'edit') {
           // update editor-components
           // console.log(result.dayForm)
-          this.data.updateItem(day.key, 'days/' + this.itineraryId, days.dayForm)
+          this.data.firestore.doc(`days/${this.itineraryId}`)
+            .update(days.dayForm)
             .then(_ => {
               console.log('days updated.');
             })
@@ -532,7 +534,7 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
       if (comment) {
         // save to firebase comments list
         if (mode === 'add') {
-          this.data.saveItem('comments/' + this.itineraryId, comment)
+          this.commentsRef$.add(comment)
             .then(() => {
               console.log('new comment-editor added.');
             })
@@ -698,7 +700,7 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
           }
 
           // write to firebase
-        this.data.af.object(`itineraries/${this.data.company}/${this.itineraryId}`).update(objectToWrite)
+        this.itineraryRef$.update(objectToWrite)
             .then(_ => {
               console.log('media item attached');
             })
@@ -798,29 +800,28 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
 
   // function to write status to firebase when status is selected
   onSelect(status: any) {
-    this.data.updateFirebaseObject(`itineraries/${this.data.company}/${this.itineraryId}`, { status: status }, 'itinerary status')
+    this.data.updateFirebaseObject(`itineraries/${this.data.company}/${this.itineraryId}`, { status }, 'itinerary status');
   }
 
   // function to delete itinerary
   deleteItinerary() {
     // delete itinerary
-    this.data.af.object(`itineraries/${this.data.company}/${this.itineraryId}`)
-      .remove()
+    this.itineraryRef$.delete()
       .then(_ => {
         // Swal
         Swal.fire('Delete Itinerary', `Itinerary ${this.itineraryId} Deleted`, 'success')
-          .then( _ => {
-            // delete countries
-            this.countriesRef$ ? this.data.af.list(`phone_numbers/${this.itineraryId}`).remove() : console.log('no countries to delete');
+          .then(() => {
+            // delete countries? this.data.firestore.collection('days/' + this.itineraryId).remove() : console.log('no days to delete');
+            this.countriesRef$.delete();
 
             // delete days
-            this.daysRef$ ? this.data.af.list('days/' + this.itineraryId).remove() : console.log('no days to delete');
+            this.daysRef$.delete();
 
             // delete comments
-            this.commentsRef$ ? this.data.af.list('comments/' + this.itineraryId).remove() : console.log('no comments to delete');
+            this.commentsRef$.delete();
 
             // delete payments
-            this.paymentsRef$ ? this.data.af.list('payments/' + this.itineraryId).remove() : console.log('no payments to delete');
+            this.paymentsRef$.delete();
           });
       })
       .catch(err => {
@@ -834,89 +835,89 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
 
   // function to duplicate itinerary
   duplicateItinerary() {
-    // variable to store duplicate
-    let duplicate = null;
-    let duplicateInvoiceNumber = null;
-    let duplicateKey = null;
-
-    // variable to store comments
-    let comments = null;
-
-      // copy data to duplicate
-    duplicate = this.itinerary$;
-
-      // add the word duplicate to title of duplicate
-    duplicate.title += '(duplicate)';
-    duplicate.title += '(duplicate)';
-
-    // map comments to local variable
-    comments = this.comments;
-
-    // assign invoice number
-    this.data.af.object(`companies/${this.data.company}`)
-      .valueChanges()
-      .subscribe((res) => {
-      duplicateInvoiceNumber = res[`invoice_number`] + 1;
-      duplicate.invoice_number = `${res[`prefix`]}-${duplicateInvoiceNumber}`;
-    }).unsubscribe();
-
-    // write duplicate itinerary to
-    this.data.af.list(`itineraries/${this.data.company}`).push(duplicate)
-      .then((res) => {
-        // assign duplicate key
-        duplicateKey = res.key;
-
-        // check for payments
-        this.paymentsRef$.map((payments) => {
-          if (payments.length > 0) {
-            // write to firebase
-            payments.forEach(p => {
-              this.data.af.list(`payments/${duplicateKey}`).push(p);
-            });
-          }
-        });
-
-        // check for days
-        this.daysRef$.map((days) => {
-          if (days.length > 0) {
-            // write to firebase
-            days.forEach(d => {
-              this.data.af.list(`days/${duplicateKey}`).push(d)
-                .then((dayDuplicate) => {
-                  /// check for comments
-                  if (comments.length > 0) {
-                    comments.forEach((c) => {
-                      if (c.day === d.key) {
-                        c.day = dayDuplicate.key;
-                        // write to firebase
-                        this.data.af.list(`comments/${duplicateKey}`).push(c);
-                      }
-                    });
-                  }
-                });
-            });
-          }
-        }).subscribe();
-
-      })
-      .then(() => {
-        // go to duplicate itinerary
-        this.router.navigate(['/itinerary-editor', duplicateKey])
-          .then(() => {
-            // update invoice number
-            this.data.updateItem(this.data.company, 'companies', {invoice_number: duplicateInvoiceNumber})
-              .then(_ => {
-                // Swal
-                Swal.fire('Duplicate Itinerary',
-                  `Itinerary ${duplicateKey}: ${duplicate.title.slice(0, duplicate.title.length - 11)} Duplicated`,
-                  'success');
-              })
-              .catch(err => {
-                // Swal
-                Swal.fire('Duplicate Itinerary', err.message, 'success');
-              });
-          });
-      });
+    // // variable to store duplicate
+    // let duplicate = null;
+    // let duplicateInvoiceNumber = null;
+    // let duplicateKey = null;
+    //
+    // // variable to store comments
+    // let comments = null;
+    //
+    //   // copy data to duplicate
+    // duplicate = this.itinerary$;
+    //
+    //   // add the word duplicate to title of duplicate
+    // duplicate.title += '(duplicate)';
+    // duplicate.title += '(duplicate)';
+    //
+    // // map comments to local variable
+    // comments = this.comments;
+    //
+    // // assign invoice number
+    // this.data.af.object(`companies/${this.data.company}`)
+    //   .valueChanges()
+    //   .subscribe((res) => {
+    //   duplicateInvoiceNumber = res[`invoice_number`] + 1;
+    //   duplicate.invoice_number = `${res[`prefix`]}-${duplicateInvoiceNumber}`;
+    // }).unsubscribe();
+    //
+    // // write duplicate itinerary to
+    // this.data.af.list(`itineraries/${this.data.company}`).push(duplicate)
+    //   .then((res) => {
+    //     // assign duplicate key
+    //     duplicateKey = res.key;
+    //
+    //     // check for payments
+    //     this.paymentsRef$.map((payments) => {
+    //       if (payments.length > 0) {
+    //         // write to firebase
+    //         payments.forEach(p => {
+    //           this.data.af.list(`payments/${duplicateKey}`).push(p);
+    //         });
+    //       }
+    //     });
+    //
+    //     // check for days
+    //     this.daysRef$.map((days) => {
+    //       if (days.length > 0) {
+    //         // write to firebase
+    //         days.forEach(d => {
+    //           this.data.af.list(`days/${duplicateKey}`).push(d)
+    //             .then((dayDuplicate) => {
+    //               /// check for comments
+    //               if (comments.length > 0) {
+    //                 comments.forEach((c) => {
+    //                   if (c.day === d.key) {
+    //                     c.day = dayDuplicate.key;
+    //                     // write to firebase
+    //                     this.data.af.list(`comments/${duplicateKey}`).push(c);
+    //                   }
+    //                 });
+    //               }
+    //             });
+    //         });
+    //       }
+    //     }).subscribe();
+    //
+    //   })
+    //   .then(() => {
+    //     // go to duplicate itinerary
+    //     this.router.navigate(['/itinerary-editor', duplicateKey])
+    //       .then(() => {
+    //         // update invoice number
+    //         this.data.updateItem(this.data.company, 'companies', {invoice_number: duplicateInvoiceNumber})
+    //           .then(_ => {
+    //             // Swal
+    //             Swal.fire('Duplicate Itinerary',
+    //               `Itinerary ${duplicateKey}: ${duplicate.title.slice(0, duplicate.title.length - 11)} Duplicated`,
+    //               'success');
+    //           })
+    //           .catch(err => {
+    //             // Swal
+    //             Swal.fire('Duplicate Itinerary', err.message, 'success');
+    //           });
+    //       });
+    //   });
   }
 
   // function to save as PDF

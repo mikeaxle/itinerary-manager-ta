@@ -5,11 +5,13 @@ import {Router} from '@angular/router';
 import {DataService} from '../services/data.service';
 import {PermissionDeniedDialogComponent} from '../shared/permission-denied-dialog/permission-denied-dialog.component';
 import {EditorComponent} from '../shared/editor/editor.component';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-agents',
-  templateUrl: './agents.component.html',
-  styleUrls: ['./agents.component.css']
+  styleUrls: ['./agents.component.css'],
+  templateUrl: './agents.component.html'
+
 })
 export class AgentsComponent implements OnInit, OnDestroy {
 
@@ -30,17 +32,17 @@ export class AgentsComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.agents = [];
 
-    this.ref = this.data.af.list(`users`)
+    this.ref = this.data.firestore.collection(`users`)
    .snapshotChanges()
    .subscribe(snapshots => {
 
      snapshots.forEach((snapshot) => {
        // get agent data
        let agent = {};
-       agent = snapshot.payload.val();
+       agent = snapshot.payload.doc.data();
 
        // get key
-       agent[`key`] = snapshot.key;
+       agent[`key`] = snapshot.payload.doc.id;
 
        // push to agents array
        this.agents.push(agent);
@@ -86,20 +88,22 @@ export class AgentsComponent implements OnInit, OnDestroy {
     if (this.data.user.uid === id) {
       alert('Cannot delete the user you are currently logged in as');
     } else  {
-      this.data.af.list(`itineraries/${this.data.company}`, ref => ref.orderByChild('agent').equalTo(id).limitToFirst(1))
-        .snapshotChanges()
+      this.data.firestore.collection(`itineraries/${this.data.company}`)
+        .valueChanges()
         .subscribe((res) => {
           // check if agent has itineraries
           if (res.length > 0) {
             this.openPermissionDenied();
           } else {
-            this.data.deleteItem(id, 'users')
+            this.data.firestore.doc('users/' + id)
+              .delete()
               .then(() => {
                 // this.data.afAuth.auth.
-                console.log('agent deleted');
+                Swal.fire('Agent Editor', 'agent deleted', 'success');
               })
               .catch((error) => {
                 this.error = error;
+                Swal.fire('Agent Editor', 'deleting agent failed', 'error');
               });
           }
         }).unsubscribe();

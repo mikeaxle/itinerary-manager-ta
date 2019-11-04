@@ -37,7 +37,7 @@ export class DayEditorComponent implements OnInit {
     this.destinations = this.countryService.getCountries();
 
     // get itinerary items
-    this.inventory = this.data.getList('inventory').valueChanges()
+    this.inventory = this.data.firestore.collection('inventory').valueChanges();
 
     // get editor-components
     if (this.params.mode === 'edit') {

@@ -33,7 +33,7 @@ export class ItinerariesComponent implements OnInit, OnDestroy {
     this.status$ = new BehaviorSubject('Provisional');
     this.itinerariesRef$ = this.status$.pipe(
       switchMap(status =>
-        this.data.af.list(`itineraries/${this.data.company}`, ref => status ? ref.orderByChild('status').equalTo(status) : ref
+        this.data.firestore.collection(`itineraries/${this.data.company}`, ref => status ? ref.where('status', '==', status) : ref
         ).snapshotChanges()
       )
     );
@@ -57,14 +57,7 @@ export class ItinerariesComponent implements OnInit, OnDestroy {
           // get key
           itinerary[`key`] = snapshot.key;
 
-          // check if client is string
-          if (this.checkIfObjectIsString(itinerary[`client`])) {
-            itinerary[`fullName`] = this.data.af.object(`clients/${this.data.company}/${itinerary[`client`]}`).valueChanges();
-          } else if (typeof itinerary[`client`] == 'object') {
-            itinerary[`fullName`] = itinerary[`client`][`firstname`] + ' ' + itinerary[`client`][`lastname`];
-          } else {
-            itinerary[`fullName`] = 'N/A';
-          }
+          // todo: get client details and add to itinerary info
 
           // push to itineraries array
           this.itineraries.push(itinerary);
@@ -79,23 +72,16 @@ export class ItinerariesComponent implements OnInit, OnDestroy {
 
   }
 
-
-
-  // function to check if an object is a string
-  checkIfObjectIsString(object) {
-    return typeof object == 'string';
-  }
-
   // function to delete item
   deleteItinerary(id: string) {
-    this.data.deleteItem(id, 'itineraries')
+    this.data.firestore.doc(`itineraries/${id}`)
+      .delete()
       .then(() => {
         Swal.fire('Success', 'Itinerary deleted', 'success');
         console.log('itinerary deleted');
       })
       .catch((error) => {
         this.error = error;
-
         Swal.fire('Failed', `An error has occurred: ${error.message}`, 'error');
       });
   }
