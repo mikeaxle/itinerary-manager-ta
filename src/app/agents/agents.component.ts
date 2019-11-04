@@ -23,19 +23,19 @@ export class AgentsComponent implements OnInit, OnDestroy {
   // inject data worked and router into component
   @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
   @ViewChild(MatSort, {static: true}) sort: MatSort;
-  agents: any;
+  agents = [];
   ref: any;
 
 
   constructor(public router: Router, public data: DataService, public dialog: MatDialog) {}
 
   ngOnInit() {
-    this.agents = [];
+
 
     this.ref = this.data.firestore.collection(`users`)
    .snapshotChanges()
    .subscribe(snapshots => {
-
+     this.agents = [];  // empty array
      snapshots.forEach((snapshot) => {
        // get agent data
        let agent = {};
@@ -72,7 +72,7 @@ export class AgentsComponent implements OnInit, OnDestroy {
           this.deleteAgent(id);
         }
       }
-    }).unsubscribe();
+    });
   }
 
   openPermissionDenied() {
@@ -83,19 +83,25 @@ export class AgentsComponent implements OnInit, OnDestroy {
   }
 
   // function to delete item
-  deleteAgent(id: string) {
-
-    if (this.data.user.uid === id) {
-      alert('Cannot delete the user you are currently logged in as');
+  deleteAgent(key: string) {
+    if (this.data.user.uid === key) {
+      Swal.fire('Agent Editor', 'Cannot delete the user you are currently logged in as', 'error')
+        .then(() => {
+          return;
+      });
     } else  {
-      this.data.firestore.collection(`itineraries/${this.data.company}`)
+      // get agent ref
+      const agentRef$ = this.data.firestore.doc(`users/${key}`).ref;
+
+      // query itineraries with agent ref
+      this.data.firestore.collection(`itineraries`, ref => ref.where('agent', '==', agentRef$))
         .valueChanges()
         .subscribe((res) => {
           // check if agent has itineraries
           if (res.length > 0) {
             this.openPermissionDenied();
           } else {
-            this.data.firestore.doc('users/' + id)
+            agentRef$
               .delete()
               .then(() => {
                 // this.data.afAuth.auth.
@@ -106,7 +112,7 @@ export class AgentsComponent implements OnInit, OnDestroy {
                 Swal.fire('Agent Editor', 'deleting agent failed', 'error');
               });
           }
-        }).unsubscribe();
+        });
     }
   }
 

@@ -202,7 +202,7 @@
 <!-- agent form-->
 <div *ngIf="args.type === 'agents'">
   <mat-card-title>Save Agent</mat-card-title>
-  <form [formGroup]="agentForm" (ngSubmit)="saveItem(agentForm.value)">
+  <form [formGroup]="agentForm" (ngSubmit)="addAgent(agentForm.value)">
     <!-- account type -->
     <mat-radio-group formControlName="role" required fxLayout>
       <mat-radio-button value="admin" color="primary" fxFlex>Admin</mat-radio-button>

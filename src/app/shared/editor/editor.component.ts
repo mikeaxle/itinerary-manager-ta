@@ -14,11 +14,10 @@ import {CountryService} from '../../services/country.service';
 import {inventoryTypes} from '../../model/inventory-types';
 import {MediaItem} from '../../model/mediaItem';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
-import {MatDialogConfig} from '@angular/material';
 import {Observable} from 'rxjs';
 import {map, startWith} from 'rxjs/operators';
 import {generalInclusions} from '../../model/generalInclusions';
-import * as firebase from 'firebase-admin';
+import {firestore} from 'firebase';
 
 // interface for country codes
 export interface CountryCodes {
@@ -80,6 +79,8 @@ export class EditorComponent implements OnInit {
   ngOnInit() {
     // get logged in user
     this.user = this.data.user;
+
+    console.log(this.args);
 
     // check type
     switch (this.args.type) {
@@ -169,11 +170,11 @@ export class EditorComponent implements OnInit {
   // initialize new client form
   initNewClient() {
     this.clientForm = this.args.new ? this.formBuilder.group({
-      email: [null, Validators.required],
-      firstName: [null, Validators.required],
-      lastName: [null, Validators.required],
-      nationality: [null, Validators.required],
-      phone: [null, Validators.required]
+      email: ['e@mail.com', Validators.required],
+      firstName: ['test', Validators.required],
+      lastName: ['data', Validators.required],
+      nationality: ['Zambian', Validators.required],
+      phone: ['00000', Validators.required]
     }) : this.formBuilder.group(this.client);
 
     // init filtered countries and subscribe to value changes on nationality control
@@ -188,11 +189,11 @@ export class EditorComponent implements OnInit {
   // initialize new agent form
   initNewAgent() {
     this.agentForm = this.args.new ? this.formBuilder.group({
-      email: [null, Validators.required],
-      firstName: [null, Validators.required],
-      lastName: [null, Validators.required],
-      password: [null, Validators.required],
-      role: [null, Validators.required],
+      email: ['test@null.com', Validators.required],
+      firstName: ['yest', Validators.required],
+      lastName: ['nuts', Validators.required],
+      password: ['wolf@1988', Validators.required],
+      role: ['agent', Validators.required],
     }) : this.formBuilder.group(this.agent);
   }
 
@@ -401,14 +402,22 @@ export class EditorComponent implements OnInit {
   }
 
   addClient(client) {
+    // check if adding new client
     if (this.args.new) {
       // add company to client
+      client[`company`]  = this.data.firestore.doc(`companies/${this.data.company.key}`).ref;
+
       // add agent to client
+      client[`agent`] = this.data.firestore.doc(`users/${this.data.user.key}`).ref;
+
+      // add created to client
+      client[`created`] =  firestore.Timestamp.now();
+
       // write to firebase
       this.data.firestore.collection('clients')
         .add(client)
         .then(_ => {
-          console.log('new client id: ' + _.id);
+          console.log('new client added.');
           Swal.fire('Client editor', 'new client added.', 'success');
         })
         .catch(err => {
@@ -424,26 +433,20 @@ export class EditorComponent implements OnInit {
           lastName: client.lastName,
           nationality: client.nationality,
           phone: client.phone,
-          updated: firebase.firestore.Timestamp.now()
+          updated: firestore.Timestamp.now()
         })
         .then(_ => {
-          console.log(_);
+          console.log('new client added');
+          Swal.fire('Client editor', 'client updated.', 'success');
         })
         .catch(err => {
           console.log(err);
+          Swal.fire('Client editor', err.message, 'error');
         });
-      // this.data.firestore.doc(`clients/${this.client.key}`)
-      //   .update(client)
-      //   .then(_ => {
-      //     console.log('client updated.');
-      //     Swal.fire('Client editor', 'client update.', 'success');
-      //   })
-      //   .catch(err => {
-      //     console.log(err);
-      //     Swal.fire('Client editor', err.message, 'error');
-      //   });
     }
 
+    // close dialog
+    this.closeDialog();
   }
 
 
@@ -523,4 +526,41 @@ export class EditorComponent implements OnInit {
   }
 
   // function to update single item
+  addAgent(agent: any) {
+    // check if adding new
+    if (!this.args.new) {
+      // update existing agen
+      this.data.firestore.doc(`users/${this.agent.key}`)
+        .update({
+          email: agent.email,
+          firstName: agent.firstName,
+          lastName: agent.lastName,
+          role: agent.role,
+          updated: firestore.Timestamp.now()
+        })
+        .then(_ => {
+          console.log('agent updated');
+          Swal.fire('Agent editor', 'agent updated', 'success');
+        })
+        .catch(err => {
+          console.log(err);
+          Swal.fire('Agent editor', err.message, 'error');
+        });
+    } else {
+      // add timestamp
+      agent[`created`] = firestore.Timestamp.now();
+
+      // add new agent
+      this.data.firestore.collection('users')
+        .add(agent)
+        .then(_ => {
+          console.log('new agent added');
+          Swal.fire('Agent editor', 'new agent added.', 'success');
+        })
+        .catch(err => {
+          console.log(err);
+          Swal.fire('Agent editor', err.message, 'error');
+        });
+    }
+  }
 }

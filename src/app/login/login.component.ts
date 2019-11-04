@@ -18,6 +18,7 @@ export class LoginComponent implements OnDestroy  {
   providers = AuthProvider;
   logo = '../assets/logos/avatar-trueafrica.png';
   user$;
+  private companyRef$;
 
   constructor(private router: Router, private data: DataService, private snackbar: MatSnackBar) {
     // check if user is authenticated
@@ -25,30 +26,19 @@ export class LoginComponent implements OnDestroy  {
       if (auth) {
         // check if local storage variables are defined
         if (this.data.company === undefined) {
-          // default to True Africa
-          localStorage.setItem('company', 'True Africa');
+          // set True Africa as defualt compaby
+          this.setCompany(`companies/YbSudQRjCglvvffyujaf`);
         }
 
         // set global color
-        if (this.data.company === 'Planet Africa') {
-          localStorage.setItem('color', '#AC452F');
-          localStorage.setItem('logo', '../assets/logos/avatar-planetafrica.png');
-        } else {
-          localStorage.setItem('color', '#B18C51');
-          localStorage.setItem('logo', '../assets/logos/avatar-trueafrica.png');
-        }
+        // if (this.data.company === 'Planet Africa') {
+        //   localStorage.setItem('logo', '../assets/logos/avatar-planetafrica.png');
+        // } else {
+        //   localStorage.setItem('logo', '../assets/logos/avatar-trueafrica.png');
+        // }
 
-                    // set logged in user
-        this.user$ = this.data.firestore.doc(`users/${auth[`uid`]}`)
-                    .snapshotChanges()
-                    .subscribe((_) => {
-                      const user = _.payload.data();
-                      user[`key`] = _.payload.id;
-                      // set logged in user
-                      localStorage.setItem('user', JSON.stringify(user));
-                    });
-
-
+        // set logged in user
+        this.setUser(auth);
 
         // if user is logged in, redirect to dashboard
         this.router.navigate(['itineraries'])
@@ -59,7 +49,20 @@ export class LoginComponent implements OnDestroy  {
     });
   }
 
-  // handle login error
+  // set company to local storage
+  private setCompany(path) {
+    this.companyRef$ = this.data.firestore.doc(path)
+      .snapshotChanges()
+      .subscribe(_ => {
+        const company = _.payload.data();
+        company[`key`] = _.payload.id;
+        localStorage.setItem('company', JSON.stringify(company));
+        localStorage.setItem('color', company[`color`]);
+        localStorage.setItem('logo', company[`logoUrl`]);
+      });
+  }
+
+// handle login error
   onLoginError(error) {
     console.log(error);
     this.error = error.message;
@@ -74,31 +77,28 @@ export class LoginComponent implements OnDestroy  {
 
   // handle login success
   onLoginSuccess(auth) {
-
-    console.log(auth[`uid`]);
     // set company
-    localStorage.setItem('company', 'True Africa');
-
-    // set color
-    localStorage.setItem('color', '#B18C51');
+    this.setCompany(`companies/YbSudQRjCglvvffyujaf`);
 
     // set logo
     this.logo = '../assets/logos/avatar-trueafrica.png';
 
     // set user
-            // set logged in user
-    this.user$ = this.data.firestore.doc('users/' + auth[`uid`])
-            .snapshotChanges()
-            .subscribe((_) => {
-              const user = _.payload.data();
-              user[`key`] = _.payload.id;
-              // set logged in user
-              localStorage.setItem('user', JSON.stringify(user));
-            });
-
+    this.setUser(auth);
 
     // show swal
     Swal.fire('Authentication', 'Log in successful!', 'success');
   }
 
+  // sets user to local storage
+  private setUser(auth) {
+    this.user$ = this.data.firestore.doc('users/' + auth[`uid`])
+      .snapshotChanges()
+      .subscribe((_) => {
+        const user = _.payload.data();
+        user[`key`] = _.payload.id;
+        // set logged in user
+        localStorage.setItem('user', JSON.stringify(user));
+      });
+  }
 }

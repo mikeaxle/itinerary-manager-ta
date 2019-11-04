@@ -25,15 +25,17 @@ export class ItinerariesComponent implements OnInit, OnDestroy {
   private error: any;
   itinerariesRef$;
   status$: BehaviorSubject<string | null>;
+  companyRef$: any;
   status = 'Provisional';
   itinerariesSubscription$: any;
   STATUS = STATUS;
 
   constructor(public data: DataService, private matDialog: MatDialog, public router: Router) {
     this.status$ = new BehaviorSubject('Provisional');
+    this.companyRef$ = this.data.firestore.doc(`companies/${this.data.company}`).ref;
     this.itinerariesRef$ = this.status$.pipe(
       switchMap(status =>
-        this.data.firestore.collection(`itineraries`, ref => status ? ref.where('company', '==', '9MZBVwEmR28enTGLIi1p').where('status', '==', status) : ref
+        this.data.firestore.collection(`itineraries`, ref => status ? ref.where('company', '==', ref).where('status', '==', status) : ref
         ).snapshotChanges()
       )
     );
