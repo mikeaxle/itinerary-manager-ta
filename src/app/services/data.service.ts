@@ -178,6 +178,20 @@ export class DataService {
     return `/${folder}/${imageName}`;
   }
 
+  saveFirebaseObject(collection: any, dataToSave, caller: string) {
+    // dataToSave[`created`] = firebase.firestore.Timestamp.now();
+    this.firestore.collection(collection)
+      .add(dataToSave)
+      .then(_ => {
+        console.log(`new ${caller} added`);
+        Swal.fire(`${caller} editor`, `new ${caller} added.`, 'success');
+      })
+      .catch(err => {
+        console.log(err);
+        Swal.fire(`${caller} editor`, err.message, 'error');
+      });
+  }
+
   // function to delete firebase objects
    deleteObjectFromFirebase(path: string, type: string) {
     this.firestore.doc(path)

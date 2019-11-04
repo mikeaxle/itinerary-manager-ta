@@ -313,42 +313,28 @@ export class EditorComponent implements OnInit {
   }
 
   // function to add inventory item
-  addInventory(inventoryForm) {
-    // check if form data is valid
-    if (inventoryForm.valid) {
-      // check if image is loaded
-      if (this.inventoryItem.image === undefined) {
-
+  addInventory(inventory) {
+    // check if adding new inventory
+    if (this.args.new) {
+      // check if inventory type is service or activity
+      if (inventory.type != 'Accommodation') {
         // call normal firebase save function
-        this.data.firestore.collection('inventory')
-          .add(inventoryForm.value)
-          .then(() => {
-            // swal
-            Swal.fire('Success', 'New inventory item successfully added', 'success');
-
-            // close dialog
-            this.closeDialog();
-
-          })
-          .catch((error) => {
-            console.log(error);
-
-            Swal.fire('Failed!', `An error has occurred: ${error.message}`, 'error');
-
-            // show error text
-            this.error = error;
-          });
-
+        this.data.saveFirebaseObject('inventory', inventory, 'inventory');
       } else {
         // call firebase save with image function
-        this.data.saveItemWithImage('inventory-images', inventoryForm.value, this.inventoryItem.image, 'inventory')
+        this.data.saveItemWithImage('inventory-images', inventory, this.inventoryItem.image, 'inventory')
           .subscribe((res) => {
             console.log(res);
             // swal
             Swal.fire('Success', 'New inventory item successfully added', 'success');
           });
       }
+    } else {
+      // update existing object
     }
+
+    // close dialog
+    this.closeDialog();
   }
 
 
@@ -414,35 +400,20 @@ export class EditorComponent implements OnInit {
       client[`created`] =  firestore.Timestamp.now();
 
       // write to firebase
-      this.data.firestore.collection('clients')
-        .add(client)
-        .then(_ => {
-          console.log('new client added.');
-          Swal.fire('Client editor', 'new client added.', 'success');
-        })
-        .catch(err => {
-          console.log(err);
-          Swal.fire('Client editor', err.message, 'error');
-        });
+      this.data.saveFirebaseObject('clients', client, 'client');
     } else {
-      // write to firebase
-      this.data.firestore.doc(`clients/${this.client.key}`)
-        .update({
+      // create update object
+       const dataToUpdate = {
           email: client.email,
           firstName: client.firstName,
           lastName: client.lastName,
           nationality: client.nationality,
           phone: client.phone,
           updated: firestore.Timestamp.now()
-        })
-        .then(_ => {
-          console.log('new client added');
-          Swal.fire('Client editor', 'client updated.', 'success');
-        })
-        .catch(err => {
-          console.log(err);
-          Swal.fire('Client editor', err.message, 'error');
-        });
+        };
+
+       // write to firebase
+       this.data.updateFirebaseObject(`clients/${this.client.key}`, dataToUpdate, 'client');
     }
 
     // close dialog
@@ -529,7 +500,7 @@ export class EditorComponent implements OnInit {
   addAgent(agent: any) {
     // check if adding new
     if (!this.args.new) {
-      // update existing agen
+      // update existing agent
       this.data.firestore.doc(`users/${this.agent.key}`)
         .update({
           email: agent.email,
@@ -562,5 +533,7 @@ export class EditorComponent implements OnInit {
           Swal.fire('Agent editor', err.message, 'error');
         });
     }
+    // close dailog
+    this.closeDialog();
   }
 }

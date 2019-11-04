@@ -255,7 +255,7 @@
 <div *ngIf="args.type === 'inventory'">
   <mat-card-title>Save Inventory</mat-card-title>
   <mat-dialog-content>
-    <form [formGroup]="inventoryForm" (ngSubmit)="addInventory(inventoryForm)" >
+    <form [formGroup]="inventoryForm" (ngSubmit)="addInventory(inventoryForm.value)" >
       <!-- destination -->
       <mat-select
         placeholder="Destination"
