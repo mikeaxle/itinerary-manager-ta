@@ -15,7 +15,7 @@ import {EditorComponent} from '../shared/editor/editor.component';
   templateUrl: './inventory.component.html'
 })
 export class InventoryComponent implements OnInit, OnDestroy {
-  inventory;
+  inventory = []
   error: any;
   countries: Country[] = [];
   regions: Region[] = [];
@@ -36,13 +36,14 @@ export class InventoryComponent implements OnInit, OnDestroy {
     // get regions
     this.regions = this.countryService.getRegions();
 
-    // init inventory array
-    this.inventory = [];
 
     // get inventory
     this.ref = this.data.firestore.collection('inventory')
       .snapshotChanges()
       .subscribe(snapshots => {
+        // init inventory array
+        this.inventory = [];
+
         snapshots.forEach(snapshot => {
           let item = {};
           item = snapshot.payload.doc.data();
@@ -101,7 +102,7 @@ export class InventoryComponent implements OnInit, OnDestroy {
           this.deleteInventory(item);
         }
       }
-    }).unsubscribe();
+    })
   }
 
   // function to delete item
@@ -115,7 +116,7 @@ export class InventoryComponent implements OnInit, OnDestroy {
           // delete image from firebase storage
             this.data.deleteItemWithImage(item.image)
               .then((res) => {
-                Swal.fire('Success', 'Inventory item deleted: ' + JSON.stringify(res), 'success');
+                Swal.fire('Success', 'Inventory item deleted', 'success');
                 console.log(res);
               })
               .catch((err) => {

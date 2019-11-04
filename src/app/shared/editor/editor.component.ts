@@ -45,7 +45,7 @@ export class EditorComponent implements OnInit {
   user: any;
   invoiceDetails: any;
   countries = countries;
-  inventoryItem: InventoryItem;
+  inventoryItem: any;
   mediaItem: MediaItem;
   destinations: Country[];
   regions: Region[];
@@ -54,6 +54,7 @@ export class EditorComponent implements OnInit {
   filteredCountries: Observable<CountryCodes>;
   private filteredClients: Observable<any[]>;
   generalInclusions = generalInclusions;
+  newImage: any;
 
   constructor(@Inject(MAT_DIALOG_DATA) public args: any,
               private formBuilder: FormBuilder,
@@ -200,14 +201,14 @@ export class EditorComponent implements OnInit {
   // initialize new inventory form
   initNewInventory() {
     this.inventoryForm = this.args.new ? this.formBuilder.group({
-      description: [null, Validators.required],
-      destination: [null, Validators.required],
-      image: [null, Validators.required],
-      inclusions: [null, Validators.required],
-      long_description: [null, Validators.required],
-      name: [null, Validators.required],
-      region: [null, Validators.required],
-      type: [null, Validators.required],
+      description: ['test', Validators.required],
+      destination: [1, Validators.required],
+      // image: [null, Validators.required],
+      inclusions: ['test', Validators.required],
+      longDescription: ['test', Validators.required],
+      name: ['test', Validators.required],
+      region: [11, Validators.required],
+      type: ['Accommodation', Validators.required],
     }) : this.formBuilder.group(this.inventoryItem);
   }
 
@@ -293,13 +294,13 @@ export class EditorComponent implements OnInit {
   // function to detect when file is selected
   fileSelected(file) {
     if (file.size <= 1048576) {
-      this.inventoryItem.image = file;
-
+      this.newImage = file;
       console.log(file);
-      alert('file selected');
+      Swal.fire('Inventory editor', 'file selected', 'success');
+      this.error = null;
     } else {
-      alert('Image size must be less than 1MB');
-      this.inventoryItem.image = null;
+      Swal.fire('Inventory editor', 'Image size must be less than 1MB', 'error');
+      this.newImage = null;
       this.error = 'Please upload an image smaller than 1MB';
     }
 
@@ -321,16 +322,66 @@ export class EditorComponent implements OnInit {
         // call normal firebase save function
         this.data.saveFirebaseObject('inventory', inventory, 'inventory');
       } else {
-        // call firebase save with image function
-        this.data.saveItemWithImage('inventory-images', inventory, this.inventoryItem.image, 'inventory')
-          .subscribe((res) => {
-            console.log(res);
-            // swal
-            Swal.fire('Success', 'New inventory item successfully added', 'success');
+        //  save image & get download url
+        this.data.saveImage(this.newImage)
+          .then(url => {
+            if  (url) {
+              // add image Url and download url to object
+              url.subscribe(uRl => {
+                inventory[`imageUrl`] = uRl;
+                inventory[`image`] = `inventory-images/${this.newImage.name}`;
+                // write data to firebase
+                this.data.saveFirebaseObject('inventory', inventory, 'inventory accommodation');
+              });
+            }
+          })
+          .catch(err => {
+            console.log(err);
+            Swal.fire('inventory editor', err.message, 'error');
           });
       }
     } else {
-      // update existing object
+
+      const dataToUpdate = {
+        description: inventory.description,
+        destination: inventory.destination,
+        name: inventory.name,
+        region: inventory.region,
+        type: inventory.type
+      };
+
+      // check if type is service or activity
+      if (this.inventoryItem.type != 'Accommodation') {
+        // update existing object
+        this.data.updateFirebaseObject(`inventory/${this.inventoryItem[`key`]}`, dataToUpdate, 'inventory');
+      } else {
+
+        // add accommodation fields to update data
+        dataToUpdate[`longDescription`] = inventory.longDescription;
+        dataToUpdate[`inclusions`] = inventory.inclusions;
+        dataToUpdate[`image`] = 'inventory-items/' + this.newImage.name;
+
+        // first update image
+        if (this.newImage) {
+          this.data.saveImage(this.newImage)
+            .then(uploadResult => {
+              uploadResult.subscribe(url => {
+                // get file url
+                dataToUpdate[`imageUrl`] = url;
+
+                // write to firebase
+                this.data.updateFirebaseObject(`inventory/${this.inventoryItem[`key`]}`, dataToUpdate, 'inventory');
+              });
+            })
+            .catch(err => {
+              console.log(err);
+              Swal.fire('inventory editor', err.message, 'error');
+            });
+          //
+        } else {
+         this.data.updateFirebaseObject(`inventory/${this.inventoryItem[`key`]}`, dataToUpdate, 'inventory');
+        }
+      }
     }
 
     // close dialog
@@ -413,82 +464,6 @@ export class EditorComponent implements OnInit {
     }
 
     // close dialog
-    this.closeDialog();
-  }
-
-
-  // function to save single item to list
-  saveItem(data) {
-    let databasePath = this.args.type === 'agents' ? 'users/' : `${this.args.type}/`;
-    let itemId;
-    // check if client
-
-    switch (this.args.type) {
-      case 'itineraries':
-        // itemId = this.itinerary[`key`]
-        break;
-      case 'clients':
-        itemId = this.client ? this.client[`key`] : null;
-        data.agent = this.user[`key`];
-        databasePath += `${this.data.company.key}/`;
-        break;
-      case 'inventory':
-        itemId = this.inventoryItem ? this.inventoryItem[`key`] : null;
-        break;
-      case 'agents':
-        itemId = this.agent ? this.agent[`key`] : null;
-        break;
-      case 'media':
-        itemId = this.mediaItem ? this.mediaItem[`key`] : null;
-        break;
-    }
-
-    // remove key
-    delete data[`key`];
-
-    // check if new item
-    if (this.args.new) {
-      // write to database
-      this.data.firestore.collection(databasePath)
-        .add(data)
-        .then(_ => {
-        // Swal
-        Swal.fire('Success', `New ${this.args.type.slice(0, this.args.type.length - 1)} successfully added`, 'success');
-
-        // close dialog
-        this.closeDialog();
-      })
-      .catch((err) => {
-        console.log(err);
-
-        // Swal
-        Swal.fire('Failed!', `An error has occurred: ${err.message}`, 'error');
-
-        // assign error to variable
-        this.error = err;
-      });
-    } else {
-      // push to firebase
-      this.data.firestore.doc( `${databasePath}/${itemId}`)
-        .update(data)
-        .then(_ => {
-          // Swal
-          Swal.fire('Success', `Existing ${this.args.type.slice(0, this.args.type.length - 1)} successfully updated`, 'success');
-
-          // close dialog
-          this.closeDialog();
-
-        })
-        .catch((error) => {
-          console.log(error);
-
-          Swal.fire('Failed!', `An error has occurred: ${error.message}`, 'error');
-
-          // assign error to variable
-          this.error = error;
-        });
-    }
-
     this.closeDialog();
   }
 

@@ -9,7 +9,7 @@ import { Observable } from 'rxjs';
 import 'rxjs-compat/add/observable/of';
 import Swal from 'sweetalert2';
 import {AngularFirestore} from '@angular/fire/firestore';
-import {firestore} from 'firebase';
+import * as firebase from 'firebase';
 
 
 @Injectable({
@@ -24,7 +24,7 @@ export class DataService {
     databaseURL: 'https://true-africa-itinerary.firebaseio.com'
   };
   secondaryApp: any;
-  constructor(public afAuth: AngularFireAuth, public firestore: AngularFirestore, private storage: AngularFireStorage, private router: Router) {}
+  constructor(public afAuth: AngularFireAuth, public firestore: AngularFirestore, public storage: AngularFireStorage, private router: Router) {}
 
   // getter for user
   get user(): any {
@@ -181,7 +181,7 @@ export class DataService {
 
   saveFirebaseObject(collection: any, dataToSave, caller: string) {
     // add created time stamp
-    dataToSave[`created`] = firestore.Timestamp.now();
+    dataToSave[`created`] = firebase.firestore.Timestamp.now();
     this.firestore.collection(collection)
       .add(dataToSave)
       .then(_ => {
@@ -210,7 +210,7 @@ export class DataService {
 
    updateFirebaseObject(path: any, dataToUpdate, caller: string) {
     // add updated time stamp
-    dataToUpdate[`updated`] = firestore.Timestamp.now();
+    dataToUpdate[`updated`] = firebase.firestore.Timestamp.now();
     this.firestore.doc(path)
       .update(dataToUpdate)
       .then(_ => {
@@ -221,6 +221,12 @@ export class DataService {
         console.log(err);
         Swal.fire(`${caller} editor`, err.message, 'error');
       });
+  }
+
+   async saveImage(image: any) {
+    const imageRef$ = this.storage.ref('inventory-images/' + image.name.trim());
+    await imageRef$.put(image);
+    return  imageRef$.getDownloadURL();
   }
 
 }
