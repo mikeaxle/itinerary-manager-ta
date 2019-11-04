@@ -9,6 +9,7 @@ import { Observable } from 'rxjs';
 import 'rxjs-compat/add/observable/of';
 import Swal from 'sweetalert2';
 import {AngularFirestore} from '@angular/fire/firestore';
+import {firestore} from 'firebase';
 
 
 @Injectable({
@@ -179,7 +180,8 @@ export class DataService {
   }
 
   saveFirebaseObject(collection: any, dataToSave, caller: string) {
-    // dataToSave[`created`] = firebase.firestore.Timestamp.now();
+    // add created time stamp
+    dataToSave[`created`] = firestore.Timestamp.now();
     this.firestore.collection(collection)
       .add(dataToSave)
       .then(_ => {
@@ -198,22 +200,26 @@ export class DataService {
       .delete()
       .then(_ => {
         console.log(`${type} deleted.`);
+        Swal.fire(`${type} editor`, `existing ${type} deleted.`, 'success');
       })
       .catch(err => {
         console.log(err);
-        Swal.fire(`Delete ${type}`, err.message, 'error');
+        Swal.fire(`${type} editor`, err.message, 'error');
       });
   }
 
    updateFirebaseObject(path: any, dataToUpdate, caller: string) {
+    // add updated time stamp
+    dataToUpdate[`updated`] = firestore.Timestamp.now();
     this.firestore.doc(path)
       .update(dataToUpdate)
       .then(_ => {
         console.log(`updated ${caller}`);
+        Swal.fire(`${caller} editor`, `${caller} updated.`, 'success');
       })
       .catch(err => {
         console.log(err);
-        Swal.fire(`${caller} update`, err.message, 'error');
+        Swal.fire(`${caller} editor`, err.message, 'error');
       });
   }
 

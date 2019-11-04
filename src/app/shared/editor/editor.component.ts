@@ -396,9 +396,6 @@ export class EditorComponent implements OnInit {
       // add agent to client
       client[`agent`] = this.data.firestore.doc(`users/${this.data.user.key}`).ref;
 
-      // add created to client
-      client[`created`] =  firestore.Timestamp.now();
-
       // write to firebase
       this.data.saveFirebaseObject('clients', client, 'client');
     } else {
@@ -408,8 +405,7 @@ export class EditorComponent implements OnInit {
           firstName: client.firstName,
           lastName: client.lastName,
           nationality: client.nationality,
-          phone: client.phone,
-          updated: firestore.Timestamp.now()
+          phone: client.phone
         };
 
        // write to firebase
@@ -500,40 +496,21 @@ export class EditorComponent implements OnInit {
   addAgent(agent: any) {
     // check if adding new
     if (!this.args.new) {
-      // update existing agent
-      this.data.firestore.doc(`users/${this.agent.key}`)
-        .update({
+      // create update object
+      const dataToUpdate = {
           email: agent.email,
           firstName: agent.firstName,
           lastName: agent.lastName,
           role: agent.role,
-          updated: firestore.Timestamp.now()
-        })
-        .then(_ => {
-          console.log('agent updated');
-          Swal.fire('Agent editor', 'agent updated', 'success');
-        })
-        .catch(err => {
-          console.log(err);
-          Swal.fire('Agent editor', err.message, 'error');
-        });
-    } else {
-      // add timestamp
-      agent[`created`] = firestore.Timestamp.now();
+        };
 
+      // update firebase object
+      this.data.updateFirebaseObject(`users/${this.agent.key}`, dataToUpdate, 'agent');
+    } else {
       // add new agent
-      this.data.firestore.collection('users')
-        .add(agent)
-        .then(_ => {
-          console.log('new agent added');
-          Swal.fire('Agent editor', 'new agent added.', 'success');
-        })
-        .catch(err => {
-          console.log(err);
-          Swal.fire('Agent editor', err.message, 'error');
-        });
+      this.data.saveFirebaseObject('users', agent, 'agent');
     }
-    // close dailog
+    // close dialog
     this.closeDialog();
   }
 }
