@@ -14,12 +14,13 @@ export class CommentEditorComponent implements OnInit {
   days;
   mapIterator: any;
   commentForm: FormGroup;
-  comment: Comment;
+  comment: any;
   types = [
     'Flight',
     'Activity',
     'Info'
   ];
+  day: any;
 
   constructor(public data: DataService,
               public dialogRef: MatDialogRef<CommentEditorComponent>,
@@ -27,10 +28,18 @@ export class CommentEditorComponent implements OnInit {
 
   ngOnInit() {
     // get comment-editor from params
-    this.comment = this.params.comment ? this.params.comment : new Comment();
+    this.comment = this.params.comment ? this.params.comment : {};
+
+    this.day = this.comment.day ? this.params.comment.day.id : null;
+
+
 
     // map iterator made from keys
     this.days = [...this.params.days];
+  }
+
+  onSelect() {
+    this.comment.day = this.data.firestore.doc(`days/${this.day}`).ref;
   }
 
   // function to close dialog

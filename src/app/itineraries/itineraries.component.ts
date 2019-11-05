@@ -32,19 +32,16 @@ export class ItinerariesComponent implements OnInit, OnDestroy {
 
   constructor(public data: DataService, private matDialog: MatDialog, public router: Router) {
     this.status$ = new BehaviorSubject('Provisional');
-    this.companyRef$ = this.data.firestore.doc(`companies/${this.data.company}`).ref;
+    this.companyRef$ = this.data.firestore.doc(`companies/${this.data.company.key}`).ref;
     this.itinerariesRef$ = this.status$.pipe(
       switchMap(status =>
-        this.data.firestore.collection(`itineraries`, ref => status ? ref.where('company', '==', ref).where('status', '==', status) : ref
+        this.data.firestore.collection(`itineraries`, ref => status ? ref.where('company', '==', this.companyRef$).where('status', '==', status) : ref
         ).snapshotChanges()
       )
     );
   }
 
   ngOnInit() {
-
-
-
       // this.data.af.list(`itineraries/${this.data.company}/`, ref => ref.orderByChild('status').equalTo('Provisional').limitToLast(250))
     // // this.ref = this.data.af.list(`itineraries/${this.data.company}/`)
     this.itinerariesSubscription$ = this.itinerariesRef$
@@ -54,12 +51,17 @@ export class ItinerariesComponent implements OnInit, OnDestroy {
         snapshots.forEach(snapshot => {
           // get itinerary
           let itinerary = {};
-          itinerary = snapshot.payload.val();
+          itinerary = snapshot.payload.doc.data();
 
           // get key
-          itinerary[`key`] = snapshot.key;
+          itinerary[`key`] = snapshot.payload.doc.id;
 
           // todo: get client details and add to itinerary info
+          itinerary[`client`].get()
+            .then(res => {
+              const client = res.data()
+              itinerary[`clientFullName`] = `${client.firstName} ${client.lastName}`;
+            });
 
           // push to itineraries array
           this.itineraries.push(itinerary);

@@ -58,7 +58,7 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
   exclusions = EXCLUSIONS;
   discount = 0;
   deposit = 0;
-  comments;
+  comments = [];
   payments;
   countries;
   itineraryId;
@@ -71,7 +71,6 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
   private paymentsSubscription$;
   private averageCost;
   paymentsPdf = [];
-  commentsPdf = [];
   private commentsSubscription$: any;
   private countriesSubscription$;
   countriesPdf = [];
@@ -85,6 +84,7 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
 ];
   generalInclusions = generalInclusions;
   private daysSubscription$;
+  private itinerarySubscription$;
   constructor(public router: Router, private route: ActivatedRoute, public data: DataService, public formbuilder: FormBuilder,
               public dialog: MatDialog, public savePdfService: SavePdfService, public snackBar: MatSnackBar,
               public http: HttpClient, public countryService: CountryService) {
@@ -113,17 +113,18 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
     this.itineraryId = this.route.snapshot.paramMap.get('id');
 
     // get itinerary firebase reference
-    this.itineraryRef$ = this.data.firestore.doc(`itineraries/${this.itineraryId}`).snapshotChanges();
+    this.itineraryRef$ = this.data.firestore.doc(`itineraries/${this.itineraryId}`);
 
     // subscribe to itinerary ref
-    this.itineraryRef$
+    this.itinerarySubscription$ = this.itineraryRef$
+      .snapshotChanges()
       .subscribe(_ => {
-        if (_.payload.val()) {
+        if (_.payload.data()) {
           // get itinerary payload
-          const it = _.payload.doc.data();
+          const it = _.payload.data();
 
           // get itinerary key
-          it[`key`] = _.payload.doc.id;
+          it[`key`] = _.payload.id;
 
           // assign to local itinerary object for manipulation
           this.itinerary$ = it;
@@ -163,10 +164,8 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
           this.getAgent();
 
           // get contact numbers associated with itinerary
-          this.getContactNumbersForCountries();
+          // this.getContactNumbersForCountries();
 
-          // get comments related to itinerary id
-          this.getComments();
         }
       });
 
@@ -177,29 +176,29 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
   // calculates total days assigned to itinerary
   private calculateDays(itinerary) {
     /* calculate total days by converting dates into milliseconds, subtracting and divide by 86400000 which is the number of milliseconds equal to a editor-components */
-    this.totalDays = Math.round((Date.parse(itinerary.enddate) - Date.parse(itinerary.startdate)) / 86400000);
+    this.totalDays = Math.round((Date.parse(itinerary.endDate) - Date.parse(itinerary.startDate)) / 86400000);
     this.totalDays++;
   }
 
 // get contact numbers to associated countries related to itinerary
-  // todo: move contract numbers to itinerary.contactNumbers
-  private getContactNumbersForCountries() {
-    this.countriesRef$ = this.data.firestore.collection(`phone_numbers/${this.itineraryId}`);
-    this.countries = this.countriesRef$.snapshotChanges();
-    this.countriesPdf = [];
-    this.countriesSubscription$ = this.countries.subscribe(_ => {
-      _.forEach(snapshot => {
-        const country = snapshot.payload.val();
-        country.key = snapshot.key;
-        this.countriesPdf.push(country);
-      });
-    });
-  }
+//   // todo: move contract numbers to itinerary.contactNumbers
+//   private getContactNumbersForCountries() {
+//     this.countriesRef$ = this.data.firestore.collection(`phone_numbers/${this.itineraryId}`);
+//     this.countries = this.countriesRef$.snapshotChanges();
+//     this.countriesPdf = [];
+//     this.countriesSubscription$ = this.countries.subscribe(_ => {
+//       _.forEach(snapshot => {
+//         const country = snapshot.payload.val();
+//         country.key = snapshot.key;
+//         this.countriesPdf.push(country);
+//       });
+//     });
+//   }
 
   // get payments related to itinerary
   private getPayments(itinerary) {
     // init payments firebase list reference
-    this.paymentsRef$ = this.data.firestore.collection('payments', ref => ref.where('itinerary', '==', this.itineraryId));
+    this.paymentsRef$ = this.data.firestore.collection('payments', ref => ref.where('itinerary', '==', this.itineraryRef$.ref));
 
     // init payments snapshot array
     this.payments = this.paymentsRef$.snapshotChanges();
@@ -210,6 +209,8 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
       this.paymentsPdf = [];
       this.totalPayments = 0;
       this.averageCost = 0;
+
+      console.log(_)
 
       _.forEach(snapshot => {
         const payment = snapshot.payload.doc.data();
@@ -228,26 +229,30 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
   }
 
   // get comments related to itinerary
-  private getComments() {
-    this.commentsRef$ = this.data.firestore.collection('comments/', ref => ref.where('itinerary', '==', this.itineraryId));
-    this.comments = this.commentsRef$.snapshotChanges();
-    this.commentsSubscription$ = this.comments.subscribe(_ => {
-      this.commentsPdf = [];
-      _.forEach(snapshot => {
-        const comment = snapshot.payload.doc.data();
-        comment.key = snapshot.payload.doc.id;
-        this.commentsPdf.push(comment);
-      });
+  private getComments(dayRef) {
+
+    this.commentsRef$ = this.data.firestore.collection('comments', ref => ref.where('day', '==', dayRef));
+    this.commentsSubscription$ = this.commentsRef$
+      .snapshotChanges()
+      .subscribe(_ => {
+        if (_.length > 0) {
+          this.comments = [];
+          _.forEach(snapshot => {
+            const comment = snapshot.payload.doc.data();
+            comment.key = snapshot.payload.doc.id;
+            this.comments.push(comment);
+          });
+        }
     });
   }
 
   // get days related to itinerary
    private  getDays() {
-    this.days = [];
-    this.daysRef$ = this.data.firestore.collection('days', ref => ref.where('itinerary', '==', this.itineraryId).orderBy('position'))
-      .snapshotChanges();
+    this.daysRef$ = this.data.firestore.collection('days', ref => ref.where('itinerary', '==', this.itineraryRef$.ref).orderBy('position'));
 
-    this.daysSubscription$ = this.daysRef$.subscribe(_ => {
+    this.daysSubscription$ = this.daysRef$
+      .snapshotChanges()
+      .subscribe(_ => {
         // reset temp inclusions array, used days and temp days array
         const _INCLUSIONS = [];
         this.usedDays = 0;
@@ -266,6 +271,10 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
 
           // add dates
           day[`dates`] = this.getDayTitle('dates', day);
+
+          // get comments relate to day
+          this.comments = [];
+          this.getComments(this.data.firestore.doc(`days/${day[`key`]}`).ref);
 
           // add days to find out how many days are used
           this.usedDays += Math.round(parseInt(day[`days`], 10));
@@ -293,7 +302,7 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
 
 // function to remove editor-components
   removeDay(key) {
-    this.data.deleteObjectFromFirebase(`days/${this.itineraryId}/${key}`, 'day');
+    this.data.deleteObjectFromFirebase(`days/${key}`, 'day');
   }
 
   // function to remove comment
@@ -317,21 +326,20 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
 
   // gets agent object
   getAgent() {
-    this.agentRef$ = this.data.firestore.doc(`users/${this.itinerary$.agent}`)
-      .snapshotChanges()
-      .subscribe(_ => {
-        this.agent = _.payload.data();
-        this.agent[`key`] = _.payload.id;
+    // use agent ref from itinerary to get agent
+    this.itinerary$.agent.get()
+      .then(_ => {
+        // assign agent object
+        this.agent = _.data();
       });
   }
 
   // gets client
   getClient() {
-    this.clientRef$ = this.data.firestore.doc(`clients/${this.itinerary$.client}`)
-      .snapshotChanges()
-      .subscribe(_ => {
-        this.client = _.payload.data();
-        this.client[`key`] =  _.payload.id;
+    // use client ref from itinerary to get client
+    this.itinerary$.client.get()
+      .then(_ => {
+        this.client = _.data();
       });
   }
 
@@ -370,7 +378,7 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
     title += `Day ${firstDay}`;
 
     // init start date to itinerary start date
-    startDate = new Date(this.itinerary$.startdate);
+    startDate = new Date(this.itinerary$.startDate);
 
     // add number of days before current editor-components to start date to get current start date
     startDate.setDate(startDate.getDate() + (firstDay - 1));
@@ -459,46 +467,33 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
 
 
     // after dialog is close
-    dialogRef.afterClosed().subscribe(days => {
+    dialogRef.afterClosed().subscribe(result => {
       // check for days
-      if (days) {
+      if (result) {
         // reassign previously used country and editor-components
-        this.lastUsedParams = days.lastUsedParams;
+        this.lastUsedParams = result.lastUsedParams;
 
         // mode is add
         if (mode === 'add') {
-          // add position to editor-components
-          days.dayForm.position = position;
+          // add position to day form
+          result.dayForm.position = position;
 
-          // push new editor-components to firebase
-          this.daysSubscription$.add(days.dayForm)
-            .then(_ => {
-              console.log('new days added.');
-            })
-            .catch(error => {
-              console.log(error);
-              Swal.fire('Day editor', 'Adding days failed', 'error');
-            });
+          // add itinerary ref to day form
+          result.dayForm.itinerary = this.itineraryRef$.ref;
+
+          // push new day form as days to dayRef$
+          this.daysRef$.add(result.dayForm);
 
         } else if (mode === 'edit') {
-          // update editor-components
-          // console.log(result.dayForm)
-          this.data.firestore.doc(`days/${this.itineraryId}`)
-            .update(days.dayForm)
-            .then(_ => {
-              console.log('days updated.');
-            })
-            .catch(error => {
-              console.log(error);
-              Swal.fire('Day editor', 'Updating days failed', 'error');
-            });
+          // update day
+          this.data.updateFirebaseObject(`days/${day.key}`, result.dayForm, 'days');
         }
       }
     });
   }
 
   // function to open comment dialog
-  openCommentDialog(mode: string, data: any) {
+  openCommentDialog(mode: string, comment: any) {
     // declare dialog reference
     let dialogRef: any;
 
@@ -518,7 +513,7 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
       // open modal in edit mode
       dialogRef = this.dialog.open(CommentEditorComponent, {
         data: {
-          comment: data.payload.val(),
+          comment,
           days: this.days,
           itineraryId: this.itineraryId,
           mode: 'edit'
@@ -529,29 +524,18 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
 
 
     // function to run after dialog is close
-    dialogRef.afterClosed().subscribe(comment => {
+    dialogRef.afterClosed().subscribe(commentRes => {
       // check for comment-editor
-      if (comment) {
+      if (commentRes) {
+        // add day ref
+        // commentRes.day = this.data.firestore.doc(`days/${commentRes.day}`).ref;
         // save to firebase comments list
         if (mode === 'add') {
-          this.commentsRef$.add(comment)
-            .then(() => {
-              console.log('new comment-editor added.');
-            })
-            .catch((error) => {
-              console.log(error);
-              Swal.fire('Comment editor', 'adding new comment-editor failed', 'error');
-            });
-
+          this.commentsRef$.add(commentRes);
+          console.log('comment added');
         } else if (mode === 'edit') {
-          this.commentsRef$.update(data.key, comment)
-            .then(() => {
-              console.log('comment-editor updated.');
-            })
-            .catch((error) => {
-              console.log(error);
-              Swal.fire('Comment editor', 'Updating comment-editor failed', 'error');
-            });
+          // this.commentsRef$.update(comment.key, commentRes);
+          this.data.updateFirebaseObject(`comments/${comment.key}`, commentRes, 'comment');
         }
       }
     });
@@ -584,26 +568,22 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
     dialogRef.afterClosed()
       .subscribe(payment => {
         if (payment) {
+          // add itinerary ref to payment
+          payment.itinerary = this.itineraryRef$.ref;
           // convert date to date string
           if (mode === 'edit') {
             // convert date object to string
             payment.date = payment.date.toDateString();
 
             // write payment-editor to firebase
-            this.paymentsRef$.update(data.key, payment)
-              .then(() => {
-                console.log('payment-editor updated');
-              })
-              .catch((error) => {
-                console.log(error);
-                Swal.fire('Payment Editor', 'Updating payment-editor failed', 'error');
-              });
+            // this.paymentsRef$.update(data.key, payment)
+            this.data.updateFirebaseObject(`payments/${data.key}`, payment, 'payment');
           }
 
           if (mode === 'add') {
             payment.date = payment.date.toDateString();
             // write payment-editor to firebase
-            this.paymentsRef$.push(payment)
+            this.paymentsRef$.add(payment)
               .then(() => {
                 console.log('payment-editor added');
               })
@@ -752,14 +732,20 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
   }
 
   // function to save inclusion edits to firebase on blur or press enter
-  onKeyUpInclusions(event: any, data: any) {
+  onKeyUpInclusions(event: any, accommodation: any) {
+    // add updated inclusion to accommodation
+    accommodation.inclusions = event.target.value;
 
-    // variable to store data to enter
-    const dataToUpdate = {};
-    dataToUpdate['accommodation/' + 0 + '/inclusions'] = event.target.value;
 
+    this.data.updateFirebaseObject(`days/${accommodation.day}`, { accommodation: [accommodation] }, 'inclusions');
     // update inclusion
-    this.data.updateFirebaseObject(`days/${this.itineraryId}/${data.day}/`, dataToUpdate, 'inclusion');
+    // this.data.firestore.doc(`days/${accommodation.day}`)
+    //   .update({
+    //     accommodation: [
+    //       accommodation
+    //     ]
+    //   });
+      // event.target.value, 'inclusion');
   }
 
 
@@ -769,27 +755,27 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
     // check which control called the function
     switch (type) {
       case 'total':
-        this.data.updateFirebaseObject(`itineraries/${this.data.company}/${this.itineraryId}`,
+        this.data.updateFirebaseObject(`itineraries/${this.itineraryId}`,
           { total: this.itinerary$.total },
           'itinerary total');
         break;
       case 'deposit':
-        this.data.updateFirebaseObject(`itineraries/${this.data.company}/${this.itineraryId}`,
+        this.data.updateFirebaseObject(`itineraries/${this.itineraryId}`,
           { deposit: this.itinerary$.deposit },
           'itinerary deposit');
         break;
       case 'discount':
-        this.data.updateFirebaseObject(`itineraries/${this.data.company}/${this.itineraryId}`,
+        this.data.updateFirebaseObject(`itineraries/${this.itineraryId}`,
           { discount: this.itinerary$.discount },
           'itinerary discount');
         break;
       case 'exclusions':
-        this.data.updateFirebaseObject(`itineraries/${this.data.company}/${this.itineraryId}`,
+        this.data.updateFirebaseObject(`itineraries/${this.itineraryId}`,
           { exclusions: this.itinerary$.exclusions },
           'exclusions');
         break;
       case 'generalInclusions':
-        this.data.updateFirebaseObject(`itineraries/${this.data.company}/${this.itineraryId}`,
+        this.data.updateFirebaseObject(`itineraries/${this.itineraryId}`,
           { generalInclusions: this.itinerary$.generalInclusions },
           'generalInclusions');
         break;
@@ -800,7 +786,7 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
 
   // function to write status to firebase when status is selected
   onSelect(status: any) {
-    this.data.updateFirebaseObject(`itineraries/${this.data.company}/${this.itineraryId}`, { status }, 'itinerary status');
+    this.data.updateFirebaseObject(`itineraries/${this.itineraryId}`, { status }, 'itinerary status');
   }
 
   // function to delete itinerary
@@ -941,7 +927,7 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
     if (canPrint) {
         this.savePdfService.savePDF({
           agent: this.agent,
-          comments: this.commentsPdf,
+          comments: this.comments,
           days: this.days,
           itinerary: this.itinerary$,
           payments: this.paymentsPdf,
@@ -958,7 +944,7 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
   saveAsPdfPartial() {
     this.savePdfService.savePDF( {
       agent: this.agent,
-      comments: this.commentsPdf,
+      comments: this.comments,
       days: this.days,
       itinerary: this.itinerary$,
       payments: this.paymentsPdf,
@@ -990,6 +976,7 @@ isArray(obj: any ) {
     delete this.clientRef$;
     delete this.agentRef$;
 
+    this.itinerarySubscription$.unsubscribe();
     this.paymentsSubscription$.unsubscribe();
     this.commentsSubscription$.unsubscribe();
     this.countriesSubscription$.unsubscribe();

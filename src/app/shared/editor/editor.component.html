@@ -41,40 +41,118 @@
     <div class="double-items">
       <mat-select
         placeholder="Number of Adults"
-        formControlName="adults"
+        [(ngModel)]="adults"
+        [ngModelOptions]="{standalone: true}"
+        (selectionChange)="onChangePassengers($event, true)"
         class="half-input"
         required>
-        <mat-option
-          *ngFor="let number of numbers"
-          [value]="number">
-          {{number}}
+        <mat-option *ngFor="let number of numbers" [value]="number">
+          {{ number }}
         </mat-option>
       </mat-select>
 
       <mat-select
         placeholder="Number of Children"
-        formControlName="children"
+        [(ngModel)]="children"
+        [ngModelOptions]="{standalone: true}"
+        (selectionChange)="onChangePassengers($event, false)"
         class="half-input"
-        required>
-        <mat-option
-          *ngFor="let number of numbers"
-          [value]="number">
-          {{number}}
+        required
+      >
+        <mat-option *ngFor="let number of numbers" [value]="number">
+          {{ number }}
         </mat-option>
       </mat-select>
-
     </div>
 
-    <!-- children's ages -->
-    <mat-form-field *ngIf="itineraryForm.value.children > 0">
-      <label>
-        <input
-          type="text"
-          placeholder="Children's ages"
-          formControlName="children_ages"
-          matInput/>
-      </label>
-    </mat-form-field>
+    <!-- adult details -->
+    <div *ngIf="itineraryForm.get('adults')['length'] > 0">
+      <div *ngFor="let passenger of itineraryForm.get('adults').controls; let i = index;">
+        <div [formGroup]="passenger" fxLayout="row" fxLayoutAlign="space-between center">
+          <mat-form-field>
+            <label>
+              <input
+                matInput
+                name="firstName"
+                type="text"
+                formControlName="firstName"
+                placeholder="First Name"
+              />
+            </label>
+          </mat-form-field>
+          <span class="spacer"></span>
+          <mat-form-field>
+            <label>
+              <input
+                matInput
+                name="lastName"
+                type="text"
+                formControlName="lastName"
+                placeholder="Surname"
+              />
+            </label>
+          </mat-form-field>
+          <span class="spacer"></span>
+          <mat-form-field>
+            <label>
+              <input
+                matInput
+                name="age"
+                type="number"
+                formControlName="age"
+                placeholder="Age"
+              />
+            </label>
+          </mat-form-field>
+        </div>
+      </div>
+    </div>
+
+    <!-- children details -->
+    <div *ngIf="itineraryForm.get('children')['length'] > 0">
+      <div *ngFor="let passenger of itineraryForm.get('children').controls; let i = index;">
+        <div [formGroup]="passenger" fxLayout="row">
+          <mat-form-field>
+            <label>
+              <input
+                matInput
+                name="firstName"
+                type="text"
+                formControlName="firstName"
+                placeholder="First Name"
+                fxFlex="30"
+              />
+            </label>
+          </mat-form-field>
+          <span class="spacer"></span>
+          <mat-form-field>
+            <label>
+              <input
+                matInput
+                name="lastName"
+                type="text"
+                formControlName="lastName"
+                placeholder="Surname"
+                fxFlex="30"
+              />
+            </label>
+          </mat-form-field>
+          <span class="spacer"></span>
+          <mat-form-field>
+            <label>
+              <input
+                matInput
+                name="age"
+                type="number"
+                formControlName="age"
+                placeholder="Age"
+                fxFlex="30"
+              />
+            </label>
+          </mat-form-field>
+        </div>
+      </div>
+    </div>
 
     <!-- name of itinerary -->
     <mat-form-field>
@@ -101,7 +179,7 @@
             matInput
             [matDatepicker]="picker"
             placeholder="Start Date"
-            formControlName="startdate"
+            formControlName="startDate"
             required>
         </label>
         <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
@@ -116,7 +194,7 @@
             matInput
             [matDatepicker]="picker2"
             placeholder="End Date"
-            formControlName="enddate"
+            formControlName="endDate"
             required>
         </label>
         <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>

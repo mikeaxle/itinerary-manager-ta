@@ -18,6 +18,7 @@ import {Observable} from 'rxjs';
 import {map, startWith} from 'rxjs/operators';
 import {generalInclusions} from '../../model/generalInclusions';
 import {firestore} from 'firebase';
+import {Passenger} from '../../model/passenger';
 
 // interface for country codes
 export interface CountryCodes {
@@ -55,6 +56,8 @@ export class EditorComponent implements OnInit {
   private filteredClients: Observable<any[]>;
   generalInclusions = generalInclusions;
   newImage: any;
+  adults: any;
+  children: any;
 
   constructor(@Inject(MAT_DIALOG_DATA) public args: any,
               private formBuilder: FormBuilder,
@@ -115,14 +118,13 @@ export class EditorComponent implements OnInit {
   initNewItinerary() {
 
     this.itineraryForm = this.formBuilder.group({
-      adults: [null, Validators.required],
+      adults: new FormArray([]),
       agent: [null, Validators.required],
-      children: [null, Validators.required],
-      children_ages: [null],
+      children: new FormArray([]),
       client: [null, Validators.required],
-      enddate: [null, Validators.required],
-      startdate: [null, Validators.required],
-      title: [null, Validators.required]
+      endDate: ['Wed Nov 09 2019', Validators.required],
+      startDate: ['Wed Nov 06 2019', Validators.required],
+      title: ['test 4/11', Validators.required]
     });
 
                           // init filtered clients  and subscribe to client form control on itinerary form
@@ -137,7 +139,7 @@ export class EditorComponent implements OnInit {
       .valueChanges()
       .subscribe((res) => {
         // this.data.list('company/True Africa')
-        this.invoiceDetails = {prefix: res[`prefix`], invoice_number: res[`invoice_number`]};
+        this.invoiceDetails = {prefix: res[`prefix`], invoiceNumber: res[`invoiceNumber`]};
       });
 
     // get agents list
@@ -152,7 +154,8 @@ export class EditorComponent implements OnInit {
       });
 
     // get client list
-    this.data.firestore.collection(`clients`, ref => ref.where('company', '==', this.data.company.key))
+    const companyRef$ = this.data.firestore.doc(`companies/${this.data.company.key}`).ref;
+    this.data.firestore.collection(`clients`, ref => ref.where('company', '==', companyRef$))
       .snapshotChanges()
       .subscribe(_ => {
         _.forEach(snapshot => {
@@ -239,8 +242,8 @@ export class EditorComponent implements OnInit {
     if (this.itineraryForm.valid) {
 
       // convert dates to date strings
-      this.itineraryForm.value.startdate = this.itineraryForm.value.startdate.toDateString();
-      this.itineraryForm.value.enddate = this.itineraryForm.value.enddate.toDateString();
+      this.itineraryForm.value.startDate = this.itineraryForm.value.startDate.toDateString();
+      this.itineraryForm.value.endDate = this.itineraryForm.value.endDate.toDateString();
 
       // add status field to formData
       this.itineraryForm.value.status = 'Provisional';
@@ -248,10 +251,19 @@ export class EditorComponent implements OnInit {
       this.itineraryForm.value.generalInclusions = generalInclusions;
 
       // increment invoice number
-      this.invoiceDetails.invoice_number += 1;
+      this.invoiceDetails.invoiceNumber += 1;
 
       // add invoice number to itinerary
-      this.itineraryForm.value.invoice_number = `${this.invoiceDetails.prefix}-${this.invoiceDetails.invoice_number}`;
+      this.itineraryForm.value.invoiceNumber = this.invoiceDetails.invoiceNumber;
+
+      // add company ref
+      this.itineraryForm.value.company = this.data.firestore.doc(`companies/${this.data.company.key}`).ref;
+
+      // add agent ref
+      this.itineraryForm.value.agent = this.data.firestore.doc(`users/${this.itineraryForm.value.agent}`).ref;
+
+      // add client ref
+      this.itineraryForm.value.client = this.data.firestore.doc(`clients/${this.itineraryForm.value.client}`).ref;
 
       // push to firebase
       this.data.firestore.collection(`itineraries`)
@@ -260,7 +272,7 @@ export class EditorComponent implements OnInit {
           // update invoice number in firebase
           this.data.firestore.doc(`companies/${this.data.company.key}`)
             .update({
-              invoiceNumber: this.invoiceDetails.invoice_number
+              invoiceNumber: this.invoiceDetails.invoiceNumber
             })
             .then(_ => {
               console.log('invoice number updated');
@@ -402,6 +414,7 @@ export class EditorComponent implements OnInit {
     }
   }
 
+  // todo: media crud
   // function to save media to firebase
   addMedia() {
     // check if new media item
@@ -487,5 +500,42 @@ export class EditorComponent implements OnInit {
     }
     // close dialog
     this.closeDialog();
+  }
+
+  // convenience getters for easy access to form fields
+  get f() {
+    return this.itineraryForm.controls;
+  }
+
+  get adultsArray() {
+    return this.f.adults as FormArray;
+  }
+
+  get childrenArray() {
+    return this.f.children as FormArray;
+  }
+
+  // adds new form control to a FormArray
+  addFormControl() {
+    // @ts-ignore
+    return this.formBuilder.group(new Passenger('', '', 0, false));
+  }
+
+  // function to handle number of adults change change
+  onChangePassengers(event, adult) {
+    // get the number of specified customers from event
+    const passengerCount = event.value || 0;
+
+    const passengers = adult ? this.adultsArray : this.childrenArray;
+
+    if (passengers.length < passengerCount) {
+      for (let count = passengers.length; count < passengerCount; count++) {
+        passengers.push(this.addFormControl());
+      }
+    } else {
+      for (let count = passengers.length; count >= passengerCount; count--) {
+        passengers.removeAt(count);
+      }
+    }
   }
 }

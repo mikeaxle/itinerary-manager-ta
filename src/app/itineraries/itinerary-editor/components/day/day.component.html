@@ -33,17 +33,18 @@
 </div>
 
 <!--  comments-->
-<div *ngIf="comments | async as commentsArray" fxLayout="column" fxFlexAlign="space-between base-line">
+
+<div *ngIf="comments.length > 0" fxLayout="column" fxFlexAlign="space-between base-line">
   <!-- iterate comments array -->
-  <div *ngFor="let comment of commentsArray | commentsFilter: day.key" fxLayout="row" class="day">
+  <div *ngFor="let comment of comments | commentsFilter: day.key" fxLayout="row" class="day">
     <!-- left column -->
     <span fxLayoutAlign="space-around center" fxFlex="18" fxLayoutGap="5px">
-              <img [src]="getCommentIcon(comment.payload.val().type)" />
+              <img [src]="getCommentIcon(comment.type)" />
             </span>
 
     <!-- middle column -->
     <span fxFlex="80" fxFlexAlign="flex-start">
-              <span>{{comment.payload.val().comment}}</span>
+              <span>{{comment.comment}}</span>
             </span>
 
     <!-- right column -->
