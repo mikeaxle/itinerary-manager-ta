@@ -5,7 +5,7 @@ import { ItinerariesRoutingModule } from './itineraries-routing.module';
 import {ItineraryEditorComponent} from './itinerary-editor/itinerary-editor.component';
 import { ItineraryDetailsEditorComponent } from './itinerary-editor/editors/itinerary-details-editor/itinerary-details-editor.component';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {MatButtonModule, MatCardModule, MatChipsModule, MatDatepickerModule, MatDialogModule, MatGridListModule, MatIconModule, MatInputModule, MatMenuModule, MatOptionModule, MatProgressBarModule, MatProgressSpinnerModule, MatSelectModule} from '@angular/material';
+import {MatAutocompleteModule, MatButtonModule, MatCardModule, MatChipsModule, MatDatepickerModule, MatDialogModule, MatGridListModule, MatIconModule, MatInputModule, MatMenuModule, MatOptionModule, MatProgressBarModule, MatProgressSpinnerModule, MatSelectModule} from '@angular/material';
 import {AngularSvgIconModule} from 'angular-svg-icon';
 import {FlexLayoutModule} from '@angular/flex-layout';
 import {CurrencyMaskModule} from 'ng2-currency-mask';
@@ -49,7 +49,8 @@ import { PhoneNumberComponent } from './itinerary-editor/components/phone-number
     MatDatepickerModule,
     ReactiveFormsModule,
     MatProgressBarModule,
-    DragDropModule
+    DragDropModule,
+    MatAutocompleteModule
   ],
 })
 export class ItinerariesModule { }

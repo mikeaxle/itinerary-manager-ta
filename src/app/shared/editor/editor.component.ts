@@ -69,13 +69,13 @@ export class EditorComponent implements OnInit {
 
 
               // getter to return filtered country codes
-  private _filterCountries(value): CountryCodes[] {
+  private _filterCountries(value): any[] {
     const filterValue = value.toLowerCase();
     return this.countries.filter(country => country.name.toLowerCase().indexOf(filterValue) === 0);
   }
 
   // getter to return filtered country codes
-  private _filterClients(value): CountryCodes[] {
+  private _filterClients(value): any[] {
     const filterValue = value.toLowerCase();
     return this.clients.filter(client => `${client.firstName} ${client.lastName}`.toLowerCase().indexOf(filterValue) === 0);
   }
@@ -118,9 +118,9 @@ export class EditorComponent implements OnInit {
   initNewItinerary() {
 
     this.itineraryForm = this.formBuilder.group({
-      adults: new FormArray([]),
+      adults: this.formBuilder.array([]),
       agent: [null, Validators.required],
-      children: new FormArray([]),
+      children: this.formBuilder.array([]),
       client: [null, Validators.required],
       endDate: ['Wed Nov 09 2019', Validators.required],
       startDate: ['Wed Nov 06 2019', Validators.required],

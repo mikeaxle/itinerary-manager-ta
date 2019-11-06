@@ -17,17 +17,6 @@
 
 
     <!-- client -->
-<!--    <mat-select-->
-<!--      placeholder="Client"-->
-<!--      formControlName="client"-->
-<!--      required>-->
-<!--      <mat-option-->
-<!--        *ngFor="let client of clients"-->
-<!--        [value]="client.key">-->
-<!--        {{client.firstName}} {{client.lastName}}-->
-<!--      </mat-option>-->
-<!--    </mat-select>-->
-
     <mat-form-field>
       <input matInput placeholder="Client" aria-label="Client" [matAutocomplete]="auto" formControlName="client">
       <mat-autocomplete #auto="matAutocomplete">

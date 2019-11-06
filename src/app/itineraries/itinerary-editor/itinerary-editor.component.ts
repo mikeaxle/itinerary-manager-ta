@@ -686,8 +686,7 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
         client: this.client,
         itinerary: this.itinerary$,
         usedDays: this.usedDays
-      },
-      width: '480px',
+      }
     });
 
 
