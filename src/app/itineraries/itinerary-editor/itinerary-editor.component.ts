@@ -20,6 +20,7 @@ import {ItineraryDetailsEditorComponent} from './editors/itinerary-details-edito
 import Swal from 'sweetalert2';
 import {generalInclusions} from '../../model/generalInclusions';
 import {CdkDragDrop, moveItemInArray} from '@angular/cdk/drag-drop';
+import {CommentsPipe} from '../../filter/comments.pipe';
 
 @NgModule({
   imports: [CommonModule]
@@ -98,12 +99,10 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
     day[`position`] = event.currentIndex + 1;
     previousDay[`position`] = event.previousIndex + 1;
 
-    const dataToUpdate = {};
-    dataToUpdate[day.key] = day;
-    dataToUpdate[previousDay.key] = previousDay;
 
-    // update inclusion
-    this.data.updateFirebaseObject(`days/${this.itineraryId}/`, dataToUpdate, 'day order');
+    // update previous dat
+    this.data.updateFirebaseObject(`days/${day.key}`, day, 'day order');
+    this.data.updateFirebaseObject(`days/${previousDay.key}`, previousDay, 'day order');
   }
 
   ngOnInit(): void {
@@ -323,7 +322,6 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
     this.data.deleteObjectFromFirebase(`itineraryContactDetails/${key}`, 'contact');
   }
 
-
   // gets agent object
   getAgent() {
     // use agent ref from itinerary to get agent
@@ -343,7 +341,6 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
       });
   }
 
-  // function to generate editor-components title
   // function to generate editor-components title
   getDayTitle(type: string, day: any) {
     // variables related to editor-components tile
@@ -688,13 +685,6 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
         usedDays: this.usedDays
       }
     });
-
-
-    // after dialog is closed
-    dialogRef.afterClosed().subscribe(result => {
-      // update itinerary
-      this.updateItinerary();
-    });
   }
 
   // function to open confirm delete dialog
@@ -704,9 +694,11 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
       width: '480px'
     });
 
-    dialogRef.afterClosed().subscribe((_) => {
+    dialogRef.afterClosed().subscribe((yes) => {
       // if result is true, delete itinerary
+      if (yes) {
         this.deleteItinerary();
+      }
     });
   }
 
@@ -775,119 +767,109 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
 
   // function to delete itinerary
   deleteItinerary() {
+    // todo: write cloud function to delete any comments, payments, days and contact numbers that have a null itinerary ref
     // delete itinerary
     this.itineraryRef$.delete()
       .then(_ => {
         // Swal
         Swal.fire('Delete Itinerary', `Itinerary ${this.itineraryId} Deleted`, 'success')
           .then(() => {
-            // delete countries? this.data.firestore.collection('days/' + this.itineraryId).remove() : console.log('no days to delete');
-            this.countriesRef$.delete();
-
-            // delete days
-            this.daysRef$.delete();
-
-            // delete comments
-            this.commentsRef$.delete();
-
-            // delete payments
-            this.paymentsRef$.delete();
+            // go to itineraries page
+            this.router.navigate(['/itineraries']);
           });
       })
       .catch(err => {
         // Swal
-        Swal.fire('Delete Itinerary', `Itinerary ${this.itineraryId} failed to delete`, 'error');
+        Swal.fire('Delete Itinerary', err.message, 'error');
       });
-
-    // go to itineraries page
-    this.router.navigate(['/itineraries']);
   }
 
   // function to duplicate itinerary
   duplicateItinerary() {
-    // // variable to store duplicate
-    // let duplicate = null;
-    // let duplicateInvoiceNumber = null;
-    // let duplicateKey = null;
-    //
-    // // variable to store comments
-    // let comments = null;
-    //
-    //   // copy data to duplicate
-    // duplicate = this.itinerary$;
-    //
-    //   // add the word duplicate to title of duplicate
-    // duplicate.title += '(duplicate)';
-    // duplicate.title += '(duplicate)';
-    //
-    // // map comments to local variable
-    // comments = this.comments;
-    //
-    // // assign invoice number
-    // this.data.af.object(`companies/${this.data.company}`)
-    //   .valueChanges()
-    //   .subscribe((res) => {
-    //   duplicateInvoiceNumber = res[`invoice_number`] + 1;
-    //   duplicate.invoice_number = `${res[`prefix`]}-${duplicateInvoiceNumber}`;
-    // }).unsubscribe();
-    //
-    // // write duplicate itinerary to
-    // this.data.af.list(`itineraries/${this.data.company}`).push(duplicate)
-    //   .then((res) => {
-    //     // assign duplicate key
-    //     duplicateKey = res.key;
-    //
-    //     // check for payments
-    //     this.paymentsRef$.map((payments) => {
-    //       if (payments.length > 0) {
-    //         // write to firebase
-    //         payments.forEach(p => {
-    //           this.data.af.list(`payments/${duplicateKey}`).push(p);
-    //         });
-    //       }
-    //     });
-    //
-    //     // check for days
-    //     this.daysRef$.map((days) => {
-    //       if (days.length > 0) {
-    //         // write to firebase
-    //         days.forEach(d => {
-    //           this.data.af.list(`days/${duplicateKey}`).push(d)
-    //             .then((dayDuplicate) => {
-    //               /// check for comments
-    //               if (comments.length > 0) {
-    //                 comments.forEach((c) => {
-    //                   if (c.day === d.key) {
-    //                     c.day = dayDuplicate.key;
-    //                     // write to firebase
-    //                     this.data.af.list(`comments/${duplicateKey}`).push(c);
-    //                   }
-    //                 });
-    //               }
-    //             });
-    //         });
-    //       }
-    //     }).subscribe();
-    //
-    //   })
-    //   .then(() => {
-    //     // go to duplicate itinerary
-    //     this.router.navigate(['/itinerary-editor', duplicateKey])
-    //       .then(() => {
-    //         // update invoice number
-    //         this.data.updateItem(this.data.company, 'companies', {invoice_number: duplicateInvoiceNumber})
-    //           .then(_ => {
-    //             // Swal
-    //             Swal.fire('Duplicate Itinerary',
-    //               `Itinerary ${duplicateKey}: ${duplicate.title.slice(0, duplicate.title.length - 11)} Duplicated`,
-    //               'success');
-    //           })
-    //           .catch(err => {
-    //             // Swal
-    //             Swal.fire('Duplicate Itinerary', err.message, 'success');
-    //           });
-    //       });
-    //   });
+
+    // todo: fix duplicate bug
+
+    // variable to store duplicate
+    let duplicate;
+
+      // copy data to duplicate
+    duplicate = this.itinerary$;
+
+      // add the word duplicate to title of duplicate
+    duplicate.title += '(duplicate)';
+
+    // write duplicate itinerary to
+    this.data.firestore.collection(`itineraries`)
+      .add(duplicate)
+      .then(newItinerary => {
+        // update new itinerary invoice number
+        newItinerary.update({
+          invoiceNumber: Number(this.itinerary$.invoiceNumber) + 1
+        });
+
+        //  get new itinerary Ref
+        const newItineraryRef = this.data.firestore.doc(`itineraries/${newItinerary.id}`).ref;
+        // loop thru days
+        this.days.forEach(day => {
+
+          // change day reference
+          day.itinerary = newItineraryRef;
+
+          // write to firestore
+          this.data.firestore.collection(`days`).add(day)
+            .then(newDay => {
+              // loop thru comments array
+              this.comments.forEach(comment => {
+
+                // check if comment matches day
+                if (comment.day.id === day.key) {
+
+                  // update day key to duplicate Day ref
+                  comment.day = this.data.firestore.doc(`days/${newDay.id}`).ref;
+
+                  // write to firebase
+                  this.data.firestore.collection(`comments`).add(comment);
+                }
+              });
+            });
+        });
+
+        // loop thru payments
+        this.payments.forEach(payment => {
+          // change itinerary key to duplicate  key
+          payment.itinerary = newItineraryRef;
+
+          // write to firestore
+          this.data.firestore.collection(`payments`).add(payment);
+        });
+
+        // loop thru countries
+        this.countries.forEach(country => {
+          // change itinerary key to duplicate  key
+          country.itinerary = newItineraryRef;
+
+          // write to firestore
+          this.data.firestore.collection(`itineraryContactDetails`).add(country);
+        });
+
+        // update invoice number
+        this.data.firestore.doc(`companies/${this.data.company.key}`)
+          .update({
+            invoiceNumber: Number(this.itinerary$.invoiceNumber) + 1
+          });
+
+
+
+        Swal.fire('Duplicate Itinerary', 'Itinerary copied successfully', 'success')
+          .then(fire => {
+            // go to new itinerary
+            this.router.navigate(['/itinerary-editor', newItinerary.id])
+          });
+      })
+      .catch(err => {
+        console.log(err);
+        Swal.fire('Duplicate Itinerary', err.message, 'error');
+      });
   }
 
   // function to save as PDF
@@ -937,20 +919,6 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
     }, 1, this.usedDays);
   }
 
-  // function to check if object is an array
-isArray(obj: any ) {
-    return Array.isArray(obj);
- }
-
- updateItinerary() {
-    console.log('does updateItinerary need to be called?');
-  // this.itineraryRef$
-  // .subscribe(it => {
-  //   this.itinerary$ = it.payload.val();
-  //   this.itinerary$[`key`] = it.key;
-  // });
-}
-
   ngOnDestroy() {
     // unsubscribe from observables to remove memory leaks
     delete this.daysRef$;
@@ -960,9 +928,9 @@ isArray(obj: any ) {
     delete this.clientRef$;
     delete this.agentRef$;
 
-    this.itinerarySubscription$.unsubscribe();
-    this.paymentsSubscription$.unsubscribe();
-    this.commentsSubscription$.unsubscribe();
-    this.countriesSubscription$.unsubscribe();
+    this.itinerarySubscription$ ? this.itinerarySubscription$.unsubscribe() : console.log('deleted');
+    this.paymentsSubscription$ ? this.paymentsSubscription$.unsubscribe() : console.log('deleted');
+    this.commentsSubscription$ ? this.commentsSubscription$.unsubscribe() : console.log('deleted');
+    this.countriesSubscription$ ? this.countriesSubscription$.unsubscribe() : console.log('deleted');
   }
 }

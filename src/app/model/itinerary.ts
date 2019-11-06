@@ -4,11 +4,11 @@ export class Itinerary {
   children: number;
   client: string;
   coverImageTile: {};
-  enddate: Date;
+  endDate: Date;
   gridImageTiles: [];
 // tslint:disable-next-line:variable-name
   invoice_number: string;
-  startdate: Date;
+  startDate: Date;
   status: string;
   title: string;
   total: number;

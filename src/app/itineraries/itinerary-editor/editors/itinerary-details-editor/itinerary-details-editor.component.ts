@@ -122,12 +122,11 @@ export class ItineraryDetailsEditorComponent implements OnInit, OnDestroy {
     // this.calculateDays();
 
     // subscribe to changes on itinerary form. calculate number of days
-    this.formRef$ = this.itineraryForm
-      .valueChanges
-      .subscribe((val) => {
-        // this.calculateDays();
-        console.log(val);
-      });
+    // this.formRef$ = this.itineraryForm
+    //   .valueChanges
+    //   .subscribe((val) => {
+    //     this.calculateDays();
+    //   });
 
   }
 
@@ -224,11 +223,12 @@ export class ItineraryDetailsEditorComponent implements OnInit, OnDestroy {
     // add client ref
     this.itineraryForm.value.client = this.data.firestore.doc(`clients/${this.itineraryForm.value.client}`).ref;
 
-    // console.log(this.itineraryForm.value)
+    console.log(this.itineraryForm.value)
     // push to firebase
     this.data.firestore.doc(`itineraries/${this.itinerary.key}`)
       .update(this.itineraryForm.value)
       .then(() => {
+        this.itineraryForm.reset()
         Swal.fire('Itinerary Editor', 'Itinerary details updated', 'success');
         this.dialogRef.close();
       })
@@ -246,7 +246,7 @@ export class ItineraryDetailsEditorComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     // unsubscribe from form
-    this.formRef$.unsubscribe();
+    // this.formRef$.unsubscribe();
   }
 
   // convenience getters for easy access to form fields

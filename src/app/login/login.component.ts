@@ -26,40 +26,36 @@ export class LoginComponent implements OnDestroy  {
       if (auth) {
         // check if local storage variables are defined
         if (this.data.company === undefined) {
-          // set True Africa as defualt compaby
-          this.setCompany(`companies/YbSudQRjCglvvffyujaf`);
+          // set True Africa as defualt company
+          this.setCompany();
         }
-
-        // set global color
-        // if (this.data.company === 'Planet Africa') {
-        //   localStorage.setItem('logo', '../assets/logos/avatar-planetafrica.png');
-        // } else {
-        //   localStorage.setItem('logo', '../assets/logos/avatar-trueafrica.png');
-        // }
 
         // set logged in user
         this.setUser(auth);
 
-        // if user is logged in, redirect to dashboard
-        this.router.navigate(['itineraries'])
-          .then(() => {
-            Swal.fire('Authentication', 'You are logged in!', 'success');
-          });
+        // if (this.data.user) {
+          // if user is logged in, redirect to dashboard
+          this.router.navigate(['itineraries'])
+            .then(() => {
+              Swal.fire('Authentication', 'You are logged in!', 'success');
+            });
+        // }
+
       }
     });
   }
 
   // set company to local storage
-  private setCompany(path) {
-    this.companyRef$ = this.data.firestore.doc(path)
-      .snapshotChanges()
-      .subscribe(_ => {
-        const company = _.payload.data();
-        company[`key`] = _.payload.id;
-        localStorage.setItem('company', JSON.stringify(company));
-        localStorage.setItem('color', company[`color`]);
-        localStorage.setItem('logo', company[`logoUrl`]);
-      });
+   setCompany() {
+        localStorage.setItem('company', JSON.stringify({
+          color: '#B18C51',
+          logoUrl: 'https://firebasestorage.googleapis.com/v0/b/true-africa-itinerary.appspot.com/o/avatar-trueafrica.png?alt=media&token=6808dc76-eecb-4bdd-beee-6fd2af2868dc',
+          name: 'True Africa',
+          prefix: 'TA',
+          key: 'YbSudQRjCglvvffyujaf'
+        }));
+        localStorage.setItem('color', '#B18C51');
+        localStorage.setItem('logo', 'https://firebasestorage.googleapis.com/v0/b/true-africa-itinerary.appspot.com/o/avatar-trueafrica.png?alt=media&token=6808dc76-eecb-4bdd-beee-6fd2af2868dc');
   }
 
 // handle login error
@@ -78,7 +74,7 @@ export class LoginComponent implements OnDestroy  {
   // handle login success
   onLoginSuccess(auth) {
     // set company
-    this.setCompany(`companies/YbSudQRjCglvvffyujaf`);
+    this.setCompany();
 
     // set logo
     this.logo = '../assets/logos/avatar-trueafrica.png';
@@ -87,7 +83,7 @@ export class LoginComponent implements OnDestroy  {
     this.setUser(auth);
 
     // show swal
-    Swal.fire('Authentication', 'Log in successful!', 'success');
+    // Swal.fire('Authentication', 'Log in successful!', 'success');
   }
 
   // sets user to local storage

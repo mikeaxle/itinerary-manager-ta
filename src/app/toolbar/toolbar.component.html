@@ -24,15 +24,14 @@
   <!-- logo button -->
   <button mat-icon-button [matMenuTriggerFor]="menu">
     <!-- logo -->
-    <img   class="avatar-image" [src]="data.logo">
+    <img *ngIf="data.logo"   class="avatar-image" [src]="data.logo">
   </button>
 
   <!-- collapsible menu -->
   <mat-menu xPosition="before" #menu="matMenu">
     <button mat-menu-item (click)="data.switchCompany()">
       <mat-icon>person_outline</mat-icon>
-      <span *ngIf="data.company === 'True Africa'">Switch to Planet Africa</span>
-      <span *ngIf="data.company === 'Plant Africa'">Switch to True Africa</span>
+      <span *ngIf="data.company">Switch to {{ data.company.name }}</span>
     </button>
 
     <!-- logout -->

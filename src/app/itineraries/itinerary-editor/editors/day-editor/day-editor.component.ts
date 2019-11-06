@@ -219,7 +219,7 @@ export class DayEditorComponent implements OnInit {
       key: [data.$key],
       inclusions: [data.inclusions],
       name: [data.name],
-      long_description: [data.long_description],
+      longDescription: [data.longDescription],
       imageUrl: [data.imageUrl],
       region: [data.region],
       destination: [data.destination]

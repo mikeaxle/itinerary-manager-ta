@@ -210,14 +210,13 @@ export class DataService {
       });
   }
 
-   updateFirebaseObject(path: any, dataToUpdate, caller: string) {
+   updateFirebaseObject(path: any, dataToUpdate, caller: string, notify?) {
     // add updated time stamp
     dataToUpdate[`updated`] = firebase.firestore.Timestamp.now();
     this.firestore.doc(path)
       .update(dataToUpdate)
       .then(_ => {
-        console.log(`updated ${caller}`);
-        Swal.fire(`${caller} editor`, `${caller} updated.`, 'success');
+        notify ? Swal.fire(`${caller} editor`, `${caller} updated.`, 'success') :  console.log(`updated ${caller}`);
       })
       .catch(err => {
         console.log(err);
