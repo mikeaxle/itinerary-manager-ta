@@ -804,7 +804,7 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
       .then(newItinerary => {
         // update new itinerary invoice number
         newItinerary.update({
-          invoiceNumber: Number(this.itinerary$.invoiceNumber) + 1
+          invoiceNumber: ++this.itinerary$.invoiceNumber
         });
 
         //  get new itinerary Ref
@@ -855,7 +855,7 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
         // update invoice number
         this.data.firestore.doc(`companies/${this.data.company.key}`)
           .update({
-            invoiceNumber: Number(this.itinerary$.invoiceNumber) + 1
+            invoiceNumber: ++this.itinerary$.invoiceNumber
           });
 
 

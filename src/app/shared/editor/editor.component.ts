@@ -122,9 +122,9 @@ export class EditorComponent implements OnInit {
       agent: [null, Validators.required],
       children: this.formBuilder.array([]),
       client: [null, Validators.required],
-      endDate: ['Wed Nov 09 2019', Validators.required],
-      startDate: ['Wed Nov 06 2019', Validators.required],
-      title: ['test 4/11', Validators.required]
+      endDate: [null, Validators.required],
+      startDate: [null, Validators.required],
+      title: [null, Validators.required]
     });
 
                           // init filtered clients  and subscribe to client form control on itinerary form
@@ -174,11 +174,11 @@ export class EditorComponent implements OnInit {
   // initialize new client form
   initNewClient() {
     this.clientForm = this.args.new ? this.formBuilder.group({
-      email: ['e@mail.com', Validators.required],
-      firstName: ['test', Validators.required],
-      lastName: ['data', Validators.required],
-      nationality: ['Zambian', Validators.required],
-      phone: ['00000', Validators.required]
+      email: [null, Validators.required],
+      firstName: [null, Validators.required],
+      lastName: [null, Validators.required],
+      nationality: [null, Validators.required],
+      phone: [null, Validators.required]
     }) : this.formBuilder.group(this.client);
 
     // init filtered countries and subscribe to value changes on nationality control
@@ -193,25 +193,25 @@ export class EditorComponent implements OnInit {
   // initialize new agent form
   initNewAgent() {
     this.agentForm = this.args.new ? this.formBuilder.group({
-      email: ['test@null.com', Validators.required],
-      firstName: ['yest', Validators.required],
-      lastName: ['nuts', Validators.required],
-      password: ['wolf@1988', Validators.required],
-      role: ['agent', Validators.required],
+      email: [null, Validators.required],
+      firstName: [null, Validators.required],
+      lastName: [null, Validators.required],
+      password: [null, Validators.required],
+      role: [null, Validators.required],
     }) : this.formBuilder.group(this.agent);
   }
 
   // initialize new inventory form
   initNewInventory() {
     this.inventoryForm = this.args.new ? this.formBuilder.group({
-      description: ['test', Validators.required],
-      destination: [1, Validators.required],
+      description: [null, Validators.required],
+      destination: [null, Validators.required],
       // image: [null, Validators.required],
-      inclusions: ['test', Validators.required],
-      longDescription: ['test', Validators.required],
-      name: ['test', Validators.required],
-      region: [11, Validators.required],
-      type: ['Accommodation', Validators.required],
+      inclusions: [null, Validators.required],
+      longDescription: [null, Validators.required],
+      name: [null, Validators.required],
+      region: [null, Validators.required],
+      type: [null, Validators.required],
     }) : this.formBuilder.group(this.inventoryItem);
   }
 
