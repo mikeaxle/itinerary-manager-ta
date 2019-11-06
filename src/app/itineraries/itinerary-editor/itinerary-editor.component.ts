@@ -59,21 +59,19 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
   discount = 0;
   deposit = 0;
   comments = [];
-  payments;
-  countries;
+  payments = [];
+  countries = [];
   itineraryId;
-  private itineraryRef$;
+  itineraryRef$;
   commentsRef$;
-  private agentRef$;
-  private clientRef$;
-  private client: any;
-  private agent: any;
-  private paymentsSubscription$;
-  private averageCost;
-  paymentsPdf = [];
-  private commentsSubscription$: any;
-  private countriesSubscription$;
-  countriesPdf = [];
+  agentRef$;
+  clientRef$;
+  client: any;
+  agent: any;
+  paymentsSubscription$;
+  averageCost;
+  commentsSubscription$: any;
+  countriesSubscription$;
   gridImageTiles =  [
     { imageUrl: false },
 { imageUrl: false },
@@ -164,8 +162,7 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
           this.getAgent();
 
           // get contact numbers associated with itinerary
-          // this.getContactNumbersForCountries();
-
+          this.getContactNumbers();
         }
       });
 
@@ -181,57 +178,63 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
   }
 
 // get contact numbers to associated countries related to itinerary
-//   // todo: move contract numbers to itinerary.contactNumbers
-//   private getContactNumbersForCountries() {
-//     this.countriesRef$ = this.data.firestore.collection(`phone_numbers/${this.itineraryId}`);
-//     this.countries = this.countriesRef$.snapshotChanges();
-//     this.countriesPdf = [];
-//     this.countriesSubscription$ = this.countries.subscribe(_ => {
-//       _.forEach(snapshot => {
-//         const country = snapshot.payload.val();
-//         country.key = snapshot.key;
-//         this.countriesPdf.push(country);
-//       });
-//     });
-//   }
+  // todo: move contract numbers to itinerary.contactNumbers
+  private getContactNumbers() {
+    this.countriesRef$ = this.data.firestore.collection(`itineraryContactDetails`, ref => ref.where('itinerary', '==', this.itineraryRef$.ref));
+    this.countriesSubscription$ = this.countriesRef$
+      .snapshotChanges()
+      .subscribe(_ => {
+      if (_.length > 0) {
+        this.countries = [];
+        _.forEach(snapshot => {
+          const country = snapshot.payload.doc.data();
+          country.key = snapshot.payload.doc.id;
+          this.countries.push(country);
+        });
+      }
+
+    });
+  }
 
   // get payments related to itinerary
   private getPayments(itinerary) {
     // init payments firebase list reference
     this.paymentsRef$ = this.data.firestore.collection('payments', ref => ref.where('itinerary', '==', this.itineraryRef$.ref));
 
-    // init payments snapshot array
-    this.payments = this.paymentsRef$.snapshotChanges();
-
     // init payments subscription
-    this.paymentsSubscription$ = this.payments.subscribe(_ => {
+    this.paymentsSubscription$ = this.paymentsRef$
+      .snapshotChanges()
+      .subscribe(_ => {
       // reset payments
-      this.paymentsPdf = [];
-      this.totalPayments = 0;
-      this.averageCost = 0;
+      if (_.length > 0) {
+        //
+        this.payments = [];
+        this.totalPayments = 0;
+        this.averageCost = 0;
 
-      console.log(_)
+        _.forEach(snapshot => {
+          const payment = snapshot.payload.doc.data();
+          payment.key = snapshot.payload.doc.id;
 
-      _.forEach(snapshot => {
-        const payment = snapshot.payload.doc.data();
-        payment.key = snapshot.payload.doc.id;
-
-        // increment total payments
-        this.totalPayments += parseFloat(payment.amount);
+          // increment total payments
+          this.totalPayments += parseFloat(payment.amount);
 
           // add to array for pdf
-        this.paymentsPdf.push(payment);
+          this.payments.push(payment);
         });
 
         // calculate average
-      this.averageCost = itinerary.total / parseFloat(itinerary.children + itinerary.adults);
+        this.averageCost = itinerary.total / parseFloat(itinerary.children.length + itinerary.adults.length);
+      }
       });
   }
 
   // get comments related to itinerary
   private getComments(dayRef) {
-
+    // get comment ref
     this.commentsRef$ = this.data.firestore.collection('comments', ref => ref.where('day', '==', dayRef));
+
+    // get comments and assign to local array
     this.commentsSubscription$ = this.commentsRef$
       .snapshotChanges()
       .subscribe(_ => {
@@ -307,20 +310,17 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
 
   // function to remove comment
   removeComment(key: string) {
-    this.commentsRef$.remove(key);
-    console.log('comment deleted');
+    this.data.deleteObjectFromFirebase(`comments/${key}`, 'comment');
   }
 
 // function to delete payment
   removePayment(key: string) {
-    this.paymentsRef$.remove(key);
-    console.log('payment deleted');
+    this.data.deleteObjectFromFirebase(`payments/${key}`, 'payment');
   }
 
   // function to delete country
   removeCountry(key) {
-    this.countriesRef$.remove(key);
-    console.log('country deleted');
+    this.data.deleteObjectFromFirebase(`itineraryContactDetails/${key}`, 'contact');
   }
 
 
@@ -558,7 +558,7 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
         data: {
           id: this.itineraryId,
           mode,
-          payment: data.payload.val()
+          payment: data
         },
         width: '480px'
       });
@@ -585,7 +585,7 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
             // write payment-editor to firebase
             this.paymentsRef$.add(payment)
               .then(() => {
-                console.log('payment-editor added');
+                console.log('payment added');
               })
               .catch((error) => {
                 console.log(error);
@@ -609,7 +609,7 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
     } else {
       dialogRef = this.dialog.open(CountryEditorComponent, {
         data: {
-          country: data.payload.val(),
+          country: data,
           id: data.key,
           mode
         },
@@ -620,28 +620,14 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
     // function to run after dialog is closed
     dialogRef.afterClosed()
       .subscribe(country => {
+        country.itinerary = this.itineraryRef$.ref;
         if (country) {
           if (mode === 'edit') {
             // update existing item
-            this.countriesRef$.update(data.key, country)
-              .then(_ => {
-                console.log('phone number updated');
-              })
-              .catch((error) => {
-                console.log(error);
-              });
+            this.data.updateFirebaseObject(`itineraryContactDetails/${data.key}`, country, 'itinerary contact details');
           } else {
             // save new contact number
-            this.countriesRef$.push(country)
-              .then(() => {
-                console.log('country added');
-              })
-              .catch((error) => {
-                console.log(error);
-
-                //  swal
-                Swal.fire('Comment Editor', 'Comment update failed', 'error');
-              });
+            this.data.saveFirebaseObject('itineraryContactDetails', country, 'itinerary contact details');
           }
         }
       });
@@ -751,7 +737,6 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
 
 // function to save quote details to firebase on blur or press enter
   onKeyUpSave(type: string) {
-
     // check which control called the function
     switch (type) {
       case 'total':
@@ -777,7 +762,7 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
       case 'generalInclusions':
         this.data.updateFirebaseObject(`itineraries/${this.itineraryId}`,
           { generalInclusions: this.itinerary$.generalInclusions },
-          'generalInclusions');
+          'general inclusions');
         break;
       default:
         break;
@@ -930,8 +915,8 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
           comments: this.comments,
           days: this.days,
           itinerary: this.itinerary$,
-          payments: this.paymentsPdf,
-          phoneNumbers: this.countriesPdf,
+          payments: this.payments,
+          phoneNumbers: this.countries,
           totalPayments: this.totalPayments
         }, type, this.usedDays);
     } else {
@@ -947,8 +932,8 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
       comments: this.comments,
       days: this.days,
       itinerary: this.itinerary$,
-      payments: this.paymentsPdf,
-      phoneNumbers: this.countriesPdf,
+      payments: this.payments,
+      phoneNumbers: this.countries,
       totalPayments: this.totalPayments
     }, 1, this.usedDays);
   }

@@ -179,6 +179,8 @@ export class DataService {
     return `/${folder}/${imageName}`;
   }
 
+
+
   saveFirebaseObject(collection: any, dataToSave, caller: string) {
     // add created time stamp
     dataToSave[`created`] = firebase.firestore.Timestamp.now();
@@ -228,5 +230,4 @@ export class DataService {
     await imageRef$.put(image);
     return  imageRef$.getDownloadURL();
   }
-
 }
