@@ -1432,7 +1432,7 @@ if (lastIteneraryItemsHeight + quotHeight > quoteThreshold) {
   getComments(day) {
     let comments = '';
     this.comments.forEach((c) => {
-      if (c.day === day.key) {
+      if (c.day.id === day.key) {
         comments += ` <p class="${this.commentIconGenerator(c.type)}">${c.comment}</p>`;
       }
     });
