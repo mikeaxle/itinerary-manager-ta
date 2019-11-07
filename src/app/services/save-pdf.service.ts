@@ -105,6 +105,8 @@ export class SavePdfService {
 
   // function to save pdf
   savePDF(itineraryData: any, type: number, usedDays: any) {
+    console.log(itineraryData)
+
     // get itinerary
     this.itinerary = itineraryData.itinerary;
 
@@ -384,7 +386,7 @@ footer p:last-of-type{
         <li>
           <p class="title">Status</p>
           <p class="field">${this.itinerary.status}</p>
-        </li>x
+        </li>
       </ul>
 
       <!-- ITNERARY ITEMS -->
@@ -771,7 +773,7 @@ footer p:last-of-type{
       <li>
       <li>
       <p class="title">Children</p>
-      <p class="field">${ this.itinerary.children.length > 0 ? this.getAdultDetails('children') : this.itinerary.childern.length }</p>
+      <p class="field">${ this.itinerary.children.length > 0 ? this.getAdultDetails('children') : this.itinerary.children.length }</p>
       </li>
 
       </li>
