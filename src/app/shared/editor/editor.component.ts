@@ -100,6 +100,7 @@ export class EditorComponent implements OnInit {
         case 'inventory':
           this.inventoryItem = this.args.item;
           this.destinations = this.countryService.getCountries();
+          this.regions = this.countryService.getRegions();
           this.initNewInventory();
           break;
         case 'agents':
@@ -325,6 +326,19 @@ export class EditorComponent implements OnInit {
     // this.inventoryForm.controls.setValue('region', null);
   }
 
+  // function to delete image
+  deleteImage() {
+
+    // assign old image url to seperate variable
+    this.oldImage = this.inventoryItem.image;
+
+    // delete image from inventory item
+    delete this.inventoryItem.image;
+    delete this.inventoryItem.imageUrl;
+
+  }
+
+
   // function to add inventory item
   addInventory(inventory) {
     // check if adding new inventory
@@ -335,9 +349,13 @@ export class EditorComponent implements OnInit {
         this.data.saveFirebaseObject('inventory', inventory, 'inventory');
       } else {
         //  save image & get download url
+        // show loading Swal
+        Swal.fire('Inventory editor', 'updating image', 'info');
         this.data.saveImage(this.newImage)
           .then(url => {
             if  (url) {
+              // close Swal
+              Swal.close();
               // add image Url and download url to object
               url.subscribe(uRl => {
                 inventory[`imageUrl`] = uRl;
@@ -365,7 +383,7 @@ export class EditorComponent implements OnInit {
       // check if type is service or activity
       if (this.inventoryItem.type != 'Accommodation') {
         // update existing object
-        this.data.updateFirebaseObject(`inventory/${this.inventoryItem[`key`]}`, dataToUpdate, 'inventory');
+        this.data.updateFirebaseObject(`inventory/${this.inventoryItem[`key`]}`, dataToUpdate, 'inventory', true);
       } else {
 
         // add accommodation fields to update data
@@ -375,14 +393,18 @@ export class EditorComponent implements OnInit {
 
         // first update image
         if (this.newImage) {
+          // show loading Swal
+          Swal.fire('Inventory editor', 'updating image', 'info');
           this.data.saveImage(this.newImage)
             .then(uploadResult => {
               uploadResult.subscribe(url => {
+                // close Swal
+                Swal.close();
                 // get file url
                 dataToUpdate[`imageUrl`] = url;
 
                 // write to firebase
-                this.data.updateFirebaseObject(`inventory/${this.inventoryItem[`key`]}`, dataToUpdate, 'inventory');
+                this.data.updateFirebaseObject(`inventory/${this.inventoryItem[`key`]}`, dataToUpdate, 'inventory', true);
               });
             })
             .catch(err => {
@@ -391,7 +413,7 @@ export class EditorComponent implements OnInit {
             });
           //
         } else {
-         this.data.updateFirebaseObject(`inventory/${this.inventoryItem[`key`]}`, dataToUpdate, 'inventory');
+         this.data.updateFirebaseObject(`inventory/${this.inventoryItem[`key`]}`, dataToUpdate, 'inventory', true);
         }
       }
     }
@@ -538,4 +560,5 @@ export class EditorComponent implements OnInit {
       }
     }
   }
+
 }

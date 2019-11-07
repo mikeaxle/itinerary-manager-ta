@@ -392,10 +392,37 @@
 
         <!-- image upload -->
         <app-file-uploader
+          *ngIf="!inventoryItem.image"
           (notify)="fileSelected($event)"
           [activeColor]="'orangered'"
           [baseColor]="'lightgray'">
         </app-file-uploader>
+
+        <!-- existing image -->
+        <span
+          *ngIf="inventoryItem.image"
+          fxLayout="column"
+          fxLayoutAlign="center center"
+          fxLayoutGap="10px"
+          class="loaded-image">
+
+        <mat-icon
+          style="cursor: pointer !important;"
+          *ngIf="inventoryItem.image"
+          fxFlexAlign="end"
+          color="warn"
+          (click)="deleteImage()">cancel</mat-icon>
+
+        <img
+          *ngIf="inventoryItem.image"
+          [src]="inventoryItem.imageUrl"
+          width="100%"
+          style="border-radius: 10px"/>
+
+        <md-spinner *ngIf="!inventoryItem.imageUrl"></md-spinner>
+
+      </span>
+
         <span class="spacer-vert"></span>
       </div>
 
