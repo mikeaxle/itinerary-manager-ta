@@ -6,6 +6,9 @@
     <mat-option *ngFor="let status of STATUS" [value]="status">
       {{ status }}
     </mat-option>
+    <mat-option [value]="undefined">
+      All
+    </mat-option>
   </mat-select>
 
   <button mat-raised-button color="primary" (click)="addNew()">Add New Itinerary</button>

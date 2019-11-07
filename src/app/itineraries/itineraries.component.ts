@@ -31,8 +31,13 @@ export class ItinerariesComponent implements OnInit, OnDestroy {
   STATUS = STATUS;
 
   constructor(public data: DataService, private matDialog: MatDialog, public router: Router) {
+    // init status fitler
     this.status$ = new BehaviorSubject('Provisional');
+
+    // get company ref
     this.companyRef$ = this.data.firestore.doc(`companies/${this.data.company.key}`).ref;
+    
+    // get itineraries ref
     this.itinerariesRef$ = this.status$.pipe(
       switchMap(status =>
         this.data.firestore.collection(`itineraries`, ref => status ? ref.where('company', '==', this.companyRef$).where('status', '==', status) : ref
@@ -108,8 +113,14 @@ export class ItinerariesComponent implements OnInit, OnDestroy {
 
   // function to filter by status
   onFilterChange(event) {
+    // empty itineraries array
     this.itineraries = [];
+
+    // perform next query
     this.status$.next(event.source.value);
+    
+    // Swal
+    event.source.value === undefined ? Swal.fire('Reloading Itineraries', 'Getting all itineraries', 'info') :
     Swal.fire('Reloading Itineraries', `Filtering by status: "${event.source.value}"`, 'info');
   }
 
