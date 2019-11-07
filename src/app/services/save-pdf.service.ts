@@ -73,6 +73,7 @@ export class SavePdfService {
     });
      this.http.post('https://planet-africa-print-server-dev.herokuapp.com/print-pdf', {
     //  this.http.post('https://planet-africa-print-server.herokuapp.com/print-pdf', {
+      //  this.http.post('http://localhost:8000/print-pdf', {
       html
     }, {
       responseType: 'arraybuffer'
@@ -428,6 +429,9 @@ footer p:last-of-type{
   <main>
     <div class="container">
     ${this.getContacts()}
+
+    ${this.getTravelInsuranceBox()}
+
       <div class="info-block">
         <img src="${this.getInfoIcon()}" alt="" width="24" height="24">
         <p>Please read your <em>Important Info for your Safari</em> brochure for further information about tipping, weather, visas, vaccines, what to pack and more.</p>
@@ -857,6 +861,8 @@ footer p:last-of-type{
     <div class="container">
     ${this.getContacts()}
 
+    ${this.getTravelInsuranceBox()}
+
       <div class="info-block">
         <img src="${this.getInfoIcon()}" alt="" width="24" height="24">
         <p>Please read your <em>Important Info for your Safari</em> brochure for further information about tipping, weather, visas, vaccines, what to pack and more.</p>
@@ -1161,6 +1167,8 @@ if (lastIteneraryItemsHeight + quotHeight > quoteThreshold) {
       <main>
         <div class="container">
         ${this.getContacts()}
+
+        ${this.getTravelInsuranceBox()}
 
           <div class="info-block">
             <img src="${this.getInfoIcon()}" alt="" width="24" height="24">
@@ -1653,6 +1661,17 @@ if (lastIteneraryItemsHeight + quotHeight > quoteThreshold) {
     } else if (this.data.company.name === 'Planet Africa') {
       return `https://firebasestorage.googleapis.com/v0/b/true-africa-itinerary.appspot.com/o/info%402x-red.png?alt=media&token=2b85b903-b92a-4f33-8dea-ef39c3c1266c`;
     }
+  }
+
+  // function to get the travel insurance box
+  getTravelInsuranceBox() {
+    return `<div class="contact-block" style="margin-top: 15px; !important;">
+      <p class="heading">24/7 Medical Hotline and Emergency Air Evacuation Insurance</p>
+      <p class="normal-text">Medical Emergency Number: +27 31 100 2370</p>
+      <p class="normal-text">It is essential that you organise comprehensive travel insurance prior to departure. This should cover any medical situation such as hospitalisation, as well as cancellation, curtailment of arrangements and loss/delay of baggage. When you travel with TrueAfrica/Planet Africa Safaris, you are automatically covered by our emergency evacuation insurance. This guarantees emergency evacuation to the nearest hospital should you suffer either severe illness or injury. This does not cover the cost of treatment once in hospital and in no way replaces your normal travel insurance. Please contact us for further details.</p>
+    </div>
+    `;
+
   }
 
   // function to get contact details
