@@ -12,6 +12,7 @@ import Swal from 'sweetalert2';
   providedIn: 'root'
 })
 export class SavePdfService {
+  private averageCost = 0;
   constructor(private data: DataService, private http: HttpClient, private countryService: CountryService, public dialog: MatDialog) {
     this.regions = this.countryService.getRegions();
     this.countries = this.countryService.getCountries();
@@ -106,6 +107,9 @@ export class SavePdfService {
   savePDF(itineraryData: any, type: number, usedDays: any) {
     // get itinerary
     this.itinerary = itineraryData.itinerary;
+
+    // get averages
+    this.averageCost = itineraryData.averageCost;
 
     // get days
     this.days = itineraryData.days;
@@ -794,12 +798,12 @@ footer p:last-of-type{
         <tr>
           <td class="description">Average price per person, per day of service</td>
           <td class="currency">USD</td>
-          <td class="amount"/>${this.avePricePerPersonPerDayCalc()}</td>
+          <td class="amount"/>${this.averageCost / this.usedDays}</td>
         </tr>
         <tr>
           <td class="description">Average price per person</td>
           <td class="currency">USD</td>
-          <td class="amount">${this.avePricePerPersonCalc()}</td>
+          <td class="amount">${this.averageCost}</td>
         </tr>
         <tr class="total-price">
           <td class="description">Total Price</td>
@@ -1131,12 +1135,12 @@ if (lastIteneraryItemsHeight + quotHeight > quoteThreshold) {
             <tr>
               <td class="description">Average price per person, per day of service</td>
               <td class="currency">USD</td>
-              <td class="amount"/>${this.avePricePerPersonPerDayCalc()}</td>
+              <td class="amount"/>${this.averageCost / this.usedDays}</td>
             </tr>
             <tr>
               <td class="description">Average price per person</td>
               <td class="currency">USD</td>
-              <td class="amount">${this.avePricePerPersonCalc()}</td>
+              <td class="amount">${this.averageCost}</td>
             </tr>
             <tr class="total-price">
               <td class="description">Total Price</td>
@@ -1481,23 +1485,23 @@ if (lastIteneraryItemsHeight + quotHeight > quoteThreshold) {
     return this.filter.transform(balance);
   }
 
-  // function to calculate ave price per person
-  avePricePerPersonCalc() {
-    let appp = 0;
-
-    this.itinerary.total === 0 ? appp = 0 : appp = this.itinerary.total / (this.itinerary.children + this.itinerary.adults);
-
-    return this.filter.transform(appp);
-  }
-
-  // function to calculate ave price per person per day
-  avePricePerPersonPerDayCalc() {
-    let apppd = 0;
-
-    this.itinerary.total === 0 ? apppd = 0 : apppd = (this.itinerary.total / (this.itinerary.children + this.itinerary.adults)) / this.usedDays;
-
-    return this.filter.transform(apppd);
-  }
+  // // function to calculate ave price per person
+  // avePricePerPersonCalc() {
+  //   let appp = 0;
+  //
+  //   this.itinerary.total === 0 ? appp = 0 : appp = this.itinerary.total / (this.itinerary.children + this.itinerary.adults);
+  //
+  //   return this.filter.transform(appp);
+  // }
+  //
+  // // function to calculate ave price per person per day
+  // avePricePerPersonPerDayCalc() {
+  //   let apppd = 0;
+  //
+  //   this.itinerary.total === 0 ? apppd = 0 : apppd = (this.itinerary.total / (this.itinerary.children + this.itinerary.adults)) / this.usedDays;
+  //
+  //   return this.filter.transform(apppd);
+  // }
 
   nameGenerator(key: string, type: string) {
     // client\agent name string

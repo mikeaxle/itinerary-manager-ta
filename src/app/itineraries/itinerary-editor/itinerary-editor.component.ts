@@ -897,6 +897,7 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
     if (canPrint) {
         this.savePdfService.savePDF({
           agent: this.agent,
+          averageCost: this.averageCost,
           comments: this.comments,
           days: this.days,
           itinerary: this.itinerary$,
@@ -914,12 +915,13 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
   saveAsPdfPartial() {
     this.savePdfService.savePDF( {
       agent: this.agent,
+      averageCost: this.averageCost,
       comments: this.comments,
       days: this.days,
       itinerary: this.itinerary$,
       payments: this.payments,
       phoneNumbers: this.countries,
-      totalPayments: this.totalPayments
+      totalPayments: this.totalPayments,
     }, 1, this.usedDays);
   }
 
