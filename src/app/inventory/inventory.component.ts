@@ -107,28 +107,7 @@ export class InventoryComponent implements OnInit, OnDestroy {
 
   // function to delete item
   deleteInventory(item) {
-
-    this.data.firestore.doc(`inventory/${item.key}`)
-      .delete()
-      .then(() => {
-        // check if inventory item has an image
-        if (item.image !== undefined && item.image !== 'undefined') {
-          // delete image from firebase storage
-            this.data.deleteItemWithImage(item.image)
-              .then((res) => {
-                Swal.fire('Success', 'Inventory item deleted', 'success');
-                console.log(res);
-              })
-              .catch((err) => {
-                Swal.fire('Failed', err.message, 'error');
-                console.log(err);
-              });
-        }
-      })
-      .catch((error) => {
-        this.error = error.message;
-        Swal.fire('Failed', error.message, 'error');
-      });
+    this.data.deleteObjectFromFirebase(`inventory/${item.key}`, 'inventory');
   }
 
   // function to add new inventory item
@@ -152,7 +131,8 @@ export class InventoryComponent implements OnInit, OnDestroy {
         new: false,
         type: 'inventory'
       },
-      maxHeight: '90vh'
+      maxHeight: '80vh',
+      maxWidth: '60vw'
     });
   }
 

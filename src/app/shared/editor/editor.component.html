@@ -389,39 +389,24 @@
             <textarea placeholder="Inclusions" rows="2" cols="50" formControlName="inclusions" matInput required></textarea>
           </label>
         </mat-form-field>
-
         <!-- image upload -->
         <app-file-uploader
-          *ngIf="!inventoryItem.image"
+          *ngIf="!inventoryItem.imageUrl"
           (notify)="fileSelected($event)"
           [activeColor]="'orangered'"
           [baseColor]="'lightgray'">
         </app-file-uploader>
 
-        <!-- existing image -->
-        <span
-          *ngIf="inventoryItem.image"
-          fxLayout="column"
-          fxLayoutAlign="center center"
-          fxLayoutGap="10px"
-          class="loaded-image">
+        <div *ngIf="!args.new && inventoryItem.imageUrl">
+          <!-- existing image -->
+          <span *ngIf="inventoryItem.imageUrl" fxLayout="column" fxLayoutAlign="center center" fxLayoutGap="10px" class="loaded-image">
+            <!-- delete icon -->
+            <mat-icon style="cursor: pointer !important;"  *ngIf="inventoryItem.image" fxFlexAlign="end" color="warn" (click)="deleteImage()">cancel</mat-icon>
 
-        <mat-icon
-          style="cursor: pointer !important;"
-          *ngIf="inventoryItem.image"
-          fxFlexAlign="end"
-          color="warn"
-          (click)="deleteImage()">cancel</mat-icon>
-
-        <img
-          *ngIf="inventoryItem.image"
-          [src]="inventoryItem.imageUrl"
-          width="100%"
-          style="border-radius: 10px"/>
-
-        <md-spinner *ngIf="!inventoryItem.imageUrl"></md-spinner>
-
-      </span>
+            <!-- image -->
+            <img *ngIf="inventoryItem.image" [src]="inventoryItem.imageUrl" width="100%" style="border-radius: 10px"/>
+          </span>
+        </div>
 
         <span class="spacer-vert"></span>
       </div>

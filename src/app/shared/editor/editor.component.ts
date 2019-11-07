@@ -46,7 +46,7 @@ export class EditorComponent implements OnInit {
   user: any;
   invoiceDetails: any;
   countries = countries;
-  inventoryItem: any;
+  inventoryItem;
   mediaItem: any;
   destinations: Country[];
   regions: Region[];
@@ -92,19 +92,17 @@ export class EditorComponent implements OnInit {
           this.initNewItinerary();
           break;
         case 'clients':
-          this.client = this.args.item;
+          this.client = this.args.item ? this.args.item : {};
           this.initNewClient();
-
-
           break;
         case 'inventory':
-          this.inventoryItem = this.args.item;
+          this.inventoryItem = this.args.item ? this.args.item : {};
           this.destinations = this.countryService.getCountries();
           this.regions = this.countryService.getRegions();
           this.initNewInventory();
           break;
         case 'agents':
-          this.agent = this.args.item;
+          this.agent = this.args.item ? this.args.item : {};
           this.initNewAgent();
           break;
       case 'media':
