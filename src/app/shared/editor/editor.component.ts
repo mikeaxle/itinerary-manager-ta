@@ -1,4 +1,4 @@
-import {Component, Inject, OnInit} from '@angular/core';
+import {Component, Inject, OnInit, ViewEncapsulation} from '@angular/core';
 import {Itinerary} from '../../model/itinerary';
 import {DataService} from '../../services/data.service';
 import {FormArray, FormBuilder, FormControl, Validators} from '@angular/forms';
@@ -28,8 +28,9 @@ export interface CountryCodes {
 
 @Component({
   selector: 'app-editor',
-  styleUrls: ['./editor.component.css'],
-  templateUrl: './editor.component.html'
+  styleUrls: ['./editor.component.scss'],
+  templateUrl: './editor.component.html',
+  encapsulation: ViewEncapsulation.None
 })
 export class EditorComponent implements OnInit {
   itineraryForm: any;
