@@ -237,12 +237,12 @@
     </mat-select>
 
   </div>
-  
+
   <!-- loader -->
-  <mat-spinner *ngIf="inventory.length === 0"></mat-spinner>
+  <mat-progress-bar *ngIf="inventory.length === 0" mode="indeterminate"></mat-progress-bar>
 
   <span class="spacer"></span>
-  
+
   <!-- editor-components preview -->
   <div
     fxFlex

@@ -17,8 +17,8 @@ import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
 import {Observable} from 'rxjs';
 import {map, startWith} from 'rxjs/operators';
 import {generalInclusions} from '../../model/generalInclusions';
-import {firestore} from 'firebase';
 import {Passenger} from '../../model/passenger';
+import {firestore} from 'firebase/app';
 
 // interface for country codes
 export interface CountryCodes {
@@ -265,6 +265,8 @@ export class EditorComponent implements OnInit {
       // add client ref
       this.itineraryForm.value.client = this.data.firestore.doc(`clients/${this.itineraryForm.value.client}`).ref;
 
+      this.itineraryForm.value.created = firestore.Timestamp.now();
+
       // push to firebase
       this.data.firestore.collection(`itineraries`)
         .add(this.itineraryForm.value)
@@ -440,7 +442,7 @@ export class EditorComponent implements OnInit {
   addMedia() {
     // check if new media item
     if (this.args.new) {
-      this.data.saveItemWithImage('media', { caption: this.mediaItem.caption, title: this.mediaItem.title }, this.mediaItem.image, 'media')
+      this.data.saveItemWithImage('media', { caption: this.mediaItem.caption, title: this.mediaItem.title }, this.mediaItem.image, 'media');
 
       } else {
       // update item with image
@@ -468,11 +470,11 @@ export class EditorComponent implements OnInit {
     // function to delete image for media
     deleteImageForMedia() {
       // assign old image url to seperate variable
-      this.oldImage = this.mediaItem.image
+      this.oldImage = this.mediaItem.image;
 
       // delete image from inventory item
-      delete this.mediaItem.image
-      delete this.mediaItem.imageUrl
+      delete this.mediaItem.image;
+      delete this.mediaItem.imageUrl;
     }
 
   // function to close dialog

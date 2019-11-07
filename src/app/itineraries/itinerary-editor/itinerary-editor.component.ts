@@ -128,7 +128,7 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
           // assign to local itinerary object for manipulation
           this.itinerary$ = it;
 
-          this.updatedAt = new Date(it[`updated`].seconds * 1000);
+          this.updatedAt = it[`updated`] ? new Date(it[`updated`].seconds * 1000) : new Date(it[`created`].seconds * 1000);
 
           // assign exclusions if not defined
           this.itinerary$[`exclusions`]  = this.itinerary$[`exclusions`] ? this.itinerary$[`exclusions`] : this.exclusions;
@@ -233,22 +233,20 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
   }
 
   // get comments related to itinerary
-  private getComments(dayRef) {
+  private getComments() {
     // get comment ref
-    this.commentsRef$ = this.data.firestore.collection('comments', ref => ref.where('day', '==', dayRef));
+    this.commentsRef$ = this.data.firestore.collection('comments', ref => ref.where('itinerary', '==', this.itineraryRef$.ref));
 
     // get comments and assign to local array
     this.commentsSubscription$ = this.commentsRef$
       .snapshotChanges()
       .subscribe(_ => {
-        if (_.length > 0) {
           this.comments = [];
           _.forEach(snapshot => {
             const comment = snapshot.payload.doc.data();
             comment.key = snapshot.payload.doc.id;
             this.comments.push(comment);
           });
-        }
     });
   }
 
@@ -278,10 +276,6 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
           // add dates
           day[`dates`] = this.getDayTitle('dates', day);
 
-          // get comments relate to day
-          this.comments = [];
-          this.getComments(this.data.firestore.doc(`days/${day[`key`]}`).ref);
-
           // add days to find out how many days are used
           this.usedDays += Math.round(parseInt(day[`days`], 10));
 
@@ -304,6 +298,8 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
           return arr.map(mapObj => mapObj.name).indexOf(obj.name) === pos;
         });
       });
+
+    this.getComments();
   }
 
 // function to remove editor-components
@@ -526,6 +522,8 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
 
     // function to run after dialog is close
     dialogRef.afterClosed().subscribe(commentRes => {
+      // add itinerary ref
+      commentRes.itinerary = this.itineraryRef$.ref;
       // check for comment-editor
       if (commentRes) {
         // add day ref
