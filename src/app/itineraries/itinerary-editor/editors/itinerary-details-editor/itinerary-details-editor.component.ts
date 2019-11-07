@@ -43,10 +43,10 @@ export class ItineraryDetailsEditorComponent implements OnInit, OnDestroy {
               @Inject(MAT_DIALOG_DATA) public params: any) { }
 
   // getter to return filtered country codes
-  private _filterClients(value): any[] {
-    const filterValue = value.toLowerCase();
-    return this.clients.filter(client => `${client.firstName} ${client.lastName}`.toLowerCase().indexOf(filterValue) === 0);
-  }
+  // private _filterClients(value): any[] {
+  //   const filterValue = value.toLowerCase();
+  //   return this.clients.filter(client => `${client.firstName} ${client.lastName}`.toLowerCase().indexOf(filterValue) === 0);
+  // }
 
   ngOnInit() {
     // init itinerary form
@@ -163,11 +163,11 @@ export class ItineraryDetailsEditorComponent implements OnInit, OnDestroy {
     });
 
     // init filtered clients  and subscribe to client form control on itinerary form
-    this.filteredClients = this.itineraryForm.controls.client
-      .valueChanges
-      .pipe(
-        startWith(''),
-        map(client => client ? this._filterClients(client) : this.clients.slice()));
+    // this.filteredClients = this.itineraryForm.controls.client
+    //   .valueChanges
+    //   .pipe(
+    //     startWith(''),
+    //     map(client => client ? this._filterClients(client) : this.clients.slice()));
   }
 
   // patch values to form array control

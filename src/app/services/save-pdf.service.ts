@@ -1421,7 +1421,7 @@ if (lastIteneraryItemsHeight + quotHeight > quoteThreshold) {
       if (day.accommodation.length !== 0) {
         day.accommodation.forEach(d => {
           // concat accommodation
-          itinerary += d.description.replace(/^[.\s]+|[.\s]+$/g, '') + '. ';
+          itinerary += d.description.replace(/^[.\s]+onSelectionChange|[.\s]+$/g, '') + '. ';
         });
       }
     }
