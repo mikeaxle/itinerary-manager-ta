@@ -1,4 +1,4 @@
-<h2 mat-dialog-title>Add Item</h2>
+<h2 mat-dialog-title>{{mode}} day</h2>
 <form [formGroup]="dayForm" fxLayout="column">
 
   <!-- days -->
@@ -24,7 +24,7 @@
   </mat-select>
 
   <mat-select
-    *ngIf="params.mode === 'edit'"
+  *ngIf="params.mode === 'edit'"
     placeholder="Country"
     formControlName="country"
     (ngModelChange)="onSelect($event)"
@@ -179,8 +179,7 @@
   </div>
 
   <!-- add drop downs -->
-  <div fxLayout="row" fxLayoutGap="10px">
-
+  <div fxLayout="row" fxLayoutGap="10px" *ngIf="inventory.length > 0">
     <!-- add services drop down -->
     <mat-select
       *ngIf="inventory"
@@ -192,7 +191,7 @@
       [disabled]="dayForm.controls.country.value == null && dayForm.controls.region.value == null">
 
       <mat-option
-        *ngFor="let i of inventory | async | ItineraryItemFilterPipe: 'Service': dayForm.controls.country.value: dayForm.controls.region.value"
+        *ngFor="let i of inventory | ItineraryItemFilterPipe: 'Service': dayForm.controls.country.value: dayForm.controls.region.value"
         [value]="i">
         {{i.name}}
       </mat-option>
@@ -211,7 +210,7 @@
       [disabled]="dayForm.controls.country.value == null && dayForm.controls.region.value == null">
 
       <mat-option
-        *ngFor="let i of inventory | async | ItineraryItemFilterPipe: 'Activity': dayForm.controls.country.value: dayForm.controls.region.value"
+        *ngFor="let i of inventory | ItineraryItemFilterPipe: 'Activity': dayForm.controls.country.value: dayForm.controls.region.value"
         [value]="i">
         {{i.name}}
       </mat-option>
@@ -230,7 +229,7 @@
       [disabled]="dayForm.controls.country.value == null && dayForm.controls.region.value == null">
 
       <mat-option
-        *ngFor="let i of inventory | async | ItineraryItemFilterPipe: 'Accommodation': dayForm.controls.country.value: dayForm.controls.region.value"
+        *ngFor="let i of inventory | ItineraryItemFilterPipe: 'Accommodation': dayForm.controls.country.value: dayForm.controls.region.value"
         [value]="i">
         {{i.name}}
       </mat-option>
@@ -238,7 +237,12 @@
     </mat-select>
 
   </div>
+  
+  <!-- loader -->
+  <mat-spinner *ngIf="inventory.length === 0"></mat-spinner>
+
   <span class="spacer"></span>
+  
   <!-- editor-components preview -->
   <div
     fxFlex

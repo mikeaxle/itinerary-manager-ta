@@ -1,4 +1,4 @@
-import {Component, Inject, OnInit} from '@angular/core';
+import {Component, Inject, OnInit, OnDestroy} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
 import {FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {CountryService} from '../../../../services/country.service';
@@ -11,10 +11,11 @@ import {DataService} from '../../../../services/data.service';
   styleUrls: ['./day-editor.component.css'],
   templateUrl: './day-editor.component.html'
 })
-export class DayEditorComponent implements OnInit {
+export class DayEditorComponent implements OnInit, OnDestroy {
+
   public dayForm: FormGroup;
   day: any;
-  inventory: any;
+  inventory = [];
   destinations: Country[];
   regions: Region[];
   lastUsedParams: any;
@@ -24,6 +25,8 @@ export class DayEditorComponent implements OnInit {
   services = '';
   activities = '';
   accommodation = '';
+  inventoryRef$;
+  inventorySubscription$;
 
   constructor(private countryService: CountryService,
               private formBuilder: FormBuilder,
@@ -36,15 +39,23 @@ export class DayEditorComponent implements OnInit {
     // get destinations
     this.destinations = this.countryService.getCountries();
 
+    // get regions
+    this.regions = this.countryService.getRegions();
+
     // get itinerary items
-    this.inventory = this.data.firestore.collection('inventory').valueChanges();
+    this.inventoryRef$ = this.data.firestore.collection('inventory')
+
+    this.inventorySubscription$ = this.inventoryRef$.valueChanges()
+    .subscribe(_ => {
+      if(_) {
+        this.inventory = _;
+      }
+    })
 
     // get editor-components
     if (this.params.mode === 'edit') {
       this.day = this.params.day;
 
-      // load regions
-      this.onSelect(this.day.country);
 
       // check if day-editor has accommodation and load into string
       if (this.day.accommodation !== undefined) {
@@ -79,13 +90,13 @@ export class DayEditorComponent implements OnInit {
     this.lastUsedParams = this.params.lastUsedParams
 
     // check if last used params are default, then null
-    if (this.lastUsedParams.country === 0) {
-      this.lastUsedParams.country = null
-    }
+    // if (this.lastUsedParams.country === 0) {
+    //   this.lastUsedParams.country = null
+    // }
 
-    if (this.lastUsedParams.region === 0) {
-      this.lastUsedParams.region = null
-    }
+    // if (this.lastUsedParams.region === 0) {
+    //   this.lastUsedParams.region = null
+    // }
 
     // subscribe to services observable
     this.changes();
@@ -295,4 +306,8 @@ export class DayEditorComponent implements OnInit {
     this.dialogRef.close();
   }
 
+  ngOnDestroy() {
+    this.inventorySubscription$.unsubscribe();
+    delete this.inventoryRef$
+  }
 }

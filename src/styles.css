@@ -534,9 +534,5 @@ ngx-auth-firebaseui-login #login-form-wrapper #login-form img {
 }
 
 
-.mat-select-panel {
-  max-height: 100% !important;
-}
-.cdk-overlay-pane {
-  max-height: 50% !important;
-}
+
+

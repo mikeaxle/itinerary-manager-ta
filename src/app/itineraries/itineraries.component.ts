@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {Component, OnDestroy, OnInit, ViewChild, ViewEncapsulation} from '@angular/core';
 import {DataService} from '../services/data.service';
 import {MatBottomSheet, MatBottomSheetRef, MatDialog} from '@angular/material';
 import {MatPaginator} from '@angular/material/paginator';
@@ -14,7 +14,8 @@ import {switchMap} from 'rxjs/operators';
 @Component({
   selector: 'app-itineraries',
   styleUrls: ['./itineraries.component.scss'],
-  templateUrl: './itineraries.component.html'
+  templateUrl: './itineraries.component.html',
+  encapsulation: ViewEncapsulation.None 
 
 })
 export class ItinerariesComponent implements OnInit, OnDestroy {

@@ -17,8 +17,7 @@
 
 
     <!-- client -->
-    <mat-select
-      [disabled]="clients.length === 0"
+    <mat-select *ngIf="clients.length > 0"
       placeholder="Client"
       formControlName="client"
       required>
@@ -28,6 +27,7 @@
         {{client.firstName }} {{client.lastName}}
       </mat-option>
     </mat-select>
+    <span class="spacer-vert" *ngIf="clients.length === 0" fxLayoutAlign="center center">loading clients...</span>
 <!--    <mat-form-field>-->
 <!--      <input matInput placeholder="Client" aria-label="Client" [matAutocomplete]="auto" formControlName="client">-->
 <!--      <mat-autocomplete #auto="matAutocomplete">-->

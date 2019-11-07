@@ -46,8 +46,8 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
   statuses = STATUS;
   dayTitles = new Map([]);
   lastUsedParams = {
-    country: 0,
-    region: 0
+    country: null,
+    region: null
   };
   tileColor = '#d8d8d8';
   coverImageTile = null;
@@ -443,8 +443,8 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
           position,
           remainingDays: this.totalDays - this.usedDays,            // pass remaining days
         },
-        height: '700px',
-        width: '600px'
+        width: '60vw',
+        maxHeight: '80vh'
       });
 
     } else if (mode === 'edit') {
@@ -457,8 +457,8 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
           mode,
           remainingDays: this.remainingDays,            // pass remaining days
         },
-        height: '600px',
-        width: '600px'
+        width: '60vw',
+        maxHeight: '80vh'
       });
     }
 
