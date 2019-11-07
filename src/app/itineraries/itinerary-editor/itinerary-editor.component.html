@@ -113,10 +113,10 @@
             <h5>Status</h5>
             <b>{{ itinerary$.status }}</b>
           </td>
-          <!-- <td>
-            <h5>Modified</h5>
-            <b>{{ (itinerary$.updatedAt }}</b>
-          </td> -->
+          <td>
+              <h5>Modified</h5>
+              <b>{{ updatedAt | date : 'MMM d, y, h:mm:ss a' }}</b>
+          </td>
         </tr>
         <tr>
           <td>

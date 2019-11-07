@@ -84,6 +84,8 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
   generalInclusions = generalInclusions;
   private daysSubscription$;
   private itinerarySubscription$;
+  updatedAt;
+
   constructor(public router: Router, private route: ActivatedRoute, public data: DataService, public formbuilder: FormBuilder,
               public dialog: MatDialog, public savePdfService: SavePdfService, public snackBar: MatSnackBar,
               public http: HttpClient, public countryService: CountryService) {
@@ -125,6 +127,8 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
 
           // assign to local itinerary object for manipulation
           this.itinerary$ = it;
+
+          this.updatedAt = new Date(it[`updated`].seconds * 1000);
 
           // assign exclusions if not defined
           this.itinerary$[`exclusions`]  = this.itinerary$[`exclusions`] ? this.itinerary$[`exclusions`] : this.exclusions;
