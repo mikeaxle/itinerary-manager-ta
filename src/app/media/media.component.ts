@@ -128,8 +128,9 @@ export class MediaComponent implements OnInit, OnDestroy {
     const temp = [];
     // iterate entire media list
     this.mediaList.forEach(media => {
+      const term = media.title + ' ' + media.caption;
       // search title for occurances of value
-      if (media.title.search(value) !== -1) {
+      if (term.search(value) !== -1) {
         // push to temp array
         temp.push(media);
       }

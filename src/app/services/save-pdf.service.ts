@@ -71,7 +71,7 @@ export class SavePdfService {
        disableClose: true,
        width: '300px',
     });
-
+    //  this.http.post('https://planet-africa-print-server-dev.herokuapp.com/print-pdf', {
      this.http.post('https://planet-africa-print-server.herokuapp.com/print-pdf', {
       html
     }, {
@@ -130,8 +130,8 @@ export class SavePdfService {
     this.data.firestore.collection('inventory')
       .valueChanges()
       .subscribe(res => {
-        this.inventory = res
-      })
+        this.inventory = res;
+      });
 
     // get accommodation
     this.days.forEach(day => {
