@@ -10,6 +10,7 @@ import 'rxjs-compat/add/observable/of';
 import Swal from 'sweetalert2';
 import {AngularFirestore} from '@angular/fire/firestore';
 import * as firebase from 'firebase';
+import {error} from 'util';
 
 
 @Injectable({
@@ -49,32 +50,58 @@ export class DataService {
 
   // save object with image
   saveItemWithImage(folder: string, data: any, image: File, type: string) {
+    // show info swal
+    Swal.fire(`${type} editor`, `adding new ${type}...`, 'info');
 
     // remove double and single quotes from file name
-    const imageName = this.getImageName(image);
+    const imageName = image.name.replace(/["']/g, '');
 
-    // init path
-    const path = this.getFilePath(folder, imageName);
-
-    // init ref
-    const ref = this.storage.ref(path);
-
-    const fileRef = this.storage.ref(path);
-
-    // init task
-    const task = ref.put(image);
+    // create path
+    const path = `/${folder}/${imageName}`;
+    const iRef = this.storage.ref(path);
 
 
-    // observe percentage changes
-    this.uploadPercent = task.percentageChanges();
+    // resize image
 
-    // todo: save data to item
-    // get notified when the download URL is available
-    return task.snapshotChanges().pipe(finalize(() => this.downloadURL = fileRef.getDownloadURL()));
+
+    // save file
+    iRef.put(image)
+      .then((snapshot) => {
+
+        // set image url
+        data.image = path;
+
+        iRef.getDownloadURL()
+          .toPromise()
+          .then(url => {
+            // close swal
+            Swal.close();
+
+            // get image download url
+            data[`imageUrl`] = url;
+
+            // save to firebase
+            this.saveFirebaseObject('media', data, 'media');
+
+          })
+          .catch(err => {
+            Swal.close();
+            console.log(err);
+            Swal.fire(`${type} editor`, err.message, 'error');
+          });
+      })
+      .catch(errorNo => {
+        console.log(errorNo);
+        Swal.close();
+        Swal.fire(`${type} editor`, errorNo.message, 'error');
+      });
   }
 
   // save object with image
   updateItemWithImage(id: string, folder: string, data: any, image: File, type: string) {
+    // show info swal
+    Swal.fire(`${type} editor`, `adding new ${type}...`, 'info');
+
     // remove double and single quotes from file name
     const imageName = this.getImageName(image);
 
@@ -84,19 +111,39 @@ export class DataService {
     // init storage item reference
     const ref = this.storage.ref(path);
 
-    // init file reference
-    const fileRef = this.storage.ref(path);
-
     // init task
-    const task = ref.put(image);
+    // save file
+    ref.put(image)
+      .then((snapshot) => {
 
-    // observe percentage changes
-    this.uploadPercent = task.percentageChanges();
+        // set image url
+        data.image = path;
 
-    // get notified when the download URL is available
-    // todo: save data to item
-    return task.snapshotChanges().pipe(finalize(() => this.downloadURL = fileRef.getDownloadURL()))
-      .subscribe();
+        ref.getDownloadURL()
+          .toPromise()
+          .then(url => {
+            // close swal
+            Swal.close();
+
+            // get image download url
+            data[`imageUrl`] = url;
+
+            // save to firebase
+            this.updateFirebaseObject(`media/${id}`, data, 'media', true);
+            // this.saveFirebaseObject('media', data, 'media');
+
+          })
+          .catch(err => {
+            Swal.close();
+            console.log(err);
+            Swal.fire(`${type} editor`, err.message, 'error');
+          });
+      })
+      .catch(errorNo => {
+        console.log(errorNo);
+        Swal.close();
+        Swal.fire(`${type} editor`, errorNo.message, 'error');
+      });
   }
 
 

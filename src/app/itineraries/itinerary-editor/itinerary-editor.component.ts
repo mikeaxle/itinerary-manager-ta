@@ -408,7 +408,7 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
     // check type
     if (type === 'title') {
       // add editor-components key and title to map
-      this.dayTitles.set(day.$key, title);
+      this.dayTitles.set(day.key, title);
 
       // return editor-components title
       return title;

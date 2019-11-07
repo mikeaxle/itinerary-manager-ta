@@ -28,13 +28,16 @@ export class MediaComponent implements OnInit, OnDestroy {
      this.ref = this.data.firestore.collection('media')
       .snapshotChanges()
       .subscribe((snapshots) => {
+        // reset media list
+        this.mediaList = [];
+
         // iterate snapshots
         snapshots.forEach(snapshot => {
           // get media item
-          const mediaItem = snapshot.payload.doc.data()
+          const mediaItem = snapshot.payload.doc.data();
 
           // get key
-          mediaItem[`$key`] = snapshot.payload.doc.id
+          mediaItem[`key`] = snapshot.payload.doc.id;
 
           // push to media list array
           this.mediaList.push(mediaItem);
@@ -73,7 +76,7 @@ export class MediaComponent implements OnInit, OnDestroy {
       if (result !== undefined) {
         // if result is true
         if (result) {
-          this.deleteMedia(media);
+          this.data.deleteObjectFromFirebase(`media/${media.key}`, 'media');
         }
       }
     });
@@ -81,7 +84,7 @@ export class MediaComponent implements OnInit, OnDestroy {
 
   // function to delete media
   deleteMedia(media) {
-    this.ref.remove(media.$key)
+    this.ref.remove(media.key)
       .then(() => {
         console.log('media deleted');
 
@@ -116,7 +119,9 @@ export class MediaComponent implements OnInit, OnDestroy {
         item: media,
         new: false,
         type: 'media'
-      }
+      },
+      maxHeight: '80vh',
+      maxWidth: '60vw'
     });
   }
 
@@ -130,7 +135,7 @@ export class MediaComponent implements OnInit, OnDestroy {
     this.mediaList.forEach(media => {
       const term = media.title + ' ' + media.caption;
       // search title for occurances of value
-      if (term.search(value) !== -1) {
+      if (term.toLocaleLowerCase().search(value.toLocaleLowerCase()) !== -1) {
         // push to temp array
         temp.push(media);
       }

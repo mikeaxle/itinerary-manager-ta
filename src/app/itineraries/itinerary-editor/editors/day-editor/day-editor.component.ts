@@ -227,7 +227,7 @@ export class DayEditorComponent implements OnInit, OnDestroy {
     // console.log(data)
     return this.formBuilder.group({
       description: [data.description],
-      key: [data.$key],
+      key: [data.key],
       inclusions: [data.inclusions],
       name: [data.name],
       longDescription: [data.longDescription],

@@ -47,7 +47,7 @@ export class EditorComponent implements OnInit {
   invoiceDetails: any;
   countries = countries;
   inventoryItem: any;
-  mediaItem: MediaItem;
+  mediaItem: any;
   destinations: Country[];
   regions: Region[];
   types = inventoryTypes;
@@ -108,7 +108,7 @@ export class EditorComponent implements OnInit {
           this.initNewAgent();
           break;
       case 'media':
-          this.mediaItem = this.args.item ? this.args.item : new MediaItem();
+          this.mediaItem = this.args.item ? this.args.item : {};
           break;
         default:
           return;
@@ -442,31 +442,39 @@ export class EditorComponent implements OnInit {
     // check if new media item
     if (this.args.new) {
       this.data.saveItemWithImage('media', { caption: this.mediaItem.caption, title: this.mediaItem.title }, this.mediaItem.image, 'media')
-        .subscribe((res) => {
-          console.log(res);
-          Swal.fire('Success', 'New media item successfully added', 'success');
-        });
 
       } else {
+      // update item with image
+      this.data.updateItemWithImage(this.mediaItem[`key`], 'media', this.mediaItem, this.mediaItem.image, 'media');
 
           // TODO: delete old image
-          this.data.deleteItemWithImage(this.oldImage)
-          .then((res) => {
-            // update with image
-            this.data.updateItemWithImage(this.mediaItem[`key`], 'media', this.mediaItem, this.mediaItem.image, 'media');
-
-            // console.log(res);
-            Swal.fire('Success', 'Existing media item successfully updated', 'success');
-          })
-            .catch((err) => {
-              console.log(err);
-              Swal.fire('Failed!', `An error has occurred: ${err.message}`, 'error');
-              this.error = err;
-            });
+          // this.data.deleteItemWithImage(this.oldImage)
+          // .then((res) => {
+          //   // update with image
+          //
+          //
+          //   // console.log(res);
+          //   // Swal.fire('Success', 'Existing media item successfully updated', 'success');
+          // })
+          //   .catch((err) => {
+          //     console.log(err);
+          //     Swal.fire('Failed!', `An error has occurred: ${err.message}`, 'error');
+          //     this.error = err;
+          //   });
           }
         // close form
     this.closeDialog();
   }
+
+    // function to delete image for media
+    deleteImageForMedia() {
+      // assign old image url to seperate variable
+      this.oldImage = this.mediaItem.image
+
+      // delete image from inventory item
+      delete this.mediaItem.image
+      delete this.mediaItem.imageUrl
+    }
 
   // function to close dialog
   closeDialog() {

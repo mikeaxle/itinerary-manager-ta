@@ -1,9 +1,9 @@
 <!-- itinerary form -->
 <div *ngIf="args.type === 'itinerary'">
-  <mat-card-title>Itinerary Editor</mat-card-title>
+  <mat-card-title>{{args.type}} editor</mat-card-title>
   <form [formGroup]="itineraryForm">
     <!-- agent -->
-    <!--  todo: put back condition <span *ngIf="(user | async)?.$key === agent.$key" [style.color]="data.color">(You)</span>  -->
+    <!--  todo: put back condition <span *ngIf="(user | async)?.key === agent.key" [style.color]="data.color">(You)</span>  -->
     <mat-select
       placeholder="Agent"
       formControlName="agent"
@@ -219,7 +219,7 @@
 
 <!-- client form -->
 <div  *ngIf="args.type === 'clients'">
-  <mat-card-title>Save Client</mat-card-title>
+  <mat-card-title>{{args.type}} editor</mat-card-title>
   <form [formGroup]="clientForm" (ngSubmit)="addClient(clientForm.value)">
     <!-- first name -->
     <mat-form-field>
@@ -279,7 +279,7 @@
 
 <!-- agent form-->
 <div *ngIf="args.type === 'agents'">
-  <mat-card-title>Save Agent</mat-card-title>
+  <mat-card-title>{{args.type}} editor</mat-card-title>
   <form [formGroup]="agentForm" (ngSubmit)="addAgent(agentForm.value)">
     <!-- account type -->
     <mat-radio-group formControlName="role" required fxLayout>
@@ -331,7 +331,7 @@
 
 <!-- inventory form -->
 <div *ngIf="args.type === 'inventory'">
-  <mat-card-title>Save Inventory</mat-card-title>
+  <mat-card-title>{{args.type}} editor</mat-card-title>
   <mat-dialog-content>
     <form [formGroup]="inventoryForm" (ngSubmit)="addInventory(inventoryForm.value)" >
       <!-- destination -->
@@ -444,11 +444,25 @@
 
 <!-- media form -->
 <div *ngIf="args.type === 'media'">
-  <mat-card-title>Save Image</mat-card-title>
+  <mat-card-title>{{args.type}} editor</mat-card-title>
   <br><br>
   <form #mediaForm="ngForm" (ngSubmit)="addMedia()">
+    <!-- existing image -->
+    <div *ngIf="!args.new && mediaItem.imageUrl">
+      <span fxLayout="column" fxLayoutAlign="center center" fxLayoutGap="10px" class="loaded-image">
+        <!-- delete icon -->
+        <mat-icon style="cursor:pointer !important;" fxFlexAlign="end" color="warn" (click)="deleteImageForMedia()">cancel</mat-icon>
+
+        <!-- image -->
+        <img [src]="mediaItem.imageUrl" width="100%" style="border-radius: 10px"/>
+      </span>
+    </div>
+
     <!-- image uploader -->
-    <app-file-uploader (notify)="fileSelectedForMedia($event)" [activeColor]="'orangered'" [baseColor]="'lightgray'"></app-file-uploader>
+    <app-file-uploader *ngIf="args.new" (notify)="fileSelectedForMedia($event)" [activeColor]="'orangered'" [baseColor]="'lightgray'"></app-file-uploader>
+
+    <!-- image uploader -->
+    <app-file-uploader *ngIf="!mediaItem.imageUrl && !args.new" (notify)="fileSelectedForMedia($event)" [activeColor]="'orangered'" [baseColor]="'lightgray'"></app-file-uploader>
 
     <span class="spacer-vert"></span>
 
