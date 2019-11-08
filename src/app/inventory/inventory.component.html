@@ -6,21 +6,6 @@
 
 <span class="spacer-vert"></span>
 
-<!-- table -->
-<!--    &lt;!&ndash; filter options &ndash;&gt;-->
-<!--    <mat-select [formControl]="destinationFilter" placeholder="Destination" class="filters">-->
-<!--      <mat-option value="">All</mat-option>-->
-<!--      <mat-option *ngFor="let country of countries" [value]="country.id">-->
-<!--        {{ country.name }}-->
-<!--      </mat-option>-->
-<!--    </mat-select>-->
-
-<!--    &lt;!&ndash; search &ndash;&gt;-->
-<!--    <mat-input-container class="search">-->
-<!--      <mat-icon matSuffix color="primary">search</mat-icon>-->
-<!--      <input [formControl]="searchFilter" matInput placeholder="Search">-->
-<!--    </mat-input-container>-->
-
 <!--  </div>-->
 <app-search [dataSource]="dataSource" caller="inventory"></app-search>
 
