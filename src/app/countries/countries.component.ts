@@ -7,13 +7,22 @@ import {DataService} from '../services/data.service';
 import {ConfirmComponent} from '../shared/confirm/confirm.component';
 import {EditorComponent} from '../shared/editor/editor.component';
 
-// country interface
-export interface Country {
+// region interface
+export interface  RegionInCountry {
+  id: number;
   name: string;
-  regions: Region
-  phoneNumbers: string[];
-  flag: string;
 }
+
+// country interface
+export interface CountryWithRegions {
+  id?: number;
+  name: string;
+  regions: RegionInCountry[];
+  phoneNumbers: [];
+  flag: string;
+  code: string;
+}
+
 
 @Component({
   selector: 'app-countries',
@@ -21,9 +30,9 @@ export interface Country {
   templateUrl: './countries.component.html'
 })
 export class CountriesComponent implements OnInit, OnDestroy {
-  countries = []
+  countries = [];
   error: any;
-  displayedColumns = [ 'Image', 'Title', 'Country', 'Region', 'Type', 'Actions'];
+  displayedColumns = [ 'Name', 'Regions', 'Phone Numbers', 'Flag', 'Code', 'Actions'];
   dataSource: MatTableDataSource<any>;
   @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
   // @ViewChild(MatSort, {static: true}) sort: MatSort;
@@ -86,8 +95,10 @@ export class CountriesComponent implements OnInit, OnDestroy {
       data: {
         item: null,
         new: true,
-        type: 'country'
-      }
+        type: 'countries'
+      },
+      maxHeight: '50%',
+      maxWidth: '60vw'
     });
   }
 
@@ -95,14 +106,11 @@ export class CountriesComponent implements OnInit, OnDestroy {
   editCountry(country) {
     // todo: fix region control when editing inventory item
     this.dialog.open(EditorComponent, {
-      autoFocus: false,
       data: {
         item: country,
         new: false,
-        type: 'inventory'
-      },
-      maxHeight: '80vh',
-      maxWidth: '60vw'
+        type: 'countries'
+      }
     });
   }
 

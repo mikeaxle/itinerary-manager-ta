@@ -491,3 +491,102 @@
   </form>
 </div>
 
+<!-- country form -->
+<div *ngIf="args.type === 'countries'">
+  <mat-card-title>{{args.type}} editor</mat-card-title>
+  <br><br>
+  <form [formGroup]="countryForm">
+    <!-- name -->
+    <mat-form-field>
+      <label>
+        <input type="text" placeholder="Country name" formControlName="name" matInput required>
+      </label>
+    </mat-form-field>
+
+    <!-- code -->
+    <mat-form-field>
+      <label>
+        <input type="text" placeholder="Country code" formControlName="code" matInput>
+      </label>
+    </mat-form-field>
+
+    <!-- flag -->
+    <mat-form-field>
+      <label>
+        <input type="url" placeholder="Flag image link" formControlName="flag" matInput>
+      </label>
+    </mat-form-field>
+
+    <!--  regions  -->
+    <div fxLayout="row" fxLayoutAlign="space-between start" fxLayoutGap="10">
+<!--      phone number + delete button-->
+      <div *ngIf="countryForm.get('regions').controls.length > 0" fxLayout="column" fxFlex="70">
+        <div *ngFor="let region of countryForm.get('regions').controls; let i = index;" fxLayout="column">
+          <div [formGroup]="region" fxLayout="row">
+            <!-- region -->
+            <mat-form-field>
+              <label>
+                <input type="text" placeholder="Region name" formControlName="name" matInput required>
+              </label>
+            </mat-form-field>
+
+            <!-- delete button -->
+            <button
+              fxFlex="nogrow"
+              mat-icon-button
+              (click)="removeFormControlForCountry('regions',i)">
+              <svg-icon src="../assets/icons/trash.svg" [style.fill]=this.data.color></svg-icon>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- add button -->
+      <button color="primary" fxFlex (click)="addFormControlForCountry('regions')" mat-raised-button>Add region</button>
+    </div>
+
+    <!--  phone numbers  -->
+    <div fxLayout="row" fxLayoutAlign="space-between start" fxLayoutGap="10">
+
+      <!-- phone number + delete button -->
+      <div *ngIf="countryForm.get('phoneNumbers').controls.length > 0" fxLayout="column" fxFlex="70">
+        <div *ngFor="let phoneNumber of countryForm.get('phoneNumbers').controls; let i = index;">
+          <div [formGroup]="phoneNumber" fxLayout="row">
+            <!-- phone number -->
+            <mat-form-field>
+              <label>
+                <input type="text" placeholder="Phone number" formControlName="number" matInput required>
+              </label>
+            </mat-form-field>
+
+            <!-- delete button -->
+            <button
+              fxFlex="nogrow"
+              mat-icon-button
+              (click)="removeFormControlForCountry('phoneNumbers',i)">
+              <svg-icon src="../assets/icons/trash.svg" [style.fill]=this.data.color></svg-icon>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- add button -->
+      <button color="primary" fxFlex (click)="addFormControlForCountry('phoneNumbers')" mat-raised-button>Add Phone Number</button>
+    </div>
+
+    <span class="spacer-vert"></span>
+
+    <!-- save button   -->
+    <button class="full-input" color="primary" (click)="addCountry(countryForm.value)" [disabled]="!countryForm.valid" mat-raised-button>Save</button>
+
+    <span class="spacer-vert"></span>
+
+    <!--  error display  -->
+    <span *ngIf="error" style="color: red">{{error}}</span>
+
+
+  </form>
+</div>
+
+
+

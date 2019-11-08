@@ -59,6 +59,8 @@ export class EditorComponent implements OnInit {
   newImage: any;
   adults: any;
   children: any;
+  country;
+  countryForm: any;
 
   constructor(@Inject(MAT_DIALOG_DATA) public args: any,
               private formBuilder: FormBuilder,
@@ -109,9 +111,67 @@ export class EditorComponent implements OnInit {
       case 'media':
           this.mediaItem = this.args.item ? this.args.item : {};
           break;
+      case 'countries':
+        this.country = this.args.item ? this.args.item : {};
+        this.initNewCountry();
+        break;
         default:
           return;
       }
+  }
+
+  // init new country form
+  initNewCountry() {
+    // init country form
+    this.countryForm = this.formBuilder.group({
+      id: [null],
+      name: [null, Validators.required],
+      regions: this.formBuilder.array([]),
+      phoneNumbers: this.formBuilder.array([]),
+      flag: [null],
+      code: [null]
+    });
+
+    // check if new
+    if (!this.args.new) {
+      // load existing country
+
+      // populate  regions array
+      this.country.regions.forEach(region => {
+        this.countryForm.controls.regions.push(this.patchValue(region, 'regions'));
+      });
+
+      // populate phone numbers array
+      this.country.phoneNumbers.forEach(phoneNumber => {
+        this.countryForm.controls.phoneNumbers.push(this.patchValue(phoneNumber, 'phoneNumbers'));
+      });
+
+      // populate other form controls 
+      this.countryForm.patchValue({
+        id: this.country.id,
+        name: this.country.name,
+        flag: this.country.flag,
+        code: this.country.code
+      })
+    }
+  }
+
+  // patch values to form array control
+  patchValue(item, type) {
+    if (type === 'regions') {
+      return this.formBuilder.group({
+        name: item.name,
+      });
+    } else {
+      return this.formBuilder.group({
+        number: item.number,
+      });
+    }
+
+  }
+
+  addRegion() {
+    const regionArray = this.countryForm.get('regions');
   }
 
   // initialize new itinerary form
@@ -552,6 +612,20 @@ export class EditorComponent implements OnInit {
     return this.formBuilder.group(new Passenger('', '', 0, false));
   }
 
+  // adds form control to array
+  addFormControlForCountry(arrayName) {
+    if (arrayName === 'regions') {
+      this.countryForm.controls[arrayName].push(this.formBuilder.group({name: null}));
+    } else {
+      this.countryForm.controls[arrayName].push(this.formBuilder.group({number: null}));
+    }
+  }
+
+  // removes form control from array
+  removeFormControlForCountry(arrayName, index) {
+    this.countryForm.controls[arrayName].removeAt(index);
+  }
+
   // function to handle number of adults change change
   onChangePassengers(event, adult) {
     // get the number of specified customers from event
@@ -570,4 +644,19 @@ export class EditorComponent implements OnInit {
     }
   }
 
+  // function to add new country or edit existing country
+  addCountry(country) {
+    // if NEW
+    if (this.args.new) {
+      // write to firebase
+      this.data.saveFirebaseObject('countries', country, 'country');
+    } else {
+      // update firebase object
+      this.data.updateFirebaseObject(`countries/${this.country.key}`, country, 'country', true);
+    }
+
+    // close editor
+    this.closeDialog();
+
+  }
 }
