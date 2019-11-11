@@ -340,14 +340,14 @@
         formControlName="destination"
         (selectionChange)="onSelect($event)"
         required>
-        <mat-option *ngFor="let d of destinations" [value]="d.id">
+        <mat-option *ngFor="let d of destinations" [value]="d.key">
           {{d.name}}
         </mat-option>
       </mat-select>
 
       <!-- region -->
       <mat-select placeholder="Region" formControlName="region" required>
-        <mat-option *ngFor="let r of regions" [value]="r.id">
+        <mat-option *ngFor="let r of regions" [value]="r.name">
           {{r.name}}
         </mat-option>
       </mat-select>

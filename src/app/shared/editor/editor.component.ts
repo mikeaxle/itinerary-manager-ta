@@ -1,18 +1,13 @@
 import {Component, Inject, OnInit, ViewEncapsulation} from '@angular/core';
 import {Itinerary} from '../../model/itinerary';
 import {DataService} from '../../services/data.service';
-import {FormArray, FormBuilder, FormControl, Validators} from '@angular/forms';
+import {FormArray, FormBuilder, Validators} from '@angular/forms';
 import {Router} from '@angular/router';
 import Swal from 'sweetalert2';
 import {countries} from '../../model/countries';
-import {Agent} from '../../model/agent';
-import {Client} from '../../model/client';
-import {InventoryItem} from '../../model/inventoryItem';
 import {Country} from '../../model/country';
 import {Region} from '../../model/region';
-import {CountryService} from '../../services/country.service';
 import {inventoryTypes} from '../../model/inventory-types';
-import {MediaItem} from '../../model/mediaItem';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
 import {Observable} from 'rxjs';
 import {map, startWith} from 'rxjs/operators';
@@ -49,7 +44,7 @@ export class EditorComponent implements OnInit {
   countries = countries;
   inventoryItem;
   mediaItem: any;
-  destinations: Country[];
+  destinations = [];
   regions: Region[];
   types = inventoryTypes;
   oldImage: any;
@@ -66,7 +61,6 @@ export class EditorComponent implements OnInit {
               private formBuilder: FormBuilder,
               public data: DataService,
               public router: Router,
-              public countryService: CountryService,
               public bottomSheetRef: MatDialogRef<EditorComponent>) {}
 
 
@@ -100,8 +94,7 @@ export class EditorComponent implements OnInit {
           break;
         case 'inventory':
           this.inventoryItem = this.args.item ? this.args.item : {};
-          this.destinations = this.countryService.getCountries();
-          this.regions = this.countryService.getRegions();
+
           this.initNewInventory();
           break;
         case 'agents':
@@ -146,13 +139,13 @@ export class EditorComponent implements OnInit {
         this.countryForm.controls.phoneNumbers.push(this.patchValue(phoneNumber, 'phoneNumbers'));
       });
 
-      // populate other form controls 
+      // populate other form controls
       this.countryForm.patchValue({
         id: this.country.id,
         name: this.country.name,
         flag: this.country.flag,
         code: this.country.code
-      })
+      });
     }
   }
 
@@ -263,6 +256,7 @@ export class EditorComponent implements OnInit {
 
   // initialize new inventory form
   initNewInventory() {
+    // init inventory form
     this.inventoryForm = this.args.new ? this.formBuilder.group({
       description: [null, Validators.required],
       destination: [null, Validators.required],
@@ -273,6 +267,27 @@ export class EditorComponent implements OnInit {
       region: [null, Validators.required],
       type: [null, Validators.required],
     }) : this.formBuilder.group(this.inventoryItem);
+
+    // get countries array
+    this.data.firestore.collection('countries')
+      .snapshotChanges()
+      .subscribe(_ => {
+        this.destinations = [];
+        _.forEach(__ => {
+          const country = __.payload.doc.data();
+          country[`key`] = __.payload.doc.id;
+          this.destinations.push(country);
+        });
+
+        // if editing
+        if (!this.args.new) {
+          // set regions
+          this.onSelect({ value: this.inventoryItem.destination.id});
+
+          // set destination to country firestore key
+          this.inventoryForm.controls.destination.patchValue(this.inventoryItem.destination.id);
+        }
+      });
   }
 
 
@@ -381,11 +396,11 @@ export class EditorComponent implements OnInit {
   }
 
   // function to deal with change in select drop downs
-  onSelect(event) {
-    this.regions = this.countryService.getRegions().filter((region) => region.countryid === event.value);
-    this.inventoryForm.get('region').setValue(null);
-    // this.inventoryForm.controls.setValue('region', null);
-  }
+  // onSelect(event) {
+  //   this.regions = this.countryService.getRegions().filter((region) => region.countryid === event.value);
+  //   this.inventoryForm.get('region').setValue(null);
+  //   // this.inventoryForm.controls.setValue('region', null);
+  // }
 
   // function to delete image
   deleteImage() {
@@ -402,6 +417,9 @@ export class EditorComponent implements OnInit {
 
   // function to add inventory item
   addInventory(inventory) {
+    // add destination ref
+    inventory.destination = this.data.firestore.doc(`countries/${inventory.destination}`).ref;
+
     // check if adding new inventory
     if (this.args.new) {
       // check if inventory type is service or activity
@@ -450,10 +468,10 @@ export class EditorComponent implements OnInit {
         // add accommodation fields to update data
         dataToUpdate[`longDescription`] = inventory.longDescription;
         dataToUpdate[`inclusions`] = inventory.inclusions;
-        dataToUpdate[`image`] = 'inventory-items/' + this.newImage.name;
 
         // first update image
         if (this.newImage) {
+          dataToUpdate[`image`] = 'inventory-items/' + this.newImage.name;
           // show loading Swal
           Swal.fire('Inventory editor', 'updating image', 'info');
           this.data.saveImage(this.newImage)
@@ -658,5 +676,16 @@ export class EditorComponent implements OnInit {
     // close editor
     this.closeDialog();
 
+  }
+
+  onSelect($event) {
+    // clear regions array
+    this.regions = [];
+
+    // get destination
+    const destination = this.destinations.find(country => country[`key`] === $event.value);
+
+    // set regions array
+    this.regions = destination[`regions`];
   }
 }
