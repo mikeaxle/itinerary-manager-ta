@@ -78,7 +78,7 @@ export class SavePdfService {
   countries$;
   regions$;
 
-  getLiveDoc(html) {
+  getLiveDoc(html, mode, type) {
 
     // show dialog
     this.dialogRef = this.dialog.open(PdfDialogComponent, {
@@ -91,9 +91,9 @@ export class SavePdfService {
     });
 
     // this.http.post('http://localhost:8000/liveUrl', {
-    this.http.post('https://planet-africa-print-server.herokuapp.com/liveUrl', {
+    this.http.post('https://planet-africa-print-server-dev.herokuapp.com/liveUrl', {
       html,
-      title: this.itinerary.key
+      title: `${this.itinerary.key}-${mode}-${type}`
     }, {
       responseType: 'text'
     }).subscribe((res) => {
@@ -125,8 +125,6 @@ export class SavePdfService {
   }
 
   // function to communicate with print api
-  // https://planet-africa-itinerary-app.appspot.com/print-pdf
-  // https://planet-africa-print-server.herokuapp.com/print-pdf
   getPDF(html: string) {
     this.dialogRef = this.dialog.open(PdfDialogComponent, {
       data: {
@@ -233,16 +231,22 @@ export class SavePdfService {
     // check pdf print mode type
     if (type === 1) {
       this.html = this.getHtmlHalf();
-    } else if (type === 2) {
+    }
+
+    if (type === 2) {
       this.html = this.getHtmlFullNoCost();
-    } else if (type === 3) {
+    }
+
+    if (type === 3) {
       this.html = this.getHtmlFull();
     }
 
     // mode 1 is live url
     if (mode === 1) {
-      this.getLiveDoc(this.html);
-    } else if (mode === 2) {
+      this.getLiveDoc(this.html, mode, type);
+    }
+
+    if (mode === 2) {
       // mode 2 is get pdf
       this.getPDF(this.html);
     }

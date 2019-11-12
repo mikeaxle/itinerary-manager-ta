@@ -902,7 +902,7 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
     if (type !== 1) {
       // check if printing is allowed
       if (canPrint) {
-        // makr call to PDF service
+        // make call to PDF service
         this.savePdfService.savePDF({
           agent: this.agent,
           averageCost: this.averageCost,
@@ -912,7 +912,7 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
           itinerary: this.itinerary$,
           payments: this.payments,
           totalPayments: this.totalPayments
-        }, type, mode, this.usedDays);
+        }, mode, type, this.usedDays);
       } else {
         Swal.fire('Generate PDF', 'Please add all 7 images in order to print the full pdf', 'error');
       }
@@ -926,7 +926,7 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
         itinerary: this.itinerary$,
         payments: this.payments,
         totalPayments: this.totalPayments
-      }, type, mode, this.usedDays);
+      }, mode, type, this.usedDays);
     }
   }
 
