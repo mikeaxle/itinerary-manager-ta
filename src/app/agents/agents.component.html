@@ -28,7 +28,7 @@
     <!-- Name Column -->
     <ng-container matColumnDef="Name">
       <mat-header-cell *matHeaderCellDef fxFlex> Name</mat-header-cell>
-      <mat-cell *matCellDef="let row" fxFlex (click)="editAgent(row)"> {{ row.firstname + ' ' + row.lastname }}</mat-cell>
+      <mat-cell *matCellDef="let row" fxFlex (click)="editAgent(row)"> {{ row.firstName + ' ' + row.lastName }}</mat-cell>
     </ng-container>
 
     <!-- Email Column -->
@@ -52,7 +52,7 @@
           <svg-icon src="../assets/icons/edit.svg" [style.fill]=this.data.color></svg-icon>
         </button>
 
-        <button mat-icon-button (click)="openDelete(row.$key)">
+        <button mat-icon-button (click)="openDelete(row.key)">
           <svg-icon src="../assets/icons/trash.svg" [style.fill]=this.data.color></svg-icon>
         </button>
 

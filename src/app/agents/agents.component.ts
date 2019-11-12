@@ -5,11 +5,13 @@ import {Router} from '@angular/router';
 import {DataService} from '../services/data.service';
 import {PermissionDeniedDialogComponent} from '../shared/permission-denied-dialog/permission-denied-dialog.component';
 import {EditorComponent} from '../shared/editor/editor.component';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-agents',
-  templateUrl: './agents.component.html',
-  styleUrls: ['./agents.component.css']
+  styleUrls: ['./agents.component.css'],
+  templateUrl: './agents.component.html'
+
 })
 export class AgentsComponent implements OnInit, OnDestroy {
 
@@ -21,26 +23,26 @@ export class AgentsComponent implements OnInit, OnDestroy {
   // inject data worked and router into component
   @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
   @ViewChild(MatSort, {static: true}) sort: MatSort;
-  agents: any;
+  agents = [];
   ref: any;
 
 
   constructor(public router: Router, public data: DataService, public dialog: MatDialog) {}
 
   ngOnInit() {
-    this.agents = [];
 
-    this.ref = this.data.af.list(`users`)
+
+    this.ref = this.data.firestore.collection(`users`)
    .snapshotChanges()
    .subscribe(snapshots => {
-
+     this.agents = [];  // empty array
      snapshots.forEach((snapshot) => {
        // get agent data
        let agent = {};
-       agent = snapshot.payload.val();
+       agent = snapshot.payload.doc.data();
 
        // get key
-       agent[`key`] = snapshot.key;
+       agent[`key`] = snapshot.payload.doc.id;
 
        // push to agents array
        this.agents.push(agent);
@@ -70,7 +72,7 @@ export class AgentsComponent implements OnInit, OnDestroy {
           this.deleteAgent(id);
         }
       }
-    }).unsubscribe();
+    });
   }
 
   openPermissionDenied() {
@@ -81,28 +83,36 @@ export class AgentsComponent implements OnInit, OnDestroy {
   }
 
   // function to delete item
-  deleteAgent(id: string) {
-
-    if (this.data.user.uid === id) {
-      alert('Cannot delete the user you are currently logged in as');
+  deleteAgent(key: string) {
+    if (this.data.user.uid === key) {
+      Swal.fire('Agent Editor', 'Cannot delete the user you are currently logged in as', 'error')
+        .then(() => {
+          return;
+      });
     } else  {
-      this.data.af.list(`itineraries/${this.data.company}`, ref => ref.orderByChild('agent').equalTo(id).limitToFirst(1))
-        .snapshotChanges()
+      // get agent ref
+      const agentRef$ = this.data.firestore.doc(`users/${key}`).ref;
+
+      // query itineraries with agent ref
+      this.data.firestore.collection(`itineraries`, ref => ref.where('agent', '==', agentRef$))
+        .valueChanges()
         .subscribe((res) => {
           // check if agent has itineraries
           if (res.length > 0) {
             this.openPermissionDenied();
           } else {
-            this.data.deleteItem(id, 'users')
+            agentRef$
+              .delete()
               .then(() => {
                 // this.data.afAuth.auth.
-                console.log('agent deleted');
+                Swal.fire('Agent Editor', 'agent deleted', 'success');
               })
               .catch((error) => {
                 this.error = error;
+                Swal.fire('Agent Editor', 'deleting agent failed', 'error');
               });
           }
-        }).unsubscribe();
+        });
     }
   }
 

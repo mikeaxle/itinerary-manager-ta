@@ -18,7 +18,7 @@
       </button>
 
       <!-- invoice number -->
-      <h2>Itinerary {{ itinerary$.invoice_number }}</h2>
+      <h2>Itinerary {{ itinerary$.invoiceNumber }}</h2>
     </span>
 
 
@@ -93,7 +93,7 @@
 
     <!-- header -->
     <div class="itin-page-header">
-      <h2 *ngIf="client">Client: {{ client.firstname }} {{ client.lastname }}</h2>
+      <h2 *ngIf="client">Client: {{ client.firstName }} {{ client.lastName }}</h2>
       <h1>{{ itinerary$.title}}</h1>
     </div>
 
@@ -103,33 +103,33 @@
         <tr>
           <td>
             <h5>Itinerary</h5>
-            <b>{{ itinerary$.invoice_number }}</b>
+            <b>{{ itinerary$.invoiceNumber }}</b>
           </td>
           <td>
             <h5>Safari Specialist</h5>
-            <b *ngIf="agent">{{ agent.firstname }} {{ agent.lastname }}</b>
+            <b *ngIf="agent">{{ agent.firstName }} {{ agent.lastName }}</b>
           </td>
           <td>
             <h5>Status</h5>
             <b>{{ itinerary$.status }}</b>
           </td>
-          <!-- <td>
-            <h5>Modified</h5>
-            <b>{{ (itinerary$.updatedAt }}</b>
-          </td> -->
+          <td>
+              <h5>Modified</h5>
+              <b>{{ updatedAt | date : 'MMM d, y, h:mm:ss a'  }}</b>
+          </td>
         </tr>
         <tr>
           <td>
             <h5>Adults</h5>
-            <b> {{ isArray(itinerary$.adults) ? itinerary$.adults.length : itinerary$.adults }} </b>
+            <b> {{ itinerary$.adults ? itinerary$.adults.length : 0 }} </b>
           </td>
           <td>
             <h5>Children</h5>
-            <b> {{ isArray(itinerary$.children) ? itinerary$.children.length : itinerary$.children }}</b>
+            <b> {{ itinerary$.children ? itinerary$.children.length : 0 }}</b>
           </td>
           <td>
             <h5>Travel dates</h5>
-            <b>{{itinerary$.startdate}} - {{itinerary$.enddate}}</b>
+            <b>{{itinerary$.startDate}} - {{itinerary$.endDate}}</b>
           </td>
         </tr>
       </table>
@@ -142,91 +142,9 @@
     </div>
 
     <!-- days come here -->
-<!--  todo: put back dragula  [dragula]="'days'" [dragulaModel]="days", populate days array  -->
-    <div *ngIf="days">
-      <div *ngFor="let day of days; let i=index">
-
-        <!-- editor-components items added from modal -->
-        <div
-          fxLayout="row"
-          fxFlexAlign="space-between base-line"
-          class="day">
-
-          <!-- left column -->
-          <span
-            fxLayout="column"
-            fxLayoutAlign="flex-flex-start center"
-            fxFlex="18"
-            fxLayoutGap="10px">
-            <mat-chip-list>
-              <!-- color hack: AM2 seems to be broken -->
-              <mat-chip fxLayoutAlign="center center" [selected]="true" [style.background-color]=color  style="padding: 5px; max-width: 18% !important; min-width: 90px !important; color: white; box-sizing: border-box;" >{{ getDayTitle('title', day) }}</mat-chip>
-            </mat-chip-list>
-            <span style="font-size:12px" >{{ getDayTitle('dates', day) }}</span>
-          </span>
-
-          <!-- middle column -->
-          <span fxFlex="80" fxFlexAlign="center flex-flex-start">
-            {{getItineraryDescriptions(day)}}
-          </span>
-
-          <!-- right column -->
-          <span
-            fxLayout="row"
-            fxLayoutAlign="space-between center"
-            fxFlex
-            fxLayout.xs="column"
-            fxLayout.sm="column">
-
-            <!-- edit button -->
-            <button mat-icon-button (click)="openDayDialog('edit', day)">
-              <svg-icon src="../assets/icons/edit.svg" [style.fill]=color></svg-icon>
-            </button>
-
-            <!-- drag handle -->
-            <button mat-icon-button style="cursor: move !important;">
-              <svg-icon  src="../assets/icons/move.svg" [style.fill]=color></svg-icon>
-            </button>
-
-            <!-- delete button -->
-            <button mat-icon-button (click)="removeDay(day.key)">
-                <svg-icon src="../assets/icons/trash.svg" [style.fill]=color></svg-icon>
-            </button>
-          </span>
-        </div>
-
-        <!-- comments added from modal -->
-        <div *ngIf="comments | async as commentArray" fxLayout="column" fxFlexAlign="space-between base-line">
-          <!-- iterate comments array -->
-          <div *ngFor="let comment of commentArray | commentsFilter: day.key;" fxLayout="row" class="day">
-            <!-- left column -->
-            <span fxLayoutAlign="space-around center" fxFlex="18" fxLayoutGap="5px">
-              <img [src]="getCommentIcon(comment.payload.val().type)" />
-            </span>
-
-            <!-- middle column -->
-            <span fxFlex="80" fxFlexAlign="flex-start">
-              <span>{{comment.payload.val().comment}}</span>
-            </span>
-
-            <!-- right column -->
-            <span fxLayout="row" fxLayoutAlign="space-between center" fxFlex fxLayout.xs="column" fxLayout.sm="column">
-              <span style="width:40px"></span>
-              <button mat-icon-button (click)="openCommentDialog('edit', comment)">
-                <svg-icon src="../assets/icons/edit.svg" [style.fill]=color> </svg-icon>
-              </button>
-
-              <!-- remove comment button -->
-              <button mat-icon-button (click)="removeComment(comment.key)">
-                  <svg-icon src="../assets/icons/trash.svg" [style.fill]=color></svg-icon>
-              </button>
-          </span>
-
-            </div>
-
-          </div>
-
-        </div>
+    <div cdkDropList   [cdkDropListData]="days" (cdkDropListDropped)="drop($event)" *ngIf="days">
+      <!-- day component -->
+        <app-day cdkDrag *ngFor="let day of days; let i = index;" [day]="day" [comments]="comments" (openDayEditor)="openDayDialog('edit', $event)" (openCommentEditor)="openCommentDialog('edit', $event)" (deleteDay)="removeDay($event)" [itineraryId]="itineraryId"></app-day>
       </div>
 
     <!-- editor-components editor button -->
@@ -263,6 +181,22 @@
         <mat-form-field>
           <label>
             <textarea rows="4" matInput (keyup.enter)="onKeyUpInclusions($event, accommodation)" (blur)="onKeyUpInclusions($event, accommodation)" placeholder="{{accommodation.name}}" [value]="accommodation.inclusions"></textarea>
+          </label>
+        </mat-form-field>
+      </div>
+    </div>
+
+    <span class="spacer-vert"></span>
+
+    <!-- inclusions -->
+    <div  class="itin-border-top">
+      <h2>General Inclusions</h2>
+      <!-- inclusion -->
+      <div fxLayout="column">
+        <!-- inclusions input -->
+        <mat-form-field>
+          <label>
+            <textarea rows="4" matInput (keyup.enter)="onKeyUpSave('generalInclusions')" (blur)="onKeyUpSave('generalInclusions')" placeholder="General Inclusions" [(ngModel)]="itinerary$.generalInclusions"></textarea>
           </label>
         </mat-form-field>
       </div>
@@ -369,16 +303,16 @@
         </div>
 
         <!-- payments made -->
-        <div fxLayout="column" fxFill *ngIf="payments | async as paymentsArray">
-          <div fxLayout="row" *ngFor="let payment of paymentsArray" fxLayoutAlign="flex-start center" fxLayoutGap="10px" class="quote-field">
-            <span fxFlex="50">Payment Received {{ payment.payload.val().date }}</span>
+        <div fxLayout="column" fxFill *ngIf="payments.length > 0">
+          <div fxLayout="row" *ngFor="let payment of payments" fxLayoutAlign="flex-start center" fxLayoutGap="10px" class="quote-field">
+            <span fxFlex="50">Payment Received {{ payment.date }}</span>
             <span>USD</span>
 
             <!-- amount -->
             <mat-form-field fxFlex="30" style="text-align: right !important;">
               <label>
                 <input disabled matInput/>
-                {{payment.payload.val().amount | number: '1.0-2'}}
+                {{payment.amount | number: '1.0-2'}}
               </label>
             </mat-form-field>
 
@@ -427,28 +361,28 @@
     <h2>Contact Numbers</h2>
     <div fxLayout>
       <div fxFlex="50"></div>
-      <div *ngIf="countries | async as phoneNumbersArray" fxFlex fxLayout="Column">
-        <div *ngFor="let c of phoneNumbersArray" fxLayoutAlign="flex-start center" fxLayoutGap="10px" class="quote-field">
+      <div fxFlex fxLayout="Column">
+        <div *ngFor="let country of contactDetails; let i = index;" fxLayoutAlign="flex-start center" fxLayoutGap="10px" class="quote-field">
           <mat-form-field fxFlex="72">
             <label>
               <input disabled matInput>
-              {{ countryService.getDestination(c.payload.val().country_id).name }}
+              {{ country.countryName }}
             </label>
           </mat-form-field>
           <span fxFlex fxLayout>
               <!-- edit button -->
-              <button mat-icon-button (click)="openCountryDialog('edit', c)">
+              <button mat-icon-button (click)="openCountryDialog('edit', country)">
                 <svg-icon src="../assets/icons/edit.svg"  [style.fill]=color></svg-icon>
               </button>
 
             <!-- delete button -->
-              <button mat-icon-button (click)="removeCountry(c.key)">
+              <button mat-icon-button (click)="removeCountry(country.key)">
                 <svg-icon src="../assets/icons/trash.svg" [style.fill]=color></svg-icon>
               </button>
             </span>
         </div>
         <!--  add country phone number button -->
-        <div fxLayout="row" xLayoutAlign="flex-start center" fxLayoutGap="10px" style="height: 40px; margin-top: 10px; margin-left:10px">
+        <div fxLayout="row" fxLayoutAlign="flex-start center" fxLayoutGap="10px" style="height: 40px; margin-top: 10px; margin-left:10px">
           <button
             fxFlex="60"
             mat-raised-button

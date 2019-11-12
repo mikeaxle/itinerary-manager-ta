@@ -20,8 +20,9 @@ export class ImageSelectorComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     // get image list from firebase
-    this.mediaListSubscription$ = this.data.af.list('media').valueChanges()
+    this.mediaListSubscription$ = this.data.firestore.collection('media').valueChanges()
       .subscribe(_ => {
+        this.mediaList = [];
         this.mediaList = _;
         this.MEDIA_LIST =  [...this.mediaList];
       });
@@ -42,14 +43,12 @@ export class ImageSelectorComponent implements OnInit, OnDestroy {
   }
 
   applyFilter(value: any) {
-    // if (value === '') {
-    //   this.MEDIA_LIST = this.mediaList;
-    // }
     const temp = [];
     // iterate entire media list
     this.mediaList.forEach(media => {
+      const term = media.title + ' ' + media.caption;
       // search title for occurances of value
-      if (media.title.search(value) !== -1) {
+      if (term.toLocaleLowerCase().search(value.toLocaleLowerCase()) !== -1) {
         // push to temp array
         temp.push(media);
       }

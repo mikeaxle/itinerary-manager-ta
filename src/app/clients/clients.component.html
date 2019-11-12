@@ -11,8 +11,8 @@
 <!--    &lt;!&ndash; filter options &ndash;&gt;-->
 <!--    <mat-select placeholder="Agent" [formControl]="agentFilter" class="filters">-->
 <!--      <mat-option value="">All</mat-option>-->
-<!--      <mat-option *ngFor="let agent of agents | async" [value]="agent.$key">-->
-<!--        {{ agent.firstname }} {{ agent.lastname }} <span *ngIf=" data.user.email === agent.email" [style.color]=color>(You)</span>-->
+<!--      <mat-option *ngFor="let agent of agents | async" [value]="agent.key">-->
+<!--        {{ agent.firstName }} {{ agent.lastName }} <span *ngIf=" data.user.email === agent.email" [style.color]=color>(You)</span>-->
 <!--      </mat-option>-->
 <!--    </mat-select>-->
 
@@ -37,7 +37,7 @@
     <!-- Name Column -->
     <ng-container matColumnDef="Name">
       <mat-header-cell *matHeaderCellDef fxFlex="45"> Name</mat-header-cell>
-      <mat-cell *matCellDef="let row" fxFlex="45" (click)="editClient(row)"> {{ row.firstname + ' ' + row.lastname }}</mat-cell>
+      <mat-cell *matCellDef="let row" fxFlex="45" (click)="editClient(row)"> {{ row.firstName + ' ' + row.lastName }}</mat-cell>
     </ng-container>
 
     <!-- Email Column -->
@@ -55,7 +55,7 @@
           <svg-icon src="../assets/icons/edit.svg" [style.fill]="data.color"></svg-icon>
         </button>
 
-        <button mat-icon-button (click)="openDelete(row.$key)">
+        <button mat-icon-button (click)="openDelete(row.key)">
           <svg-icon src="../assets/icons/trash.svg" [style.fill]="data.color"></svg-icon>
         </button>
 

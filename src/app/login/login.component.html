@@ -8,4 +8,4 @@
   [registrationEnabled]="false">
 </ngx-auth-firebaseui-login>
 
-<mat-spinner *ngIf="data.user"></mat-spinner>
+<mat-progress-bar *ngIf="data.user"  mode="query" color="primary" class="example-margin progress-bar"></mat-progress-bar>

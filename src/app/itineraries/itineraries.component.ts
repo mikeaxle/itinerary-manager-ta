@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {Component, OnDestroy, OnInit, ViewChild, ViewEncapsulation} from '@angular/core';
 import {DataService} from '../services/data.service';
 import {MatBottomSheet, MatBottomSheetRef, MatDialog} from '@angular/material';
 import {MatPaginator} from '@angular/material/paginator';
@@ -7,42 +7,67 @@ import {MatTableDataSource} from '@angular/material/table';
 import {Router} from '@angular/router';
 import {EditorComponent} from '../shared/editor/editor.component';
 import Swal from 'sweetalert2';
+import {STATUS} from '../model/statuses';
+import {BehaviorSubject, Observable, Subject} from 'rxjs';
+import {switchMap} from 'rxjs/operators';
 
 @Component({
   selector: 'app-itineraries',
   styleUrls: ['./itineraries.component.scss'],
-  templateUrl: './itineraries.component.html'
+  templateUrl: './itineraries.component.html',
+  encapsulation: ViewEncapsulation.None 
 
 })
 export class ItinerariesComponent implements OnInit, OnDestroy {
   displayedColumns = ['#', 'Date', 'Client', 'Itinerary', 'Value', 'Status'];
   dataSource: MatTableDataSource<any>;
-  itineraries;
+  itineraries = [];
   @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
-  // @ViewChild(MatSort, {static: true}) sort: MatSort;
-  private error: any
-  ref;
+  private error: any;
+  itinerariesRef$;
+  status$: BehaviorSubject<string | null>;
+  companyRef$: any;
+  status = 'Provisional';
+  itinerariesSubscription$: any;
+  STATUS = STATUS;
 
   constructor(public data: DataService, private matDialog: MatDialog, public router: Router) {
+    // init status fitler
+    this.status$ = new BehaviorSubject('Provisional');
+
+    // get company ref
+    this.companyRef$ = this.data.firestore.doc(`companies/${this.data.company.key}`).ref;
+    
+    // get itineraries ref
+    this.itinerariesRef$ = this.status$.pipe(
+      switchMap(status =>
+        this.data.firestore.collection(`itineraries`, ref => status ? ref.where('company', '==', this.companyRef$).where('status', '==', status) : ref
+        ).snapshotChanges()
+      )
+    );
   }
 
   ngOnInit() {
-    // init itineraries array
-    this.itineraries = [];
-
-    // get itineraries
-    this.ref = this.data.af.list(`itineraries/${this.data.company}/`, ref => ref.limitToLast(250))
-    .snapshotChanges()
+      // this.data.af.list(`itineraries/${this.data.company}/`, ref => ref.orderByChild('status').equalTo('Provisional').limitToLast(250))
+    // // this.ref = this.data.af.list(`itineraries/${this.data.company}/`)
+    this.itinerariesSubscription$ = this.itinerariesRef$
       .subscribe(snapshots => {
-
+        this.itineraries = [];
         // iterate snapshots
         snapshots.forEach(snapshot => {
           // get itinerary
           let itinerary = {};
-          itinerary = snapshot.payload.val();
+          itinerary = snapshot.payload.doc.data();
 
           // get key
-          itinerary[`key`] = snapshot.key;
+          itinerary[`key`] = snapshot.payload.doc.id;
+
+          // todo: get client details and add to itinerary info
+          itinerary[`client`].get()
+            .then(res => {
+              const client = res.data()
+              itinerary[`clientFullName`] = `${client.firstName} ${client.lastName}`;
+            });
 
           // push to itineraries array
           this.itineraries.push(itinerary);
@@ -53,39 +78,20 @@ export class ItinerariesComponent implements OnInit, OnDestroy {
 
         // init data source
         this.dataSource.paginator = this.paginator;
-
-        // init sort
-        // this.dataSource.sort = this.sort;
       });
 
   }
 
-  // function to get client name
-  getName(key: string, type: string) {
-    // client\agent name string
-    // let string = '';
-    // get from firebase
-    // this.data.getSingleItem(key, `${type}/${this.data.company}/`)
-    //   .valueChanges()
-    //   .subscribe((res) => {
-    //     const client = res;
-    //     // concat first name and last name
-    //     return client[`firstname`]  + ' ' + client[`lastname`] ;
-    //   });
-    // return full name
-    // return string;
-  }
-
   // function to delete item
   deleteItinerary(id: string) {
-    this.data.deleteItem(id, 'itineraries')
+    this.data.firestore.doc(`itineraries/${id}`)
+      .delete()
       .then(() => {
         Swal.fire('Success', 'Itinerary deleted', 'success');
         console.log('itinerary deleted');
       })
       .catch((error) => {
         this.error = error;
-
         Swal.fire('Failed', `An error has occurred: ${error.message}`, 'error');
       });
   }
@@ -106,7 +112,21 @@ export class ItinerariesComponent implements OnInit, OnDestroy {
     this.router.navigate(['/itinerary-editor', itinerary.key]);
   }
 
+  // function to filter by status
+  onFilterChange(event) {
+    // empty itineraries array
+    this.itineraries = [];
+
+    // perform next query
+    this.status$.next(event.source.value);
+    
+    // Swal
+    event.source.value === undefined ? Swal.fire('Reloading Itineraries', 'Getting all itineraries', 'info') :
+    Swal.fire('Reloading Itineraries', `Filtering by status: "${event.source.value}"`, 'info');
+  }
+
   ngOnDestroy(): void {
-    this.ref.unsubscribe();
+    this.itinerariesRef$ = null;
+    this.itinerariesSubscription$.unsubscribe();
   }
 }
