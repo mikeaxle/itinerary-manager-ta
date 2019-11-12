@@ -6,21 +6,6 @@
 
 <span class="spacer-vert"></span>
 
-<!-- table -->
-<!--    &lt;!&ndash; filter options &ndash;&gt;-->
-<!--    <mat-select [formControl]="destinationFilter" placeholder="Destination" class="filters">-->
-<!--      <mat-option value="">All</mat-option>-->
-<!--      <mat-option *ngFor="let country of countries" [value]="country.id">-->
-<!--        {{ country.name }}-->
-<!--      </mat-option>-->
-<!--    </mat-select>-->
-
-<!--    &lt;!&ndash; search &ndash;&gt;-->
-<!--    <mat-input-container class="search">-->
-<!--      <mat-icon matSuffix color="primary">search</mat-icon>-->
-<!--      <input [formControl]="searchFilter" matInput placeholder="Search">-->
-<!--    </mat-input-container>-->
-
 <!--  </div>-->
 <app-search [dataSource]="dataSource" caller="inventory"></app-search>
 
@@ -35,13 +20,13 @@
     <!-- Country Column -->
     <ng-container matColumnDef="Country">
       <mat-header-cell *matHeaderCellDef fxFlex="15"> Destination</mat-header-cell>
-      <mat-cell *matCellDef="let row" fxFlex="15" (click)="editInventoryItem(row)"> {{ showDestination(row.destination) }}</mat-cell>
+      <mat-cell *matCellDef="let row" fxFlex="15" (click)="editInventoryItem(row)"> {{ row.country }}</mat-cell>
     </ng-container>
 
     <!-- Region Column -->
     <ng-container matColumnDef="Region">
       <mat-header-cell *matHeaderCellDef fxFlex="20"> Region</mat-header-cell>
-      <mat-cell *matCellDef="let row" fxFlex="20" (click)="editInventoryItem(row)"> {{ showRegion(row.region) }}</mat-cell>
+      <mat-cell *matCellDef="let row" fxFlex="20" (click)="editInventoryItem(row)"> {{ row.region }}</mat-cell>
     </ng-container>
 
     <!-- Type Column -->

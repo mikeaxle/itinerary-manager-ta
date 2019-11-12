@@ -4,7 +4,6 @@ import {MatBottomSheet, MatDialog, MatPaginator, MatSort, MatTable, MatTableData
 import {ConfirmComponent} from '../shared/confirm/confirm.component';
 import {PermissionDeniedDialogComponent} from '../shared/permission-denied-dialog/permission-denied-dialog.component';
 import {EditorComponent} from '../shared/editor/editor.component';
-import {snapshotChanges} from '@angular/fire/database';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -17,35 +16,31 @@ export class ClientsComponent implements OnInit, OnDestroy {
   displayedColumns = ['Name', 'Email', 'Actions'];
   private error: any;
   dataSource: MatTableDataSource<any>;
-  clients;
+  clients = [];
 
   @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
   // @ViewChild(MatSort, {static: true}) sort: MatSort;
-  private ref;
+  private clientRef$;
   public dialogRef;
+  private companyRef$;
 
   constructor(public data: DataService, public dialog: MatDialog) { }
 
   ngOnInit() {
-    // todo: dummy data
-    // const dummydata = [
-    //   this.data.sampleData.clients['Planet Africa']['-L4p6t_H3UiPg4gSXzGS'],
-    //   this.data.sampleData.clients['Planet Africa']['-L6Mm55Z_5R3AFZO3ghM'],
-    //   this.data.sampleData.clients['Planet Africa']['-L6VlsQXLu6C07ZVkJSw'],
-    //   this.data.sampleData.clients['Planet Africa']['-L6WvESKO4asYrQvEyZK'],
-    //
-    // ];
-
-    // init clients array
-    this.clients = [];
+    // get company ref
+    this.companyRef$ = this.data.firestore.doc(`companies/YbSudQRjCglvvffyujaf`).ref;
 
     // get clients
-    this.ref = this.data.getList(`clients/${this.data.company}` )
+    this.clientRef$ = this.data.firestore.collection(`clients`, ref => ref.where('company', '==', this.companyRef$))
       .snapshotChanges()
       .subscribe(snapshots => {
+        // init clients array
+        this.clients = [];
+
+        // loop thru result list
         snapshots.forEach(snapshot => {
-          const client = snapshot.payload.val();
-          client[`key`] = snapshot.key;
+          const client = snapshot.payload.doc.data();
+          client[`key`] = snapshot.payload.doc.id;
           this.clients.push(client);
         });
         // init data source
@@ -105,18 +100,22 @@ export class ClientsComponent implements OnInit, OnDestroy {
     //         });
     //     }
     //   });
+    // todo: check if user has itineraries
 
-    this.data.deleteItem(id, `clients/${this.data.company}/`)
+    // delete client
+    this.data.firestore.doc(`clients/${id}`)
+      .delete()
       .then(() => {
         console.log('client deleted');
-        Swal.fire('Client Editor', 'Client deleted: ' + id, 'error');
+        Swal.fire('Client Editor', 'client deleted', 'success');
       })
       .catch((err) => {
         this.error = err;
-        Swal.fire('Client Editor', 'Failed to delete client: ' + err.message, 'error');
+        Swal.fire('Client Editor', err.message, 'error');
       });
   }
 
+  // function to add client
   addNew() {
     // todo: add arguments to editor component for type, mode, and data
     this.dialog.open(EditorComponent, {
@@ -143,6 +142,6 @@ export class ClientsComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.ref.unsubscribe();
+    this.clientRef$.unsubscribe();
   }
 }

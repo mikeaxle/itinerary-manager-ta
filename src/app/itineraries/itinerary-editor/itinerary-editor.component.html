@@ -18,7 +18,7 @@
       </button>
 
       <!-- invoice number -->
-      <h2>Itinerary {{ itinerary$.invoice_number }}</h2>
+      <h2>Itinerary {{ itinerary$.invoiceNumber }}</h2>
     </span>
 
 
@@ -93,7 +93,7 @@
 
     <!-- header -->
     <div class="itin-page-header">
-      <h2 *ngIf="client">Client: {{ client.firstname }} {{ client.lastname }}</h2>
+      <h2 *ngIf="client">Client: {{ client.firstName }} {{ client.lastName }}</h2>
       <h1>{{ itinerary$.title}}</h1>
     </div>
 
@@ -103,20 +103,20 @@
         <tr>
           <td>
             <h5>Itinerary</h5>
-            <b>{{ itinerary$.invoice_number }}</b>
+            <b>{{ itinerary$.invoiceNumber }}</b>
           </td>
           <td>
             <h5>Safari Specialist</h5>
-            <b *ngIf="agent">{{ agent.firstname }} {{ agent.lastname }}</b>
+            <b *ngIf="agent">{{ agent.firstName }} {{ agent.lastName }}</b>
           </td>
           <td>
             <h5>Status</h5>
             <b>{{ itinerary$.status }}</b>
           </td>
-          <!-- <td>
-            <h5>Modified</h5>
-            <b>{{ (itinerary$.updatedAt }}</b>
-          </td> -->
+          <td>
+              <h5>Modified</h5>
+              <b>{{ updatedAt | date : 'MMM d, y, h:mm:ss a'  }}</b>
+          </td>
         </tr>
         <tr>
           <td>
@@ -129,7 +129,7 @@
           </td>
           <td>
             <h5>Travel dates</h5>
-            <b>{{itinerary$.startdate}} - {{itinerary$.enddate}}</b>
+            <b>{{itinerary$.startDate}} - {{itinerary$.endDate}}</b>
           </td>
         </tr>
       </table>
@@ -303,16 +303,16 @@
         </div>
 
         <!-- payments made -->
-        <div fxLayout="column" fxFill *ngIf="payments | async as paymentsArray">
-          <div fxLayout="row" *ngFor="let payment of paymentsArray" fxLayoutAlign="flex-start center" fxLayoutGap="10px" class="quote-field">
-            <span fxFlex="50">Payment Received {{ payment.payload.val().date }}</span>
+        <div fxLayout="column" fxFill *ngIf="payments.length > 0">
+          <div fxLayout="row" *ngFor="let payment of payments" fxLayoutAlign="flex-start center" fxLayoutGap="10px" class="quote-field">
+            <span fxFlex="50">Payment Received {{ payment.date }}</span>
             <span>USD</span>
 
             <!-- amount -->
             <mat-form-field fxFlex="30" style="text-align: right !important;">
               <label>
                 <input disabled matInput/>
-                {{payment.payload.val().amount | number: '1.0-2'}}
+                {{payment.amount | number: '1.0-2'}}
               </label>
             </mat-form-field>
 
@@ -361,28 +361,28 @@
     <h2>Contact Numbers</h2>
     <div fxLayout>
       <div fxFlex="50"></div>
-      <div *ngIf="countries | async as phoneNumbersArray" fxFlex fxLayout="Column">
-        <div *ngFor="let c of phoneNumbersArray" fxLayoutAlign="flex-start center" fxLayoutGap="10px" class="quote-field">
+      <div fxFlex fxLayout="Column">
+        <div *ngFor="let country of contactDetails; let i = index;" fxLayoutAlign="flex-start center" fxLayoutGap="10px" class="quote-field">
           <mat-form-field fxFlex="72">
             <label>
               <input disabled matInput>
-              {{ countryService.getDestination(c.payload.val().country_id).name }}
+              {{ country.countryName }}
             </label>
           </mat-form-field>
           <span fxFlex fxLayout>
               <!-- edit button -->
-              <button mat-icon-button (click)="openCountryDialog('edit', c)">
+              <button mat-icon-button (click)="openCountryDialog('edit', country)">
                 <svg-icon src="../assets/icons/edit.svg"  [style.fill]=color></svg-icon>
               </button>
 
             <!-- delete button -->
-              <button mat-icon-button (click)="removeCountry(c.key)">
+              <button mat-icon-button (click)="removeCountry(country.key)">
                 <svg-icon src="../assets/icons/trash.svg" [style.fill]=color></svg-icon>
               </button>
             </span>
         </div>
         <!--  add country phone number button -->
-        <div fxLayout="row" xLayoutAlign="flex-start center" fxLayoutGap="10px" style="height: 40px; margin-top: 10px; margin-left:10px">
+        <div fxLayout="row" fxLayoutAlign="flex-start center" fxLayoutGap="10px" style="height: 40px; margin-top: 10px; margin-left:10px">
           <button
             fxFlex="60"
             mat-raised-button

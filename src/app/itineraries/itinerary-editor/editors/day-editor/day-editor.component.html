@@ -1,4 +1,4 @@
-<h2 mat-dialog-title>Add Item</h2>
+<h2 mat-dialog-title>{{mode}} day</h2>
 <form [formGroup]="dayForm" fxLayout="column">
 
   <!-- days -->
@@ -9,50 +9,36 @@
   </mat-form-field>
 
   <!-- country  -->
-  <mat-select
-    *ngIf="params.mode === 'add'"
-    placeholder="Country"
-    [(ngModel)]="params.lastUsedParams.country"
-    formControlName="country"
-    (ngModelChange)="onSelect($event)"
-    required>
-    <mat-option
-      *ngFor="let destination of destinations"
-      [value]="destination.id"
-      ng-selected>{{destination.name}}
-    </mat-option>
-  </mat-select>
+<!--  <mat-select-->
+<!--    *ngIf="params.mode === 'add'"-->
+<!--    placeholder="Country"-->
+<!--    [(ngModel)]="params.lastUsedParams.country"-->
+<!--    formControlName="country"-->
+<!--    (ngModelChange)="onSelect($event)"-->
+<!--    required>-->
+<!--    <mat-option-->
+<!--      *ngFor="let destination of destinations"-->
+<!--      [value]="destination.id"-->
+<!--      ng-selected>{{destination.name}}-->
+<!--    </mat-option>-->
+<!--  </mat-select>-->
 
   <mat-select
-    *ngIf="params.mode === 'edit'"
     placeholder="Country"
     formControlName="country"
-    (ngModelChange)="onSelect($event)"
+    (selectionChange)="onSelect($event)"
     required>
-    <mat-option
-      *ngFor="let destination of destinations"
-      [value]="destination.id"
-      ng-selected>{{destination.name}}
+    <mat-option *ngFor="let destination of destinations" [value]="destination.key">
+      {{destination.name}}
     </mat-option>
   </mat-select>
 
   <!-- region -->
   <mat-select
-    *ngIf="params.mode === 'add'"
-    placeholder="Region"
-    [(ngModel)]="params.lastUsedParams.region"
-    formControlName="region"
-    (ngModelChange)="onSelectRegion($event)"
-    required>
-    <mat-option *ngFor="let region of regions" [value]="region.id">{{region.name}}</mat-option>
-  </mat-select>
-
-  <mat-select
-    *ngIf="params.mode === 'edit'"
     placeholder="Region"
     formControlName="region"
     required>
-    <mat-option *ngFor="let region of regions" [value]="region.id">{{region.name}}</mat-option>
+    <mat-option *ngFor="let region of regions" [value]="region.name">{{region.name}}</mat-option>
   </mat-select>
 
   <div fxLayout="column"
@@ -179,8 +165,7 @@
   </div>
 
   <!-- add drop downs -->
-  <div fxLayout="row" fxLayoutGap="10px">
-
+  <div fxLayout="row" fxLayoutGap="10px" *ngIf="inventory.length > 0">
     <!-- add services drop down -->
     <mat-select
       *ngIf="inventory"
@@ -192,7 +177,7 @@
       [disabled]="dayForm.controls.country.value == null && dayForm.controls.region.value == null">
 
       <mat-option
-        *ngFor="let i of inventory | async | ItineraryItemFilterPipe: 'Service': dayForm.controls.country.value: dayForm.controls.region.value"
+        *ngFor="let i of inventory | ItineraryItemFilterPipe: 'Service': dayForm.controls.country.value: dayForm.controls.region.value"
         [value]="i">
         {{i.name}}
       </mat-option>
@@ -211,7 +196,7 @@
       [disabled]="dayForm.controls.country.value == null && dayForm.controls.region.value == null">
 
       <mat-option
-        *ngFor="let i of inventory | async | ItineraryItemFilterPipe: 'Activity': dayForm.controls.country.value: dayForm.controls.region.value"
+        *ngFor="let i of inventory | ItineraryItemFilterPipe: 'Activity': dayForm.controls.country.value: dayForm.controls.region.value"
         [value]="i">
         {{i.name}}
       </mat-option>
@@ -230,7 +215,7 @@
       [disabled]="dayForm.controls.country.value == null && dayForm.controls.region.value == null">
 
       <mat-option
-        *ngFor="let i of inventory | async | ItineraryItemFilterPipe: 'Accommodation': dayForm.controls.country.value: dayForm.controls.region.value"
+        *ngFor="let i of inventory | ItineraryItemFilterPipe: 'Accommodation': dayForm.controls.country.value: dayForm.controls.region.value"
         [value]="i">
         {{i.name}}
       </mat-option>
@@ -238,7 +223,12 @@
     </mat-select>
 
   </div>
+
+  <!-- loader -->
+  <mat-progress-bar *ngIf="inventory.length === 0" mode="indeterminate"></mat-progress-bar>
+
   <span class="spacer"></span>
+
   <!-- editor-components preview -->
   <div
     fxFlex

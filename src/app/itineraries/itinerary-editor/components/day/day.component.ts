@@ -79,8 +79,9 @@ export class DayComponent implements OnInit {
   }
 
   removeComment(key) {
-    this.data.deleteObjectFromFirebase(`comments/${this.itineraryId}/${key}`, 'comment');
+    this.data.deleteObjectFromFirebase(`comments/${key}`, 'comment');
   }
+
 
   // function to get icon comment
   getCommentIcon(type: any) {

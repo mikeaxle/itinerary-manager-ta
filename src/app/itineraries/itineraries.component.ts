@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {Component, OnDestroy, OnInit, ViewChild, ViewEncapsulation} from '@angular/core';
 import {DataService} from '../services/data.service';
 import {MatBottomSheet, MatBottomSheetRef, MatDialog} from '@angular/material';
 import {MatPaginator} from '@angular/material/paginator';
@@ -14,7 +14,8 @@ import {switchMap} from 'rxjs/operators';
 @Component({
   selector: 'app-itineraries',
   styleUrls: ['./itineraries.component.scss'],
-  templateUrl: './itineraries.component.html'
+  templateUrl: './itineraries.component.html',
+  encapsulation: ViewEncapsulation.None 
 
 })
 export class ItinerariesComponent implements OnInit, OnDestroy {
@@ -25,24 +26,28 @@ export class ItinerariesComponent implements OnInit, OnDestroy {
   private error: any;
   itinerariesRef$;
   status$: BehaviorSubject<string | null>;
+  companyRef$: any;
   status = 'Provisional';
   itinerariesSubscription$: any;
   STATUS = STATUS;
 
   constructor(public data: DataService, private matDialog: MatDialog, public router: Router) {
+    // init status fitler
     this.status$ = new BehaviorSubject('Provisional');
+
+    // get company ref
+    this.companyRef$ = this.data.firestore.doc(`companies/${this.data.company.key}`).ref;
+    
+    // get itineraries ref
     this.itinerariesRef$ = this.status$.pipe(
       switchMap(status =>
-        this.data.af.list(`itineraries/${this.data.company}`, ref => status ? ref.orderByChild('status').equalTo(status) : ref
+        this.data.firestore.collection(`itineraries`, ref => status ? ref.where('company', '==', this.companyRef$).where('status', '==', status) : ref
         ).snapshotChanges()
       )
     );
   }
 
   ngOnInit() {
-
-
-
       // this.data.af.list(`itineraries/${this.data.company}/`, ref => ref.orderByChild('status').equalTo('Provisional').limitToLast(250))
     // // this.ref = this.data.af.list(`itineraries/${this.data.company}/`)
     this.itinerariesSubscription$ = this.itinerariesRef$
@@ -52,19 +57,17 @@ export class ItinerariesComponent implements OnInit, OnDestroy {
         snapshots.forEach(snapshot => {
           // get itinerary
           let itinerary = {};
-          itinerary = snapshot.payload.val();
+          itinerary = snapshot.payload.doc.data();
 
           // get key
-          itinerary[`key`] = snapshot.key;
+          itinerary[`key`] = snapshot.payload.doc.id;
 
-          // check if client is string
-          if (this.checkIfObjectIsString(itinerary[`client`])) {
-            itinerary[`fullName`] = this.data.af.object(`clients/${this.data.company}/${itinerary[`client`]}`).valueChanges();
-          } else if (typeof itinerary[`client`] == 'object') {
-            itinerary[`fullName`] = itinerary[`client`][`firstname`] + ' ' + itinerary[`client`][`lastname`];
-          } else {
-            itinerary[`fullName`] = 'N/A';
-          }
+          // todo: get client details and add to itinerary info
+          itinerary[`client`].get()
+            .then(res => {
+              const client = res.data()
+              itinerary[`clientFullName`] = `${client.firstName} ${client.lastName}`;
+            });
 
           // push to itineraries array
           this.itineraries.push(itinerary);
@@ -79,23 +82,16 @@ export class ItinerariesComponent implements OnInit, OnDestroy {
 
   }
 
-
-
-  // function to check if an object is a string
-  checkIfObjectIsString(object) {
-    return typeof object == 'string';
-  }
-
   // function to delete item
   deleteItinerary(id: string) {
-    this.data.deleteItem(id, 'itineraries')
+    this.data.firestore.doc(`itineraries/${id}`)
+      .delete()
       .then(() => {
         Swal.fire('Success', 'Itinerary deleted', 'success');
         console.log('itinerary deleted');
       })
       .catch((error) => {
         this.error = error;
-
         Swal.fire('Failed', `An error has occurred: ${error.message}`, 'error');
       });
   }
@@ -118,8 +114,14 @@ export class ItinerariesComponent implements OnInit, OnDestroy {
 
   // function to filter by status
   onFilterChange(event) {
+    // empty itineraries array
     this.itineraries = [];
+
+    // perform next query
     this.status$.next(event.source.value);
+    
+    // Swal
+    event.source.value === undefined ? Swal.fire('Reloading Itineraries', 'Getting all itineraries', 'info') :
     Swal.fire('Reloading Itineraries', `Filtering by status: "${event.source.value}"`, 'info');
   }
 

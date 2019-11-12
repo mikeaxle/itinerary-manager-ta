@@ -4,7 +4,7 @@ export class InventoryItem {
   type = '';
   name = '';
   description = '';
-  long_description = '';
+  longDescription = '';
   inclusions = '';
-  image: File;
+  image: any;
 }

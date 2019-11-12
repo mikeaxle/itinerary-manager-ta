@@ -68,12 +68,13 @@ import { SearchPipe } from './filter/search.pipe';
 import { PdfDialogComponent } from './shared/pdf-dialog/pdf-dialog.component';
 import { LoginComponent } from './login/login.component';
 import { NgxAuthFirebaseUIModule } from 'ngx-auth-firebaseui';
-import { ToolbarComponent } from './toolbar/toolbar.component';
+import { ToolbarComponent } from './shared/toolbar/toolbar.component';
 import { SearchComponent } from './shared/search/search.component';
 import { ProgressBarComponent } from './shared/progress-bar/progress-bar.component';
 import { SafeHtmlPipe } from './filter/safe-html.pipe';
 import {AngularFireAuthGuard} from '@angular/fire/auth-guard';
 import {DragDropModule} from '@angular/cdk/drag-drop';
+import { CountriesComponent } from './countries/countries.component';
 
 // currency Mask settings
 // @ts-ignore
@@ -120,7 +121,8 @@ import {DragDropModule} from '@angular/cdk/drag-drop';
     ToolbarComponent,
     SearchComponent,
     ProgressBarComponent,
-    SafeHtmlPipe
+    SafeHtmlPipe,
+    CountriesComponent
   ],
   entryComponents: [
     DayEditorComponent,

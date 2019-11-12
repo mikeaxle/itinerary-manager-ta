@@ -6,6 +6,9 @@
     <mat-option *ngFor="let status of STATUS" [value]="status">
       {{ status }}
     </mat-option>
+    <mat-option [value]="undefined">
+      All
+    </mat-option>
   </mat-select>
 
   <button mat-raised-button color="primary" (click)="addNew()">Add New Itinerary</button>
@@ -25,22 +28,21 @@
   <!-- Invoice Number Column -->
   <ng-container matColumnDef="#">
     <th mat-header-cell *matHeaderCellDef> #</th>
-    <td mat-cell *matCellDef="let row"> {{ row.invoice_number }}</td>
+    <td mat-cell *matCellDef="let row"> {{ row.invoiceNumber }}</td>
   </ng-container>
 
   <!-- Date Column -->
   <ng-container matColumnDef="Date">
     <th mat-header-cell *matHeaderCellDef> Date</th>
-    <td mat-cell *matCellDef="let row"> {{ row.startdate }}</td>
+    <td mat-cell *matCellDef="let row"> {{ row.startDate }}</td>
   </ng-container>
 
   <!-- Client Column -->
   <ng-container matColumnDef="Client">
     <th mat-header-cell *matHeaderCellDef> Client</th>
     <td mat-cell *matCellDef="let row">
-      <div *ngIf="checkIfObjectIsString(row.client)">{{ (row.fullName | async )?.firstname }} {{ (row.fullName | async )?.lastname }}</div>
-      <div *ngIf="!checkIfObjectIsString(row.client)">{{ row.fullName }}</div>
-    </td>
+      {{ row.clientFullName }}
+    </td>check
   </ng-container>
 
   <!-- Title Column -->

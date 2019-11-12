@@ -1,22 +1,23 @@
-import {Component, Inject, OnInit} from '@angular/core';
-import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
-import {FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {CountryService} from '../../../../services/country.service';
-import {Country} from '../../../../model/country';
-import {Region} from '../../../../model/region';
-import {DataService} from '../../../../services/data.service';
+import { Component, Inject, OnInit, OnDestroy } from '@angular/core';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
+import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { CountryService } from '../../../../services/country.service';
+import { Country } from '../../../../model/country';
+import { Region } from '../../../../model/region';
+import { DataService } from '../../../../services/data.service';
 
 @Component({
   selector: 'app-day',
   styleUrls: ['./day-editor.component.css'],
   templateUrl: './day-editor.component.html'
 })
-export class DayEditorComponent implements OnInit {
+export class DayEditorComponent implements OnInit, OnDestroy {
+
   public dayForm: FormGroup;
   day: any;
-  inventory: any;
-  destinations: Country[];
-  regions: Region[];
+  inventory = [];
+  destinations = [];
+  regions = [];
   lastUsedParams: any;
   selectedService: any;
   selectedActivity: any;
@@ -24,27 +25,45 @@ export class DayEditorComponent implements OnInit {
   services = '';
   activities = '';
   accommodation = '';
+  inventoryRef$;
+  inventorySubscription$;
+  countriesSubscrption$;
 
-  constructor(private countryService: CountryService,
-              private formBuilder: FormBuilder,
-              public data: DataService,
-              public dialogRef: MatDialogRef<DayEditorComponent>,
-              @Inject(MAT_DIALOG_DATA) public params: any) { }
+  constructor(private formBuilder: FormBuilder,
+    public data: DataService,
+    public dialogRef: MatDialogRef<DayEditorComponent>,
+    @Inject(MAT_DIALOG_DATA) public params: any) { }
 
   ngOnInit() {
 
     // get destinations
-    this.destinations = this.countryService.getCountries();
+    this.countriesSubscrption$ = this.data.firestore.collection('countries')
+      .snapshotChanges()
+      .subscribe(_ => {
+        _.forEach(__ => {
+          const country = __.payload.doc.data();
+          country[`key`] = __.payload.doc.id;
+          country[`ref`] = __.payload.doc.ref;
+          this.destinations.push(country);
+
+          // load regions
+          if (this.params.mode === 'edit') {
+            if (this.params.day.country.id === country[`key`]) {
+              this.regions = country[`regions`];
+            }
+          }
+        });
+      });
 
     // get itinerary items
-    this.inventory = this.data.getList('inventory').valueChanges()
+    this.inventorySubscription$ = this.data.firestore.collection('inventory').valueChanges()
+      .subscribe(_ => {
+        this.inventory = _;
+      });
 
     // get editor-components
     if (this.params.mode === 'edit') {
       this.day = this.params.day;
-
-      // load regions
-      this.onSelect(this.day.country);
 
       // check if day-editor has accommodation and load into string
       if (this.day.accommodation !== undefined) {
@@ -72,20 +91,21 @@ export class DayEditorComponent implements OnInit {
       }
     }
 
+
     // init editor-components form
-    this.dayForm = this.initDay();
+    this.initDay();
 
     // init previously used country and region params
-    this.lastUsedParams = this.params.lastUsedParams
+    this.lastUsedParams = this.params.lastUsedParams;
 
     // check if last used params are default, then null
-    if (this.lastUsedParams.country === 0) {
-      this.lastUsedParams.country = null
-    }
+    // if (this.lastUsedParams.country === 0) {
+    //   this.lastUsedParams.country = null
+    // }
 
-    if (this.lastUsedParams.region === 0) {
-      this.lastUsedParams.region = null
-    }
+    // if (this.lastUsedParams.region === 0) {
+    //   this.lastUsedParams.region = null
+    // }
 
     // subscribe to services observable
     this.changes();
@@ -132,7 +152,7 @@ export class DayEditorComponent implements OnInit {
   // function to init editor-components method
   initDay() {
     if (this.params.mode === 'add') {
-      return this.formBuilder.group({
+      this.dayForm = this.formBuilder.group({
         // title: [''],
         days: [null, Validators.required],
         country: [this.params.lastUsedParams.country, Validators.required],
@@ -176,15 +196,17 @@ export class DayEditorComponent implements OnInit {
       }
 
       // console.log(`days ${this.day-editor.days} \n country ${this.day-editor.country} \n region ${this.day-editor.region}`)
-      return this.formBuilder.group({
+      this.dayForm = this.formBuilder.group({
         // title: [''],
-        days: [this.day.days, Validators.required],
-        country: [this.day.country, Validators.required],
-        region: [this.day.region, Validators.required],
+        days: this.day.days,
+        country: this.day.country.id,
+        region: this.day.region,
         services: this.formBuilder.array(_services),
         activities: this.formBuilder.array(_activities),
         accommodation: this.formBuilder.array(_accommodation)
-      });
+      })
+
+
     }
   }
 
@@ -216,10 +238,10 @@ export class DayEditorComponent implements OnInit {
     // console.log(data)
     return this.formBuilder.group({
       description: [data.description],
-      key: [data.$key],
+      key: [data.key],
       inclusions: [data.inclusions],
       name: [data.name],
-      long_description: [data.long_description],
+      longDescription: [data.longDescription],
       imageUrl: [data.imageUrl],
       region: [data.region],
       destination: [data.destination]
@@ -256,8 +278,9 @@ export class DayEditorComponent implements OnInit {
   }
 
   // function to deal with change in select drop downs
-  onSelect(countryid: any) {
-    this.regions = this.countryService.getRegions().filter((region) => region.countryid === countryid);
+  onSelect(event) {
+    const country = this.destinations.find((destination) => destination.key === event.value);
+    this.regions = country.regions;
   }
 
   // function to deal with region select
@@ -286,8 +309,7 @@ export class DayEditorComponent implements OnInit {
 
   // function to close dialog
   onCloseConfirm() {
-    // console.log(this.dayForm.value);
-    this.dialogRef.close({dayForm: this.dayForm.value, lastUsedParams: this.params.lastUsedParams});
+    this.dialogRef.close({ dayForm: this.dayForm.value, lastUsedParams: { country: this.dayForm.value.country, region: this.dayForm.value.region } });
   }
 
   // function to cancel dialog
@@ -295,4 +317,8 @@ export class DayEditorComponent implements OnInit {
     this.dialogRef.close();
   }
 
+  ngOnDestroy() {
+    this.inventorySubscription$.unsubscribe();
+    this.countriesSubscrption$.unsubscribe();
+  }
 }

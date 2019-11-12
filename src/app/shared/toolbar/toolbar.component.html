@@ -12,27 +12,27 @@
     <button mat-button [routerLink]="['inventory']">INVENTORY</button>
     <button *ngIf="data.user.role === 'admin'" mat-button  [routerLink]="['agents']">AGENTS</button>
     <button mat-button [routerLink]="['media']">MEDIA</button>
+    <button mat-button [routerLink]="['countries']">COUNTRIES</button>
   </div>
 
   <!-- spacer -->
   <span class="fill-remaining-space"></span>
 
   <!-- first name + last name -->
-  <sub>{{ data.user.firstname }} {{ data.user.lastname }}</sub>
+  <sub>{{ data.user.firstName }} {{ data.user.lastName }}</sub>
   <div class="spacer"></div>
 
   <!-- logo button -->
   <button mat-icon-button [matMenuTriggerFor]="menu">
     <!-- logo -->
-    <img   class="avatar-image" [src]="data.logo">
+    <img *ngIf="data.logo"   class="avatar-image" [src]="data.logo">
   </button>
 
   <!-- collapsible menu -->
   <mat-menu xPosition="before" #menu="matMenu">
     <button mat-menu-item (click)="data.switchCompany()">
       <mat-icon>person_outline</mat-icon>
-      <span *ngIf="data.company === 'True Africa'">Switch to Planet Africa</span>
-      <span *ngIf="data.company === 'Plant Africa'">Switch to True Africa</span>
+      <span *ngIf="data.company">Switch to {{ data.company.name }}</span>
     </button>
 
     <!-- logout -->

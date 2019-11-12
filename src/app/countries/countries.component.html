@@ -1,0 +1,75 @@
+<!-- title + button -->
+<div class="page-title">
+  <h1>Countries</h1>
+  <button mat-raised-button color="primary" (click)="addNew()">Add New Country</button>
+</div>
+
+<span class="spacer-vert"></span>
+
+<!--  </div>-->
+<app-search [dataSource]="dataSource" caller="countries"></app-search>
+
+<!-- progress bar -->
+<app-progress-bar [listLength]="countries.length"></app-progress-bar>
+
+<mat-table *ngIf="countries.length > 0" #table [dataSource]="dataSource" #sort class="example-container mat-elevation-z4" >
+
+  <!--- Note that these columns can be defined in any order.
+  The actual rendered columns are set as a property on the row definition" -->
+
+  <!-- id Column -->
+<!--  <ng-container matColumnDef="id">-->
+<!--    <mat-header-cell *matHeaderCellDef> id</mat-header-cell>-->
+<!--    <mat-cell *matCellDef="let row"> {{ row.id }}</mat-cell>-->
+<!--  </ng-container>-->
+
+  <!-- name Column -->
+  <ng-container matColumnDef="Name">
+    <mat-header-cell *matHeaderCellDef> Name</mat-header-cell>
+    <mat-cell *matCellDef="let row">{{row.name}}</mat-cell>
+  </ng-container>
+
+  <!-- regions Column -->
+  <ng-container matColumnDef="Regions">
+    <mat-header-cell *matHeaderCellDef> Regions</mat-header-cell>
+    <mat-cell *matCellDef="let row"> {{row.regions.length}}</mat-cell>
+  </ng-container>
+
+  <!-- phone numbers Column -->
+  <ng-container matColumnDef="Phone Numbers">
+    <mat-header-cell *matHeaderCellDef> Phone Numbers</mat-header-cell>
+    <mat-cell *matCellDef="let row"> {{row.phoneNumbers.length}}</mat-cell>
+  </ng-container>
+
+  <!-- flag  Column -->
+  <ng-container matColumnDef="Flag">
+    <mat-header-cell *matHeaderCellDef> Flag</mat-header-cell>
+    <mat-cell *matCellDef="let row"> &nbsp; <img [src]="row.flag" style="height: 40px"/></mat-cell>
+  </ng-container>
+
+  <!-- country code  Column -->
+  <ng-container matColumnDef="Code">
+    <mat-header-cell *matHeaderCellDef> Code</mat-header-cell>
+    <mat-cell *matCellDef="let row">{{row.code}}</mat-cell>
+  </ng-container>
+
+  <!-- edit and delete options -->
+  <ng-container matColumnDef="Actions">
+    <mat-header-cell *matHeaderCellDef> </mat-header-cell>
+    <mat-cell *matCellDef="let row" fxLayoutAlign="end center">
+
+      <button mat-icon-button (click)="editCountry(row)">
+        <svg-icon src="../assets/icons/edit.svg" [style.fill]="data.color"></svg-icon>
+      </button>
+
+      <button mat-icon-button (click)="openDelete(row)">
+        <svg-icon src="../assets/icons/trash.svg" [style.fill]="data.color"></svg-icon>
+      </button>
+
+    </mat-cell>
+  </ng-container>
+
+  <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+  <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+</mat-table>
+<mat-paginator [pageSizeOptions]="[15, 30, 60]"></mat-paginator>

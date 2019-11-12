@@ -4,7 +4,8 @@
   <!-- days -->
   <mat-select
     placeholder="Day"
-    [(ngModel)]="comment.day"
+    [(ngModel)]="day"
+    (selectionChange)="onSelect()"
     name="day"
     required>
     <mat-option

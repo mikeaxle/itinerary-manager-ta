@@ -1,9 +1,9 @@
-import {Component, Inject, OnInit} from '@angular/core';
-import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {CountryService} from '../../../../services/country.service';
-import {Country} from '../../../../model/country';
-import {DataService} from '../../../../services/data.service';
+import { countries } from './../../../../model/countries';
+
+import { Component, Inject, OnInit } from '@angular/core';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { DataService } from '../../../../services/data.service';
 
 @Component({
   selector: 'app-add-country-number',
@@ -12,18 +12,26 @@ import {DataService} from '../../../../services/data.service';
 })
 export class CountryEditorComponent implements OnInit {
   public addNumberForm: FormGroup;
-  destinations: Country[];
+  destinations = [];
+  ref;
 
   constructor(private formBuilder: FormBuilder,
-              private countryService: CountryService,
-              public data: DataService,
-              public dialogRef: MatDialogRef<CountryEditorComponent>,
-              @Inject(MAT_DIALOG_DATA) public params: any) { }
+    public data: DataService,
+    public dialogRef: MatDialogRef<CountryEditorComponent>,
+    @Inject(MAT_DIALOG_DATA) public params: any) { }
 
   ngOnInit() {
 
     // get destinations
-    this.destinations = this.countryService.getCountries();
+    this.ref = this.data.firestore.collection('countries')
+      .snapshotChanges()
+      .subscribe(_ => {
+        _.forEach(__ => {
+          const country = __.payload.doc.data();
+          country[`key`] = __.payload.doc.id;
+          this.destinations.push(country);
+        })
+      })
 
     // initialize form
     this.addNumberForm = this.initCountry();
@@ -34,31 +42,37 @@ export class CountryEditorComponent implements OnInit {
     // check mode and init form
     if (this.params.mode === 'add') {
       return this.formBuilder.group({
-        country_id: [null, Validators.required],
-        office_hours: [null],
-        after_hours: [null],
-        alt_after_hours: [null]
+        country: [null, Validators.required],
+        officeHours: [null],
+        afterHours: [null],
+        altAfterHours: [null]
       });
     } else if (this.params.mode === 'edit') {
       // return prepopulated form
       return this.formBuilder.group({
-        country_id: [this.params.country.country_id, Validators.required],
-        office_hours: [this.params.country.office_hours],
-        after_hours: [this.params.country.after_hours],
-        alt_after_hours: [this.params.country.alt_after_hours]
+        country: [this.params.country.country, Validators.required],
+        officeHours: [this.params.country.officeHours],
+        afterHours: [this.params.country.afterHours],
+        altAfterHours: [this.params.country.altAfterHours]
       });
     }
   }
 
   // function to assign phone numbers to form after country is selected
   onCountrySelected(id: any) {
-    const country = this.countryService.getDestination(id);
-    try {
-      this.addNumberForm.controls.office_hours.setValue(country.phone_numbers[0].number);
-      this.addNumberForm.controls.after_hours.setValue(country.phone_numbers[1].number);
-      this.addNumberForm.controls.alt_after_hours.setValue(country.phone_numbers[2].number);
-    } catch (err) {
-      console.log(err);
+    const country = this.destinations.find(destination => destination.key === id);
+
+    if (country.phoneNumbers[0]) {
+      this.addNumberForm.controls.officeHours.setValue(country.phoneNumbers[0].number);
+
+    }
+
+    if (country.phoneNumbers[1]) {
+      this.addNumberForm.controls.afterHours.setValue(country.phoneNumbers[1].number);
+    }
+
+    if (country.phoneNumbers[2]) {
+      this.addNumberForm.controls.altAfterHours.setValue(country.phoneNumbers[2].number);
     }
   }
 

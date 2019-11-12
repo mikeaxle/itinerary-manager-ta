@@ -4,6 +4,7 @@ import {DataService} from '../services/data.service';
 import {Router} from '@angular/router';
 import Swal from 'sweetalert2';
 import {AuthProvider} from 'ngx-auth-firebaseui';
+import {consoleTestResultHandler} from 'tslint/lib/test';
 
 @Component({
   selector: 'app-login',
@@ -17,6 +18,7 @@ export class LoginComponent implements OnDestroy  {
   providers = AuthProvider;
   logo = '../assets/logos/avatar-trueafrica.png';
   user$;
+  private companyRef$;
 
   constructor(private router: Router, private data: DataService, private snackbar: MatSnackBar) {
     // check if user is authenticated
@@ -24,42 +26,39 @@ export class LoginComponent implements OnDestroy  {
       if (auth) {
         // check if local storage variables are defined
         if (this.data.company === undefined) {
-          // default to True Africa
-          localStorage.setItem('company', 'True Africa');
+          // set True Africa as defualt company
+          this.setCompany();
         }
 
-        // set global color
-        if (this.data.company === 'Planet Africa') {
-          localStorage.setItem('color', '#AC452F');
-          localStorage.setItem('logo', '../assets/logos/avatar-planetafrica.png');
-        } else {
-          localStorage.setItem('color', '#B18C51');
-          localStorage.setItem('logo', '../assets/logos/avatar-trueafrica.png');
-        }
+        // set logged in user
+        this.setUser(auth);
 
-                    // set logged in user
-        this.user$ = this.data.af.object('users/' + auth[`uid`])
-                    .snapshotChanges()
-                    .subscribe((user) => {
+        // if (this.data.user) {
+          // if user is logged in, redirect to dashboard
+          this.router.navigate(['itineraries'])
+            .then(() => {
+              Swal.fire('Authentication', 'You are logged in!', 'success');
+            });
+        // }
 
-                      const obj = user.payload.val();
-                      obj[`key`] = user.key;
-                      // set logged in user
-                      localStorage.setItem('user', JSON.stringify(obj));
-                    });
-
-
-
-        // if user is logged in, redirect to dashboard
-        this.router.navigate(['itineraries'])
-          .then(() => {
-            Swal.fire('Authentication', 'You are logged in!', 'success');
-          });
       }
     });
   }
 
-  // handle login error
+  // set company to local storage
+   setCompany() {
+        localStorage.setItem('company', JSON.stringify({
+          color: '#B18C51',
+          logoUrl: 'https://firebasestorage.googleapis.com/v0/b/true-africa-itinerary.appspot.com/o/avatar-trueafrica.png?alt=media&token=6808dc76-eecb-4bdd-beee-6fd2af2868dc',
+          name: 'True Africa',
+          prefix: 'TA',
+          key: 'YbSudQRjCglvvffyujaf'
+        }));
+        localStorage.setItem('color', '#B18C51');
+        localStorage.setItem('logo', 'https://firebasestorage.googleapis.com/v0/b/true-africa-itinerary.appspot.com/o/avatar-trueafrica.png?alt=media&token=6808dc76-eecb-4bdd-beee-6fd2af2868dc');
+  }
+
+// handle login error
   onLoginError(error) {
     console.log(error);
     this.error = error.message;
@@ -74,29 +73,28 @@ export class LoginComponent implements OnDestroy  {
 
   // handle login success
   onLoginSuccess(auth) {
-
-    console.log(auth[`uid`]);
     // set company
-    localStorage.setItem('company', 'True Africa');
-
-    // set color
-    localStorage.setItem('color', '#B18C51');
+    this.setCompany();
 
     // set logo
     this.logo = '../assets/logos/avatar-trueafrica.png';
 
     // set user
-            // set logged in user
-    this.user$ = this.data.af.object('users/' + auth[`uid`])
-            .snapshotChanges()
-            .subscribe((user) => {
-              // set logged in user
-              localStorage.setItem('user', JSON.stringify(user.payload.val()));
-            });
-
+    this.setUser(auth);
 
     // show swal
-    Swal.fire('Authentication', 'Log in successful!', 'success');
+    // Swal.fire('Authentication', 'Log in successful!', 'success');
   }
 
+  // sets user to local storage
+  private setUser(auth) {
+    this.user$ = this.data.firestore.doc('users/' + auth[`uid`])
+      .snapshotChanges()
+      .subscribe((_) => {
+        const user = _.payload.data();
+        user[`key`] = _.payload.id;
+        // set logged in user
+        localStorage.setItem('user', JSON.stringify(user));
+      });
+  }
 }
