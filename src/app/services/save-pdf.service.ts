@@ -13,9 +13,21 @@ import Swal from 'sweetalert2';
 })
 export class SavePdfService {
   private averageCost = 0;
-  constructor(private data: DataService, private http: HttpClient, private countryService: CountryService, public dialog: MatDialog) {
-    this.regions = this.countryService.getRegions();
-    this.countries = this.countryService.getCountries();
+  constructor(private data: DataService, private http: HttpClient, public dialog: MatDialog) {
+    // get countries
+    this.data.firestore.collection('countries')
+    .valueChanges()
+    .subscribe(res => {
+    
+      this.countries = res;
+
+      this.countries.forEach(country => {
+        country[`regions`].forEach(region => {
+          this.regions.push(region)
+        })
+      })
+    })
+
   }
 
   filter = new MoneyPipe();
@@ -60,6 +72,8 @@ export class SavePdfService {
   ];
   agent: any;
   private dialogRef: MatDialogRef<PdfDialogComponent>;
+  countries$;
+  regions$;
 
   // function to communicate with print api
   // https://planet-africa-itinerary-app.appspot.com/print-pdf
@@ -72,33 +86,33 @@ export class SavePdfService {
        disableClose: true,
        width: '300px',
     });
-     this.http.post('https://planet-africa-print-server-dev.herokuapp.com/print-pdf', {
-    //  this.http.post('https://planet-africa-print-server.herokuapp.com/print-pdf', {
-      //  this.http.post('http://localhost:8000/print-pdf', {
-      html
-    }, {
-      responseType: 'arraybuffer'
-    }).subscribe((res) => {
-      // create pdf from blob
-         const file = new Blob([res], {type: 'application/pdf'});
+    //  this.http.post('https://planet-africa-print-server-dev.herokuapp.com/print-pdf', {
+    // //  this.http.post('https://planet-africa-print-server.herokuapp.com/print-pdf', {
+    //   //  this.http.post('http://localhost:8000/print-pdf', {
+    //   html
+    // }, {
+    //   responseType: 'arraybuffer'
+    // }).subscribe((res) => {
+    //   // create pdf from blob
+    //      const file = new Blob([res], {type: 'application/pdf'});
 
-         // save pdf
-         saveAs(file, `${this.itinerary.title} ${Date.now()}.pdf`);
+    //      // save pdf
+    //      saveAs(file, `${this.itinerary.title} ${Date.now()}.pdf`);
 
-         console.log('pdf generated');
+    //      console.log('pdf generated');
 
-         // close ref
-         this.dialogRef.close();
-    }
-      , (err) => {
-        console.log(err);
-        Swal.fire('Generating PDF', err.message, 'error')
-          .then(_ => {
-            // close ref
-            this.dialogRef.close();
-          });
-      }
-    );
+    //      // close ref
+    //      this.dialogRef.close();
+    // }
+    //   , (err) => {
+    //     console.log(err);
+    //     Swal.fire('Generating PDF', err.message, 'error')
+    //       .then(_ => {
+    //         // close ref
+    //         this.dialogRef.close();
+    //       });
+    //   }
+    // );
 
 
   }
@@ -125,13 +139,14 @@ export class SavePdfService {
     this.totalPayments =  itineraryData.totalPayments;
 
     // phone numbers associated with itinerary
-    this.phone_numbers = itineraryData.phoneNumbers;
+    this.phone_numbers = this.itinerary.contactDetails;
 
     // assign used days
     this.usedDays = usedDays;
 
     // get agent
     this.agent = itineraryData.agent;
+
 
     // get inventory list
     this.data.firestore.collection('inventory')
@@ -1552,12 +1567,12 @@ if (lastIteneraryItemsHeight + quotHeight > quoteThreshold) {
   getDestinations() {
     const countries = [];
 
-    this.phone_numbers.forEach(d => {
-      countries.push(this.countryService.getDestination(d.country_id).name);
-    });
+    // this.phone_numbers.forEach(d => {
+    //   countries.push(this.countries.find(country => country.key === d ).name);
+    // });
 
     let dest = '';
-    dest = [countries.slice(0, -1).join(', '), countries.slice(-1)[0]].join(countries.length < 2 ? '' : ' & ');
+    // dest = [countries.slice(0, -1).join(', '), countries.slice(-1)[0]].join(countries.length < 2 ? '' : ' & ');
     return dest;
   }
 
@@ -1688,31 +1703,31 @@ if (lastIteneraryItemsHeight + quotHeight > quoteThreshold) {
 
       let contactBlock = `
            <div class="contact-block">
-        <p class="heading">${this.countryService.getDestination(pn.country_id).name}</p>
+        <p class="heading">${pn.country}</p>
         <div class="details">`;
 
       // check if office hours is set & add to contact block
-      if (pn.office_hours !== '') {
+      if (pn.officeHours !== '') {
         contactBlock += `
           <!-- office hours -->
           <p class="field">Office Hours</p>
-          <p class="value">${pn.office_hours}</p>
+          <p class="value">${pn.officeHours}</p>
           <br>`;
       }
 
       // check if after hours is set & add to contact block
-      if (pn.after_hours !== '') {
+      if (pn.afterHours !== '') {
         contactBlock += `<!-- after hours -->
           <p class="field">After Hours</p>
-          <p class="value">${pn.after_hours}</p>
+          <p class="value">${pn.afterHours}</p>
           <br>`;
       }
 
       // check if alt after hours is set & add to contact block
-      if (pn.alt_after_hours !== '') {
+      if (pn.alt_afterHours !== '') {
         contactBlock += `            <!-- after hours -->
           <p class="field">Alternative After Hours</p>
-          <p class="value">${pn.alt_after_hours}</p>
+          <p class="value">${pn.altAfterHours}</p>
           <br>`;
       }
 

@@ -362,11 +362,11 @@
     <div fxLayout>
       <div fxFlex="50"></div>
       <div fxFlex fxLayout="Column">
-        <div *ngFor="let country of countries" fxLayoutAlign="flex-start center" fxLayoutGap="10px" class="quote-field">
+        <div *ngFor="let country of contactDetails; let i = index;" fxLayoutAlign="flex-start center" fxLayoutGap="10px" class="quote-field">
           <mat-form-field fxFlex="72">
             <label>
               <input disabled matInput>
-              {{ countryService.getDestination(country.country_id).name }}
+              {{ country.countryName }}
             </label>
           </mat-form-field>
           <span fxFlex fxLayout>

@@ -9,50 +9,36 @@
   </mat-form-field>
 
   <!-- country  -->
-  <mat-select
-    *ngIf="params.mode === 'add'"
-    placeholder="Country"
-    [(ngModel)]="params.lastUsedParams.country"
-    formControlName="country"
-    (ngModelChange)="onSelect($event)"
-    required>
-    <mat-option
-      *ngFor="let destination of destinations"
-      [value]="destination.id"
-      ng-selected>{{destination.name}}
-    </mat-option>
-  </mat-select>
+<!--  <mat-select-->
+<!--    *ngIf="params.mode === 'add'"-->
+<!--    placeholder="Country"-->
+<!--    [(ngModel)]="params.lastUsedParams.country"-->
+<!--    formControlName="country"-->
+<!--    (ngModelChange)="onSelect($event)"-->
+<!--    required>-->
+<!--    <mat-option-->
+<!--      *ngFor="let destination of destinations"-->
+<!--      [value]="destination.id"-->
+<!--      ng-selected>{{destination.name}}-->
+<!--    </mat-option>-->
+<!--  </mat-select>-->
 
   <mat-select
-  *ngIf="params.mode === 'edit'"
     placeholder="Country"
     formControlName="country"
-    (ngModelChange)="onSelect($event)"
+    (selectionChange)="onSelect($event)"
     required>
-    <mat-option
-      *ngFor="let destination of destinations"
-      [value]="destination.id"
-      ng-selected>{{destination.name}}
+    <mat-option *ngFor="let destination of destinations" [value]="destination.key">
+      {{destination.name}}
     </mat-option>
   </mat-select>
 
   <!-- region -->
   <mat-select
-    *ngIf="params.mode === 'add'"
-    placeholder="Region"
-    [(ngModel)]="params.lastUsedParams.region"
-    formControlName="region"
-    (ngModelChange)="onSelectRegion($event)"
-    required>
-    <mat-option *ngFor="let region of regions" [value]="region.id">{{region.name}}</mat-option>
-  </mat-select>
-
-  <mat-select
-    *ngIf="params.mode === 'edit'"
     placeholder="Region"
     formControlName="region"
     required>
-    <mat-option *ngFor="let region of regions" [value]="region.id">{{region.name}}</mat-option>
+    <mat-option *ngFor="let region of regions" [value]="region.name">{{region.name}}</mat-option>
   </mat-select>
 
   <div fxLayout="column"
