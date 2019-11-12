@@ -1,332 +1,340 @@
 <!-- itinerary form -->
 <div *ngIf="args.type === 'itinerary'">
   <mat-card-title>{{args.type}} editor</mat-card-title>
-  <form [formGroup]="itineraryForm">
-    <!-- agent -->
-    <!--  todo: put back condition <span *ngIf="(user | async)?.key === agent.key" [style.color]="data.color">(You)</span>  -->
-    <mat-select
-      placeholder="Agent"
-      formControlName="agent"
-      required>
-      <mat-option
-        *ngFor="let agent of agents"
-        [value]="agent.key">
-        {{agent.firstName }} {{agent.lastName}}
-      </mat-option>
-    </mat-select>
-
-
-    <!-- client -->
-    <mat-select *ngIf="clients.length > 0"
-      placeholder="Client"
-      formControlName="client"
-      required>
-      <mat-option
-        *ngFor="let client of clients"
-        [value]="client.key">
-        {{client.firstName }} {{client.lastName}}
-      </mat-option>
-    </mat-select>
-    <span class="spacer-vert" *ngIf="clients.length === 0" fxLayoutAlign="center center">loading clients...</span>
-<!--    <mat-form-field>-->
-<!--      <input matInput placeholder="Client" aria-label="Client" [matAutocomplete]="auto" formControlName="client">-->
-<!--      <mat-autocomplete #auto="matAutocomplete">-->
-<!--        <mat-option *ngFor="let client of filteredClients | async" [value]="client.key">-->
-<!--          {{client.firstName}} {{client.lastName}}-->
-<!--        </mat-option>-->
-<!--      </mat-autocomplete>-->
-<!--    </mat-form-field>-->
-
-    <!-- Adults and Children -->
-    <div class="double-items">
+  <mat-dialog-content>
+    <form [formGroup]="itineraryForm">
+      <!-- agent -->
+      <!--  todo: put back condition <span *ngIf="(user | async)?.key === agent.key" [style.color]="data.color">(You)</span>  -->
       <mat-select
-        placeholder="Number of Adults"
-        [(ngModel)]="adults"
-        [ngModelOptions]="{standalone: true}"
-        (selectionChange)="onChangePassengers($event, true)"
-        class="half-input"
+        placeholder="Agent"
+        formControlName="agent"
         required>
-        <mat-option *ngFor="let number of numbers" [value]="number">
-          {{ number }}
+        <mat-option
+          *ngFor="let agent of agents"
+          [value]="agent.key">
+          {{agent.firstName }} {{agent.lastName}}
         </mat-option>
       </mat-select>
 
-      <mat-select
-        placeholder="Number of Children"
-        [(ngModel)]="children"
-        [ngModelOptions]="{standalone: true}"
-        (selectionChange)="onChangePassengers($event, false)"
-        class="half-input"
-        required
-      >
-        <mat-option *ngFor="let number of numbers" [value]="number">
-          {{ number }}
+
+      <!-- client -->
+      <mat-select *ngIf="clients.length > 0"
+                  placeholder="Client"
+                  formControlName="client"
+                  required>
+        <mat-option
+          *ngFor="let client of clients"
+          [value]="client.key">
+          {{client.firstName }} {{client.lastName}}
         </mat-option>
       </mat-select>
-    </div>
+      <span class="spacer-vert" *ngIf="clients.length === 0" fxLayoutAlign="center center">loading clients...</span>
+      <!--    <mat-form-field>-->
+      <!--      <input matInput placeholder="Client" aria-label="Client" [matAutocomplete]="auto" formControlName="client">-->
+      <!--      <mat-autocomplete #auto="matAutocomplete">-->
+      <!--        <mat-option *ngFor="let client of filteredClients | async" [value]="client.key">-->
+      <!--          {{client.firstName}} {{client.lastName}}-->
+      <!--        </mat-option>-->
+      <!--      </mat-autocomplete>-->
+      <!--    </mat-form-field>-->
 
-    <!-- adult details -->
-    <div *ngIf="itineraryForm.get('adults')['length'] > 0">
-      <div *ngFor="let passenger of itineraryForm.get('adults').controls; let i = index;">
-        <div [formGroup]="passenger" fxLayout="row" fxLayoutAlign="space-between center">
-          <mat-form-field>
-            <label>
-              <input
-                matInput
-                name="firstName"
-                type="text"
-                formControlName="firstName"
-                placeholder="First Name"
-              />
-            </label>
-          </mat-form-field>
-          <span class="spacer"></span>
-          <mat-form-field>
-            <label>
-              <input
-                matInput
-                name="lastName"
-                type="text"
-                formControlName="lastName"
-                placeholder="Surname"
-              />
-            </label>
-          </mat-form-field>
-          <span class="spacer"></span>
-          <mat-form-field>
-            <label>
-              <input
-                matInput
-                name="age"
-                type="number"
-                formControlName="age"
-                placeholder="Age"
-              />
-            </label>
-          </mat-form-field>
+      <!-- Adults and Children -->
+      <div class="double-items">
+        <mat-select
+          placeholder="Number of Adults"
+          [(ngModel)]="adults"
+          [ngModelOptions]="{standalone: true}"
+          (selectionChange)="onChangePassengers($event, true)"
+          class="half-input"
+          required>
+          <mat-option *ngFor="let number of numbers" [value]="number">
+            {{ number }}
+          </mat-option>
+        </mat-select>
+
+        <mat-select
+          placeholder="Number of Children"
+          [(ngModel)]="children"
+          [ngModelOptions]="{standalone: true}"
+          (selectionChange)="onChangePassengers($event, false)"
+          class="half-input"
+          required
+        >
+          <mat-option *ngFor="let number of numbers" [value]="number">
+            {{ number }}
+          </mat-option>
+        </mat-select>
+      </div>
+
+      <!-- adult details -->
+      <div *ngIf="itineraryForm.get('adults')['length'] > 0">
+        <div *ngFor="let passenger of itineraryForm.get('adults').controls; let i = index;">
+          <div [formGroup]="passenger" fxLayout="row" fxLayoutAlign="space-between center">
+            <mat-form-field>
+              <label>
+                <input
+                  matInput
+                  name="firstName"
+                  type="text"
+                  formControlName="firstName"
+                  placeholder="First Name"
+                />
+              </label>
+            </mat-form-field>
+            <span class="spacer"></span>
+            <mat-form-field>
+              <label>
+                <input
+                  matInput
+                  name="lastName"
+                  type="text"
+                  formControlName="lastName"
+                  placeholder="Surname"
+                />
+              </label>
+            </mat-form-field>
+            <span class="spacer"></span>
+            <mat-form-field>
+              <label>
+                <input
+                  matInput
+                  name="age"
+                  type="number"
+                  formControlName="age"
+                  placeholder="Age"
+                />
+              </label>
+            </mat-form-field>
+          </div>
         </div>
       </div>
-    </div>
 
-    <!-- children details -->
-    <div *ngIf="itineraryForm.get('children')['length'] > 0">
-      <div *ngFor="let passenger of itineraryForm.get('children').controls; let i = index;">
-        <div [formGroup]="passenger" fxLayout="row">
-          <mat-form-field>
-            <label>
-              <input
-                matInput
-                name="firstName"
-                type="text"
-                formControlName="firstName"
-                placeholder="First Name"
-                fxFlex="30"
-              />
-            </label>
-          </mat-form-field>
-          <span class="spacer"></span>
-          <mat-form-field>
-            <label>
-              <input
-                matInput
-                name="lastName"
-                type="text"
-                formControlName="lastName"
-                placeholder="Surname"
-                fxFlex="30"
-              />
-            </label>
-          </mat-form-field>
-          <span class="spacer"></span>
-          <mat-form-field>
-            <label>
-              <input
-                matInput
-                name="age"
-                type="number"
-                formControlName="age"
-                placeholder="Age"
-                fxFlex="30"
-              />
-            </label>
-          </mat-form-field>
+      <!-- children details -->
+      <div *ngIf="itineraryForm.get('children')['length'] > 0">
+        <div *ngFor="let passenger of itineraryForm.get('children').controls; let i = index;">
+          <div [formGroup]="passenger" fxLayout="row">
+            <mat-form-field>
+              <label>
+                <input
+                  matInput
+                  name="firstName"
+                  type="text"
+                  formControlName="firstName"
+                  placeholder="First Name"
+                  fxFlex="30"
+                />
+              </label>
+            </mat-form-field>
+            <span class="spacer"></span>
+            <mat-form-field>
+              <label>
+                <input
+                  matInput
+                  name="lastName"
+                  type="text"
+                  formControlName="lastName"
+                  placeholder="Surname"
+                  fxFlex="30"
+                />
+              </label>
+            </mat-form-field>
+            <span class="spacer"></span>
+            <mat-form-field>
+              <label>
+                <input
+                  matInput
+                  name="age"
+                  type="number"
+                  formControlName="age"
+                  placeholder="Age"
+                  fxFlex="30"
+                />
+              </label>
+            </mat-form-field>
+          </div>
         </div>
       </div>
-    </div>
 
-    <!-- name of itinerary -->
-    <mat-form-field>
-      <label>
-        <input
-          type="text"
-          placeholder="Name of itinerary"
-          formControlName="title"
-          matInput
-          required/>
-      </label>
-    </mat-form-field>
-
-
-    <div
-      fxLayout="row"
-      fxLayoutGap="10px"
-      fxLayoutAlign="space-between center">
-
-      <!-- start date -->
-      <mat-form-field class="half-input">
+      <!-- name of itinerary -->
+      <mat-form-field>
         <label>
           <input
+            type="text"
+            placeholder="Name of itinerary"
+            formControlName="title"
             matInput
-            [matDatepicker]="picker"
-            placeholder="Start Date"
-            formControlName="startDate"
-            required>
+            required/>
         </label>
-        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-        <!--<button matSuffix [matDatepickerToggle]="picker"></button>-->
       </mat-form-field>
-      <mat-datepicker touchUi="true" #picker></mat-datepicker>
 
-      <!-- end date -->
-      <mat-form-field class="half-input">
-        <label>
-          <input
-            matInput
-            [matDatepicker]="picker2"
-            placeholder="End Date"
-            formControlName="endDate"
-            required>
-        </label>
-        <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
-        <!--<button matSuffix [matDatepickerToggle]="picker2"></button>-->
-      </mat-form-field>
-      <mat-datepicker touchUi="true" #picker2></mat-datepicker>
-    </div>
 
-    <span class="spacer-vert"></span>
+      <div
+        fxLayout="row"
+        fxLayoutGap="10px"
+        fxLayoutAlign="space-between center">
 
-    <!-- save button -->
-    <button color="primary" (click)="addItinerary(itineraryForm.value)" [disabled]="!itineraryForm.valid"
-            class="full-input" mat-raised-button>Save
-    </button>
+        <!-- start date -->
+        <mat-form-field class="half-input">
+          <label>
+            <input
+              matInput
+              [matDatepicker]="picker"
+              placeholder="Start Date"
+              formControlName="startDate"
+              required>
+          </label>
+          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+          <!--<button matSuffix [matDatepickerToggle]="picker"></button>-->
+        </mat-form-field>
+        <mat-datepicker touchUi="true" #picker></mat-datepicker>
 
-    <span class="spacer-vert"></span>
+        <!-- end date -->
+        <mat-form-field class="half-input">
+          <label>
+            <input
+              matInput
+              [matDatepicker]="picker2"
+              placeholder="End Date"
+              formControlName="endDate"
+              required>
+          </label>
+          <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+          <!--<button matSuffix [matDatepickerToggle]="picker2"></button>-->
+        </mat-form-field>
+        <mat-datepicker touchUi="true" #picker2></mat-datepicker>
+      </div>
 
-    <!--  error display  -->
-    <span *ngIf="error">{{error}}</span>
-  </form>
+      <span class="spacer-vert"></span>
+
+      <!-- save button -->
+      <button color="primary" (click)="addItinerary(itineraryForm.value)" [disabled]="!itineraryForm.valid"
+              class="full-input" mat-raised-button>Save
+      </button>
+
+      <span class="spacer-vert"></span>
+
+      <!--  error display  -->
+      <span *ngIf="error">{{error}}</span>
+    </form>
+  </mat-dialog-content>
 </div>
 
 <!-- client form -->
 <div  *ngIf="args.type === 'clients'">
   <mat-card-title>{{args.type}} editor</mat-card-title>
-  <form [formGroup]="clientForm" (ngSubmit)="addClient(clientForm.value)">
-    <!-- first name -->
-    <mat-form-field>
-      <label>
-        <input type="text" placeholder="First Name" formControlName="firstName" matInput required>
-      </label>
-    </mat-form-field>
+  <mat-dialog-content>
+    <form [formGroup]="clientForm" (ngSubmit)="addClient(clientForm.value)">
+      <!-- first name -->
+      <mat-form-field>
+        <label>
+          <input type="text" placeholder="First Name" formControlName="firstName" matInput required>
+        </label>
+      </mat-form-field>
 
-    <!-- last name -->
-    <mat-form-field>
-      <label>
-        <input type="text" placeholder="Last Name" formControlName="lastName" matInput required>
-      </label>
-    </mat-form-field>
+      <!-- last name -->
+      <mat-form-field>
+        <label>
+          <input type="text" placeholder="Last Name" formControlName="lastName" matInput required>
+        </label>
+      </mat-form-field>
 
-    <!-- email -->
-    <mat-form-field>
-      <label>
-        <input type="email" placeholder="Email address" formControlName="email" matInput required>
-      </label>
-    </mat-form-field>
+      <!-- email -->
+      <mat-form-field>
+        <label>
+          <input type="email" placeholder="Email address" formControlName="email" matInput required>
+        </label>
+      </mat-form-field>
 
-    <!-- tel -->
-    <mat-form-field>
-      <label>
-        <input type="tel" placeholder="Phone Number" formControlName="phone" matInput required/>
-      </label>
-    </mat-form-field>
+      <!-- tel -->
+      <mat-form-field>
+        <label>
+          <input type="tel" placeholder="Phone Number" formControlName="phone" matInput required/>
+        </label>
+      </mat-form-field>
 
-    <!-- nationality -->
-<!--    <mat-select placeholder="Nationality" formControlName="nationality" required>-->
-<!--      <mat-option *ngFor="let country of countries" [value]="country.name">{{country.name}}</mat-option>-->
-<!--    </mat-select>-->
+      <!-- nationality -->
+      <!--    <mat-select placeholder="Nationality" formControlName="nationality" required>-->
+      <!--      <mat-option *ngFor="let country of countries" [value]="country.name">{{country.name}}</mat-option>-->
+      <!--    </mat-select>-->
 
-    <mat-form-field>
-      <input matInput placeholder="Nationality" aria-label="Nationality" [matAutocomplete]="auto" formControlName="nationality">
-      <mat-autocomplete #auto="matAutocomplete">
-        <mat-option *ngFor="let country of filteredCountries | async" [value]="country.name">
-          <span>{{country.name}}</span> |
-          <small>code: {{country.code}}</small>
-        </mat-option>
-      </mat-autocomplete>
-    </mat-form-field>
+      <mat-form-field>
+        <input matInput placeholder="Nationality" aria-label="Nationality" [matAutocomplete]="auto" formControlName="nationality">
+        <mat-autocomplete #auto="matAutocomplete">
+          <mat-option *ngFor="let country of filteredCountries | async" [value]="country.name">
+            <span>{{country.name}}</span> |
+            <small>code: {{country.code}}</small>
+          </mat-option>
+        </mat-autocomplete>
+      </mat-form-field>
 
-    <span class="spacer-vert"></span>
+      <span class="spacer-vert"></span>
 
-    <!--  save button-->
-    <button type="submit" [disabled]="!clientForm.valid" mat-raised-button class="full-input" color="primary" >Save
-    </button>
+      <!--  save button-->
+      <button type="submit" [disabled]="!clientForm.valid" mat-raised-button class="full-input" color="primary" >Save
+      </button>
 
-    <span class="spacer-vert"></span>
+      <span class="spacer-vert"></span>
 
-    <!--  error display  -->
-    <span *ngIf="error">{{error}}</span>
-  </form>
+      <!--  error display  -->
+      <span *ngIf="error">{{error}}</span>
+    </form>
+  </mat-dialog-content>
+
 </div>
 
 <!-- agent form-->
 <div *ngIf="args.type === 'agents'">
   <mat-card-title>{{args.type}} editor</mat-card-title>
-  <form [formGroup]="agentForm" (ngSubmit)="addAgent(agentForm.value)">
-    <!-- account type -->
-    <mat-radio-group formControlName="role" required fxLayout>
-      <mat-radio-button value="admin" color="primary" fxFlex>Admin</mat-radio-button>
-      <mat-radio-button value="agent" color="primary" fxFlex>Agent</mat-radio-button>
-    </mat-radio-group>
+  <mat-dialog-content>
+    <form [formGroup]="agentForm" (ngSubmit)="addAgent(agentForm.value)">
+      <!-- account type -->
+      <mat-radio-group formControlName="role" required fxLayout>
+        <mat-radio-button value="admin" color="primary" fxFlex>Admin</mat-radio-button>
+        <mat-radio-button value="agent" color="primary" fxFlex>Agent</mat-radio-button>
+      </mat-radio-group>
 
-    <div></div>
-    <!-- first name -->
-    <mat-form-field>
-      <label>
-        <input type="text" placeholder="First Name" formControlName="firstName" matInput required>
-      </label>
-    </mat-form-field>
+      <div></div>
+      <!-- first name -->
+      <mat-form-field>
+        <label>
+          <input type="text" placeholder="First Name" formControlName="firstName" matInput required>
+        </label>
+      </mat-form-field>
 
-    <!-- last name -->
-    <mat-form-field>
-      <label>
-        <input type="text" placeholder="Last Name" formControlName="lastName" matInput required>
-      </label>
-    </mat-form-field>
+      <!-- last name -->
+      <mat-form-field>
+        <label>
+          <input type="text" placeholder="Last Name" formControlName="lastName" matInput required>
+        </label>
+      </mat-form-field>
 
-    <!-- email address -->
-    <mat-form-field>
-      <label>
-        <input type="email" placeholder="Email address" formControlName="email" matInput required>
-      </label>
-    </mat-form-field>
+      <!-- email address -->
+      <mat-form-field>
+        <label>
+          <input type="email" placeholder="Email address" formControlName="email" matInput required>
+        </label>
+      </mat-form-field>
 
-    <!-- password -->
-    <mat-form-field *ngIf="args.new">
-      <label>
-        <input type="password" placeholder="Password" formControlName="password" matInput required>
-      </label>
-    </mat-form-field>
+      <!-- password -->
+      <mat-form-field *ngIf="args.new">
+        <label>
+          <input type="password" placeholder="Password" formControlName="password" matInput required>
+        </label>
+      </mat-form-field>
 
-    <span class="spacer-vert"></span>
+      <span class="spacer-vert"></span>
 
-    <!-- save button -->
-    <button type="submit" [disabled]="!agentForm.valid" mat-raised-button class="full-input" color="primary">Save
-    </button>
+      <!-- save button -->
+      <button type="submit" [disabled]="!agentForm.valid" mat-raised-button class="full-input" color="primary">Save
+      </button>
 
-    <span class="spacer-vert"></span>
+      <span class="spacer-vert"></span>
 
-    <!-- error display-->
-    <span *ngIf="error">{{error}}</span>
-  </form>
+      <!-- error display-->
+      <span *ngIf="error">{{error}}</span>
+    </form>
+  </mat-dialog-content>
+
 </div>
 
 <!-- inventory form -->
@@ -431,9 +439,10 @@
 <div *ngIf="args.type === 'media'">
   <mat-card-title>{{args.type}} editor</mat-card-title>
   <br><br>
-  <form #mediaForm="ngForm" (ngSubmit)="addMedia()">
-    <!-- existing image -->
-    <div *ngIf="!args.new && mediaItem.imageUrl">
+  <mat-dialog-content>
+    <form #mediaForm="ngForm" (ngSubmit)="addMedia()">
+      <!-- existing image -->
+      <div *ngIf="!args.new && mediaItem.imageUrl">
       <span fxLayout="column" fxLayoutAlign="center center" fxLayoutGap="10px" class="loaded-image">
         <!-- delete icon -->
         <mat-icon style="cursor:pointer !important;" fxFlexAlign="end" color="warn" (click)="deleteImageForMedia()">cancel</mat-icon>
@@ -441,151 +450,156 @@
         <!-- image -->
         <img [src]="mediaItem.imageUrl" width="100%" style="border-radius: 10px"/>
       </span>
-    </div>
+      </div>
 
-    <!-- image uploader -->
-    <app-file-uploader *ngIf="args.new" (notify)="fileSelectedForMedia($event)" [activeColor]="'orangered'" [baseColor]="'lightgray'"></app-file-uploader>
+      <!-- image uploader -->
+      <app-file-uploader *ngIf="args.new" (notify)="fileSelectedForMedia($event)" [activeColor]="'orangered'" [baseColor]="'lightgray'"></app-file-uploader>
 
-    <!-- image uploader -->
-    <app-file-uploader *ngIf="!mediaItem.imageUrl && !args.new" (notify)="fileSelectedForMedia($event)" [activeColor]="'orangered'" [baseColor]="'lightgray'"></app-file-uploader>
+      <!-- image uploader -->
+      <app-file-uploader *ngIf="!mediaItem.imageUrl && !args.new" (notify)="fileSelectedForMedia($event)" [activeColor]="'orangered'" [baseColor]="'lightgray'"></app-file-uploader>
 
-    <span class="spacer-vert"></span>
+      <span class="spacer-vert"></span>
 
-    <!-- title -->
-    <mat-form-field>
-      <label>
-        <input placeholder="Title" [(ngModel)]="mediaItem.title" type="text" name="title" matInput required/>
-      </label>
-    </mat-form-field>
+      <!-- title -->
+      <mat-form-field>
+        <label>
+          <input placeholder="Title" [(ngModel)]="mediaItem.title" type="text" name="title" matInput required/>
+        </label>
+      </mat-form-field>
 
-    <!-- caption -->
-    <mat-form-field>
-      <label>
-      <textarea placeholder="Caption" [(ngModel)]="mediaItem.caption" rows="2" cols="50" name="caption" matInput required></textarea>
-      </label>
-    </mat-form-field>
+      <!-- caption -->
+      <mat-form-field>
+        <label>
+          <textarea placeholder="Caption" [(ngModel)]="mediaItem.caption" rows="2" cols="50" name="caption" matInput required></textarea>
+        </label>
+      </mat-form-field>
 
-<!--  tags  -->
-<!--    <div formGroupName="tags">-->
-<!--      <span>-->
-<!--        <mat-form-field>-->
-<!--        <label>-->
-<!--          <textarea placeholder="Tags" rows="2" cols="50" formControlName="tag" matInput required></textarea>-->
-<!--        </label>-->
-<!--      </mat-form-field>-->
-<!--      </span>-->
-<!--    </div>-->
-
-
-    <span class="spacer-vert"></span>
-
-    <!-- save button   -->
-    <button class="full-input" color="primary" type="submit" [disabled]="!mediaForm.valid" mat-raised-button>Save</button>
-
-    <span class="spacer-vert"></span>
-
-    <!--  error display  -->
-    <span *ngIf="error" style="color: red">{{error}}</span>
+      <!--  tags  -->
+      <!--    <div formGroupName="tags">-->
+      <!--      <span>-->
+      <!--        <mat-form-field>-->
+      <!--        <label>-->
+      <!--          <textarea placeholder="Tags" rows="2" cols="50" formControlName="tag" matInput required></textarea>-->
+      <!--        </label>-->
+      <!--      </mat-form-field>-->
+      <!--      </span>-->
+      <!--    </div>-->
 
 
-  </form>
+      <span class="spacer-vert"></span>
+
+      <!-- save button   -->
+      <button class="full-input" color="primary" type="submit" [disabled]="!mediaForm.valid" mat-raised-button>Save</button>
+
+      <span class="spacer-vert"></span>
+
+      <!--  error display  -->
+      <span *ngIf="error" style="color: red">{{error}}</span>
+
+
+    </form>
+  </mat-dialog-content>
+
 </div>
 
 <!-- country form -->
 <div *ngIf="args.type === 'countries'">
   <mat-card-title>{{args.type}} editor</mat-card-title>
   <br><br>
-  <form [formGroup]="countryForm">
-    <!-- name -->
-    <mat-form-field>
-      <label>
-        <input type="text" placeholder="Country name" formControlName="name" matInput required>
-      </label>
-    </mat-form-field>
+  <mat-dialog-content>
+    <form [formGroup]="countryForm">
+      <!-- name -->
+      <mat-form-field>
+        <label>
+          <input type="text" placeholder="Country name" formControlName="name" matInput required>
+        </label>
+      </mat-form-field>
 
-    <!-- code -->
-    <mat-form-field>
-      <label>
-        <input type="text" placeholder="Country code" formControlName="code" matInput>
-      </label>
-    </mat-form-field>
+      <!-- code -->
+      <mat-form-field>
+        <label>
+          <input type="text" placeholder="Country code" formControlName="code" matInput>
+        </label>
+      </mat-form-field>
 
-    <!-- flag -->
-    <mat-form-field>
-      <label>
-        <input type="url" placeholder="Flag image link" formControlName="flag" matInput>
-      </label>
-    </mat-form-field>
+      <!-- flag -->
+      <mat-form-field>
+        <label>
+          <input type="url" placeholder="Flag image link" formControlName="flag" matInput>
+        </label>
+      </mat-form-field>
 
-    <!--  regions  -->
-    <div fxLayout="row" fxLayoutAlign="space-between start" fxLayoutGap="10">
-<!--      phone number + delete button-->
-      <div *ngIf="countryForm.get('regions').controls.length > 0" fxLayout="column" fxFlex="70">
-        <div *ngFor="let region of countryForm.get('regions').controls; let i = index;" fxLayout="column">
-          <div [formGroup]="region" fxLayout="row">
-            <!-- region -->
-            <mat-form-field>
-              <label>
-                <input type="text" placeholder="Region name" formControlName="name" matInput required>
-              </label>
-            </mat-form-field>
+      <!--  regions  -->
+      <div fxLayout="row" fxLayoutAlign="space-between start" fxLayoutGap="10">
+        <!--      phone number + delete button-->
+        <div *ngIf="countryForm.get('regions').controls.length > 0" fxLayout="column" fxFlex="70">
+          <div *ngFor="let region of countryForm.get('regions').controls; let i = index;" fxLayout="column">
+            <div [formGroup]="region" fxLayout="row">
+              <!-- region -->
+              <mat-form-field>
+                <label>
+                  <input type="text" placeholder="Region name" formControlName="name" matInput required>
+                </label>
+              </mat-form-field>
 
-            <!-- delete button -->
-            <button
-              fxFlex="nogrow"
-              mat-icon-button
-              (click)="removeFormControlForCountry('regions',i)">
-              <svg-icon src="../assets/icons/trash.svg" [style.fill]=this.data.color></svg-icon>
-            </button>
+              <!-- delete button -->
+              <button
+                fxFlex="nogrow"
+                mat-icon-button
+                (click)="removeFormControlForCountry('regions',i)">
+                <svg-icon src="../assets/icons/trash.svg" [style.fill]=this.data.color></svg-icon>
+              </button>
+            </div>
           </div>
         </div>
+
+        <!-- add button -->
+        <button color="primary" fxFlex (click)="addFormControlForCountry('regions')" mat-raised-button>Add region</button>
       </div>
 
-      <!-- add button -->
-      <button color="primary" fxFlex (click)="addFormControlForCountry('regions')" mat-raised-button>Add region</button>
-    </div>
+      <!--  phone numbers  -->
+      <div fxLayout="row" fxLayoutAlign="space-between start" fxLayoutGap="10">
 
-    <!--  phone numbers  -->
-    <div fxLayout="row" fxLayoutAlign="space-between start" fxLayoutGap="10">
+        <!-- phone number + delete button -->
+        <div *ngIf="countryForm.get('phoneNumbers').controls.length > 0" fxLayout="column" fxFlex="70">
+          <div *ngFor="let phoneNumber of countryForm.get('phoneNumbers').controls; let i = index;">
+            <div [formGroup]="phoneNumber" fxLayout="row">
+              <!-- phone number -->
+              <mat-form-field>
+                <label>
+                  <input type="text" placeholder="Phone number" formControlName="number" matInput required>
+                </label>
+              </mat-form-field>
 
-      <!-- phone number + delete button -->
-      <div *ngIf="countryForm.get('phoneNumbers').controls.length > 0" fxLayout="column" fxFlex="70">
-        <div *ngFor="let phoneNumber of countryForm.get('phoneNumbers').controls; let i = index;">
-          <div [formGroup]="phoneNumber" fxLayout="row">
-            <!-- phone number -->
-            <mat-form-field>
-              <label>
-                <input type="text" placeholder="Phone number" formControlName="number" matInput required>
-              </label>
-            </mat-form-field>
-
-            <!-- delete button -->
-            <button
-              fxFlex="nogrow"
-              mat-icon-button
-              (click)="removeFormControlForCountry('phoneNumbers',i)">
-              <svg-icon src="../assets/icons/trash.svg" [style.fill]=this.data.color></svg-icon>
-            </button>
+              <!-- delete button -->
+              <button
+                fxFlex="nogrow"
+                mat-icon-button
+                (click)="removeFormControlForCountry('phoneNumbers',i)">
+                <svg-icon src="../assets/icons/trash.svg" [style.fill]=this.data.color></svg-icon>
+              </button>
+            </div>
           </div>
         </div>
+
+        <!-- add button -->
+        <button color="primary" fxFlex (click)="addFormControlForCountry('phoneNumbers')" mat-raised-button>Add Phone Number</button>
       </div>
 
-      <!-- add button -->
-      <button color="primary" fxFlex (click)="addFormControlForCountry('phoneNumbers')" mat-raised-button>Add Phone Number</button>
-    </div>
+      <span class="spacer-vert"></span>
 
-    <span class="spacer-vert"></span>
+      <!-- save button   -->
+      <button class="full-input" color="primary" (click)="addCountry(countryForm.value)" [disabled]="!countryForm.valid" mat-raised-button>Save</button>
 
-    <!-- save button   -->
-    <button class="full-input" color="primary" (click)="addCountry(countryForm.value)" [disabled]="!countryForm.valid" mat-raised-button>Save</button>
+      <span class="spacer-vert"></span>
 
-    <span class="spacer-vert"></span>
-
-    <!--  error display  -->
-    <span *ngIf="error" style="color: red">{{error}}</span>
+      <!--  error display  -->
+      <span *ngIf="error" style="color: red">{{error}}</span>
 
 
-  </form>
+    </form>
+  </mat-dialog-content>
+
 </div>
 
 

@@ -1503,41 +1503,6 @@ if (lastIteneraryItemsHeight + quotHeight > quoteThreshold) {
     return this.filter.transform(balance);
   }
 
-  // // function to calculate ave price per person
-  // avePricePerPersonCalc() {
-  //   let appp = 0;
-  //
-  //   this.itinerary.total === 0 ? appp = 0 : appp = this.itinerary.total / (this.itinerary.children + this.itinerary.adults);
-  //
-  //   return this.filter.transform(appp);
-  // }
-  //
-  // // function to calculate ave price per person per day
-  // avePricePerPersonPerDayCalc() {
-  //   let apppd = 0;
-  //
-  //   this.itinerary.total === 0 ? apppd = 0 : apppd = (this.itinerary.total / (this.itinerary.children + this.itinerary.adults)) / this.usedDays;
-  //
-  //   return this.filter.transform(apppd);
-  // }
-
-  nameGenerator(key: string, type: string) {
-    // client\agent name string
-    let string = '';
-
-    // get from firebase
-    this.data.firestore.doc(`${type}/${key}`)
-      .valueChanges()
-      .subscribe((res) => {
-        // concat first name and last name
-        string = `${res[`firstName`]} ${res[`lastName`]}`;
-      });
-
-
-    // return full name
-    return string;
-  }
-
   // function to get accommodation
   getAccommodation(accommodation: any[]) {
 
@@ -1568,12 +1533,12 @@ if (lastIteneraryItemsHeight + quotHeight > quoteThreshold) {
   getDestinations() {
     const countries = [];
 
-    // this.phone_numbers.forEach(d => {
-    //   countries.push(this.countries.find(country => country.key === d ).name);
-    // });
+    this.phoneNumbers.forEach(phoneNumber => {
+      countries.push(this.countries.find(country => country.key === phoneNumber.country).name);
+    });
 
     let dest = '';
-    // dest = [countries.slice(0, -1).join(', '), countries.slice(-1)[0]].join(countries.length < 2 ? '' : ' & ');
+    dest = [countries.slice(0, -1).join(', '), countries.slice(-1)[0]].join(countries.length < 2 ? '' : ' & ');
     return dest;
   }
 

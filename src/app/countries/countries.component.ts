@@ -97,19 +97,23 @@ export class CountriesComponent implements OnInit, OnDestroy {
         new: true,
         type: 'countries'
       },
-      maxHeight: '50%',
+      maxHeight: '700',
       maxWidth: '60vw'
     });
   }
 
 // function to edit inventory item
   editCountry(country) {
-    // todo: fix region control when editing inventory item
     this.dialog.open(EditorComponent, {
       data: {
         item: country,
         new: false,
         type: 'countries'
+      },
+      maxHeight: '700',
+      maxWidth: '60vw',
+      position: {
+        top: '100px'
       }
     });
   }
