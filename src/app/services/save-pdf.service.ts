@@ -16,12 +16,15 @@ export class SavePdfService {
   constructor(private data: DataService, private http: HttpClient, public dialog: MatDialog) {
     // get countries
     this.data.firestore.collection('countries')
-    .valueChanges()
+    .snapshotChanges()
     .subscribe(res => {
-    
-      this.countries = res;
+      this.countries = [];
+      this.regions = [];
+      res.forEach(doc => {
+        const country = doc.payload.doc.data()
+        country[`key`] = doc.payload.doc.id;
+        this.countries.push(country)
 
-      this.countries.forEach(country => {
         country[`regions`].forEach(region => {
           this.regions.push(region)
         })
@@ -42,7 +45,7 @@ export class SavePdfService {
   comments;
   payments;
   inventory;
-  phone_numbers;
+  phoneNumbers;
   totalPayments = 0;
   totalDays = 0;
   usedDays = 0;
@@ -86,35 +89,33 @@ export class SavePdfService {
        disableClose: true,
        width: '300px',
     });
-    //  this.http.post('https://planet-africa-print-server-dev.herokuapp.com/print-pdf', {
-    // //  this.http.post('https://planet-africa-print-server.herokuapp.com/print-pdf', {
-    //   //  this.http.post('http://localhost:8000/print-pdf', {
-    //   html
-    // }, {
-    //   responseType: 'arraybuffer'
-    // }).subscribe((res) => {
-    //   // create pdf from blob
-    //      const file = new Blob([res], {type: 'application/pdf'});
+     this.http.post('https://planet-africa-print-server-dev.herokuapp.com/print-pdf', {
+      //  this.http.post('https://planet-africa-print-server.herokuapp.com/print-pdf', {
+      //  this.http.post('http://localhost:8000/print-pdf', {
+      html
+    }, {
+      responseType: 'arraybuffer'
+    }).subscribe((res) => {
+      // create pdf from blob
+         const file = new Blob([res], {type: 'application/pdf'});
 
-    //      // save pdf
-    //      saveAs(file, `${this.itinerary.title} ${Date.now()}.pdf`);
+         // save pdf
+         saveAs(file, `${this.itinerary.title} ${Date.now()}.pdf`);
 
-    //      console.log('pdf generated');
+         console.log('pdf generated');
 
-    //      // close ref
-    //      this.dialogRef.close();
-    // }
-    //   , (err) => {
-    //     console.log(err);
-    //     Swal.fire('Generating PDF', err.message, 'error')
-    //       .then(_ => {
-    //         // close ref
-    //         this.dialogRef.close();
-    //       });
-    //   }
-    // );
-
-
+         // close ref
+         this.dialogRef.close();
+    }
+      , (err) => {
+        console.log(err);
+        Swal.fire('Generating PDF', err.message, 'error')
+          .then(_ => {
+            // close ref
+            this.dialogRef.close();
+          });
+      }
+    );
   }
 
   // function to save pdf
@@ -139,7 +140,7 @@ export class SavePdfService {
     this.totalPayments =  itineraryData.totalPayments;
 
     // phone numbers associated with itinerary
-    this.phone_numbers = this.itinerary.contactDetails;
+    this.phoneNumbers = itineraryData.contactDetails;
 
     // assign used days
     this.usedDays = usedDays;
@@ -1549,7 +1550,7 @@ if (lastIteneraryItemsHeight + quotHeight > quoteThreshold) {
         <div class="img-block" style="background-image:url('${a.imageUrl}')"></div>
         <div class="accom-desc">
           <h2>${a.name.replace(/\-.*/, '')}</h2>
-          <p class="location">${this.showRegion(a.region)}</p>
+          <p class="location">${a.region}</p>
           <p class="desc">${a.longDescription}</p>
         </div>
       </div>`;
@@ -1593,29 +1594,13 @@ if (lastIteneraryItemsHeight + quotHeight > quoteThreshold) {
   }
 
   // function to diplay destination names
-  showDestination(id: string) {
-
+  showDestination(ref) {
     // return destination name
     const d = this.countries.find((item) => {
-
-      return item.id === parseInt(id, 10);
-
+      return item.key === ref.id
     });
 
     return d.name;
-  }
-
-  // function to display region names
-  showRegion(id: string) {
-
-    // return region name
-    const r = this.regions.find((item) => {
-
-      return item.id === parseInt(id, 10);
-
-    });
-
-    return r.name;
   }
 
   getHeaderLogo() {
@@ -1699,11 +1684,11 @@ if (lastIteneraryItemsHeight + quotHeight > quoteThreshold) {
   getContacts() {
     let html = '';
 
-    this.phone_numbers.forEach((pn) => {
+    this.phoneNumbers.forEach((pn) => {
 
       let contactBlock = `
            <div class="contact-block">
-        <p class="heading">${pn.country}</p>
+        <p class="heading">${pn.countryName}</p>
         <div class="details">`;
 
       // check if office hours is set & add to contact block
