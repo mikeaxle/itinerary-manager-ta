@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
-import {HttpClient} from '@angular/common/http';
-import {DataService} from './data.service';
-import {CountryService} from './country.service';
+import { HttpClient } from '@angular/common/http';
+import { DataService } from './data.service';
+import { CountryService } from './country.service';
 import { saveAs } from 'file-saver';
 import { MoneyPipe } from '../filter/money.pipe';
-import {MatDialog, MatDialogRef} from '@angular/material';
-import {PdfDialogComponent} from '../shared/pdf-dialog/pdf-dialog.component';
+import { MatDialog, MatDialogRef } from '@angular/material';
+import { PdfDialogComponent } from '../shared/pdf-dialog/pdf-dialog.component';
 import Swal from 'sweetalert2';
 
 @Injectable({
@@ -16,20 +16,20 @@ export class SavePdfService {
   constructor(private data: DataService, private http: HttpClient, public dialog: MatDialog) {
     // get countries
     this.data.firestore.collection('countries')
-    .snapshotChanges()
-    .subscribe(res => {
-      this.countries = [];
-      this.regions = [];
-      res.forEach(doc => {
-        const country = doc.payload.doc.data()
-        country[`key`] = doc.payload.doc.id;
-        this.countries.push(country)
+      .snapshotChanges()
+      .subscribe(res => {
+        this.countries = [];
+        this.regions = [];
+        res.forEach(doc => {
+          const country = doc.payload.doc.data()
+          country[`key`] = doc.payload.doc.id;
+          this.countries.push(country)
 
-        country[`regions`].forEach(region => {
-          this.regions.push(region)
+          country[`regions`].forEach(region => {
+            this.regions.push(region)
+          })
         })
       })
-    })
 
   }
 
@@ -78,18 +78,63 @@ export class SavePdfService {
   countries$;
   regions$;
 
-  // function to communicate with print api
-  // https://planet-africa-itinerary-app.appspot.com/print-pdf
-  // https://planet-africa-print-server.herokuapp.com/print-pdf
-  getPDF(html: string) {
-     this.dialogRef = this.dialog.open(PdfDialogComponent, {
-       data: {
-        title: this.itinerary.title
-       },
-       disableClose: true,
-       width: '300px',
+  getLiveDoc(html, mode, type) {
+
+    // show dialog
+    this.dialogRef = this.dialog.open(PdfDialogComponent, {
+      data: {
+        title: this.itinerary.title,
+        type: 'Live URL'
+      },
+      disableClose: true,
+      width: '300px',
     });
-     this.http.post('https://planet-africa-print-server-dev.herokuapp.com/print-pdf', {
+
+    // this.http.post('http://localhost:8000/liveUrl', {
+    this.http.post('https://planet-africa-print-server-dev.herokuapp.com/liveUrl', {
+      html,
+      title: `${this.itinerary.key}-${mode}-${type}`
+    }, {
+      responseType: 'text'
+    }).subscribe((res) => {
+
+      // close ref
+      this.dialogRef.close();
+      Swal.fire({
+        confirmButtonText: 'Open Live Url',
+        html: `${res}`,
+        title: 'Live Url available at:',
+        type: 'success',
+      })
+        .then(result => {
+          if (result.value) {
+            window.open(res)
+          }
+        })
+    }
+      , (err) => {
+        console.log(err);
+        Swal.fire('Generate Live Url', err.message, 'error')
+          .then(_ => {
+            // close ref
+            this.dialogRef.close();
+          });
+      }
+    );
+
+  }
+
+  // function to communicate with print api
+  getPDF(html: string) {
+    this.dialogRef = this.dialog.open(PdfDialogComponent, {
+      data: {
+        title: this.itinerary.title,
+        type: 'PDF'
+      },
+      disableClose: true,
+      width: '300px',
+    });
+    this.http.post('https://planet-africa-print-server-dev.herokuapp.com/print-pdf', {
       //  this.http.post('https://planet-africa-print-server.herokuapp.com/print-pdf', {
       //  this.http.post('http://localhost:8000/print-pdf', {
       html
@@ -97,15 +142,15 @@ export class SavePdfService {
       responseType: 'arraybuffer'
     }).subscribe((res) => {
       // create pdf from blob
-         const file = new Blob([res], {type: 'application/pdf'});
+      const file = new Blob([res], { type: 'application/pdf' });
 
-         // save pdf
-         saveAs(file, `${this.itinerary.title} ${Date.now()}.pdf`);
+      // save pdf
+      saveAs(file, `${this.itinerary.title} ${Date.now()}.pdf`);
 
-         console.log('pdf generated');
+      console.log('pdf generated');
 
-         // close ref
-         this.dialogRef.close();
+      // close ref
+      this.dialogRef.close();
     }
       , (err) => {
         console.log(err);
@@ -119,9 +164,7 @@ export class SavePdfService {
   }
 
   // function to save pdf
-  savePDF(itineraryData: any, type: number, usedDays: any) {
-    console.log(itineraryData)
-
+  savePDF(itineraryData: any, mode: number, type: number, usedDays: any) {
     // get itinerary
     this.itinerary = itineraryData.itinerary;
 
@@ -137,7 +180,7 @@ export class SavePdfService {
     // payments
     this.payments = itineraryData.payments;
 
-    this.totalPayments =  itineraryData.totalPayments;
+    this.totalPayments = itineraryData.totalPayments;
 
     // phone numbers associated with itinerary
     this.phoneNumbers = itineraryData.contactDetails;
@@ -188,14 +231,25 @@ export class SavePdfService {
     // check pdf print mode type
     if (type === 1) {
       this.html = this.getHtmlHalf();
-    } else if (type === 2) {
+    }
+
+    if (type === 2) {
       this.html = this.getHtmlFullNoCost();
-    } else if (type === 3) {
+    }
+
+    if (type === 3) {
       this.html = this.getHtmlFull();
     }
 
-    // get pdf
-    this.getPDF(this.html);
+    // mode 1 is live url
+    if (mode === 1) {
+      this.getLiveDoc(this.html, mode, type);
+    }
+
+    if (mode === 2) {
+      // mode 2 is get pdf
+      this.getPDF(this.html);
+    }
 
     // reset certain objects
     this.destinations = [];
@@ -392,11 +446,11 @@ footer p:last-of-type{
         </li>
         <li>
           <p class="title">Adults</p>
-          <p class="field">${ this.itinerary.adults.length > 0 ? this.getAdultDetails('adults') : this.itinerary.adults.length }</p>
+          <p class="field">${ this.itinerary.adults.length > 0 ? this.getAdultDetails('adults') : this.itinerary.adults.length}</p>
         </li>
         <li>
         <p class="title">Children</p>
-        <p class="field">${ this.itinerary.children.length > 0 ? this.getAdultDetails('children') : this.itinerary.children.length }</p>
+        <p class="field">${ this.itinerary.children.length > 0 ? this.getAdultDetails('children') : this.itinerary.children.length}</p>
         </li>
 
         <li>
@@ -784,12 +838,12 @@ footer p:last-of-type{
       </li>
       <li>
         <p class="title">Adults</p>
-        <p class="field">${ this.itinerary.adults.length > 0 ? this.getAdultDetails('adults') : this.itinerary.adults.length }</p>
+        <p class="field">${ this.itinerary.adults.length > 0 ? this.getAdultDetails('adults') : this.itinerary.adults.length}</p>
       </li>
       <li>
       <li>
       <p class="title">Children</p>
-      <p class="field">${ this.itinerary.children.length > 0 ? this.getAdultDetails('children') : this.itinerary.children.length }</p>
+      <p class="field">${ this.itinerary.children.length > 0 ? this.getAdultDetails('children') : this.itinerary.children.length}</p>
       </li>
 
       </li>
@@ -1123,11 +1177,11 @@ if (lastIteneraryItemsHeight + quotHeight > quoteThreshold) {
           </li>
           <li>
             <p class="title">Adults</p>
-            <p class="field">${ this.itinerary.adults.length > 0 ? this.getAdultDetails('adults') : this.itinerary.adults.length }</p>
+            <p class="field">${ this.itinerary.adults.length > 0 ? this.getAdultDetails('adults') : this.itinerary.adults.length}</p>
           </li>
           <li>
           <p class="title">Children</p>
-          <p class="field">${ this.itinerary.children.length > 0 ? this.getAdultDetails('children') : this.itinerary.children.length }</p>
+          <p class="field">${ this.itinerary.children.length > 0 ? this.getAdultDetails('children') : this.itinerary.children.length}</p>
           </li>
 
           </li>

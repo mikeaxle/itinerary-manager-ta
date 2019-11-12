@@ -76,10 +76,28 @@
 
         <!-- print pdf menu -->
         <mat-menu #menu="matMenu">
-          <button mat-menu-item (click)="saveAsPdfPartial()">Itinerary & Costs</button>
-          <button mat-menu-item (click)="saveAsPdf(3)">Full Itinerary</button>
-          <button mat-menu-item (click)="saveAsPdf(2)">Full Itinerary - No Costs</button>
+          <button mat-menu-item (click)="saveAsPdf(1, 2)">Itinerary & Costs</button>
+          <button mat-menu-item (click)="saveAsPdf(3, 2)">Full Itinerary</button>
+          <button mat-menu-item (click)="saveAsPdf(2, 2)">Full Itinerary - No Costs</button>
         </mat-menu>
+
+<!--      live url button -->
+        <button
+        mat-button
+        mat-raised-button
+        [matMenuTriggerFor]="menuLiveUrl"
+        [ngClass]="data.getButtonStyleMain()">
+        Save live URL
+      </button>
+
+
+        <!-- live url menu -->
+        <mat-menu #menuLiveUrl="matMenu">
+          <button mat-menu-item (click)="saveAsPdf(1, 1)">Itinerary & Costs URL</button>
+          <button mat-menu-item (click)="saveAsPdf(3, 1)">Full Itinerary URL</button>
+          <button mat-menu-item (click)="saveAsPdf(2, 1)">Full Itinerary - No Costs URL</button>
+        </mat-menu>
+
   </span>
   </section>
 

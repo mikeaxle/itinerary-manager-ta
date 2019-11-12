@@ -1,0 +1,25 @@
+<div fxLayout="column" fxLayoutAlign="space-around center">
+    <!-- header -->
+      <mat-card-header>
+        <mat-card-title>Generating Live URL</mat-card-title>
+        <mat-card-subtitle>{{ args.title }}</mat-card-subtitle>
+      </mat-card-header>
+    
+    <!-- pdf icon -->
+      <img style="height: 100px; width: 100px" mat-card-image [src]="image" alt="pdf-icon" />
+    
+    <!--  spacer -->
+    <!--  <span class="spacer-vert"></span>-->
+    
+    <!-- spinner -->
+      <mat-card-content>
+        <mat-progress-bar style="width:200px" mode="query" color="primary" class="example-margin"></mat-progress-bar>
+      </mat-card-content>
+    
+    <!-- footer -->
+      <mat-card-footer>
+        <b>please wait...</b>
+      </mat-card-footer>
+    
+    </div>
+    
