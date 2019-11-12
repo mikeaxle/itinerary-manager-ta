@@ -20,21 +20,24 @@ export class MediaComponent implements OnInit, OnDestroy {
   size = 15;
   ref;
 
-  constructor(private data: DataService, public dialog: MatDialog, public bottomSheet: MatBottomSheet) { }
+  constructor(private data: DataService, public dialog: MatDialog) { }
 
   ngOnInit() {
     // get media list
 
-     this.ref = this.data.af.list('media')
+     this.ref = this.data.firestore.collection('media')
       .snapshotChanges()
       .subscribe((snapshots) => {
+        // reset media list
+        this.mediaList = [];
+
         // iterate snapshots
         snapshots.forEach(snapshot => {
           // get media item
-          const mediaItem = snapshot.payload.val();
+          const mediaItem = snapshot.payload.doc.data();
 
           // get key
-          mediaItem[`$key`] = snapshot.key;
+          mediaItem[`key`] = snapshot.payload.doc.id;
 
           // push to media list array
           this.mediaList.push(mediaItem);
@@ -47,7 +50,7 @@ export class MediaComponent implements OnInit, OnDestroy {
         this.size = this.mediaList.length;
       });
 
-     // itint pagination
+     // init pagination
      this.getData({pageIndex: this.page, pageSize: this.size});
   }
 
@@ -73,7 +76,7 @@ export class MediaComponent implements OnInit, OnDestroy {
       if (result !== undefined) {
         // if result is true
         if (result) {
-          this.deleteMedia(media);
+          this.data.deleteObjectFromFirebase(`media/${media.key}`, 'media');
         }
       }
     });
@@ -81,7 +84,7 @@ export class MediaComponent implements OnInit, OnDestroy {
 
   // function to delete media
   deleteMedia(media) {
-    this.data.deleteItem(media.$key, 'media')
+    this.ref.remove(media.key)
       .then(() => {
         console.log('media deleted');
 
@@ -100,7 +103,7 @@ export class MediaComponent implements OnInit, OnDestroy {
 
   // function to add media
   addNew() {
-    this.bottomSheet.open(EditorComponent, {
+    this.dialog.open(EditorComponent, {
       data: {
         item: null,
         new: true,
@@ -111,16 +114,39 @@ export class MediaComponent implements OnInit, OnDestroy {
 
   // function to edit media
   editMediaItem(media: any) {
-    this.bottomSheet.open(EditorComponent, {
+    this.dialog.open(EditorComponent, {
       data: {
         item: media,
         new: false,
         type: 'media'
-      }
+      },
+      maxHeight: '80vh',
+      maxWidth: '60vw'
     });
   }
 
   ngOnDestroy(): void {
     this.ref.unsubscribe();
   }
+
+  applyFilter(value) {
+    const temp = [];
+    // iterate entire media list
+    this.mediaList.forEach(media => {
+      const term = media.title + ' ' + media.caption;
+      // search title for occurances of value
+      if (term.toLocaleLowerCase().search(value.toLocaleLowerCase()) !== -1) {
+        // push to temp array
+        temp.push(media);
+      }
+    });
+
+  //  check if temp array has entries
+    if (temp.length > 0) {
+      this.MEDIA_LIST = temp;
+      this.page = 1;
+    }
+  }
+
+
 }

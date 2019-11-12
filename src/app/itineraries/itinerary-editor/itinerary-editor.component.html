@@ -1,4 +1,7 @@
-<div>
+<!-- progress bar -->
+<mat-progress-bar *ngIf="!itinerary$" mode="query" color="primary" class="example-margin progress-bar"></mat-progress-bar>
+
+<div *ngIf="itinerary$">
   <!-- tool bar -->
   <section fxLayout="row"
            fxLayoutAlign="space-around center"
@@ -9,15 +12,18 @@
 
     <!-- back button -->
     <span fxLayout="row" fxLayoutGap="20px" fxLayoutAlign=" center">
-      <button mat-icon-button [routerLink]="['../itineraries']" style="padding-top:5px">
+    <!-- back button -->
+      <button mat-icon-button [routerLink]="['/itineraries']" style="padding-top:5px">
           <svg-icon src="../assets/icons/back.svg" [style.fill]=color></svg-icon>
       </button>
 
-      <h2>Itinerary {{ itinerary$.invoice_number }}</h2>
+      <!-- invoice number -->
+      <h2>Itinerary {{ itinerary$.invoiceNumber }}</h2>
     </span>
 
 
     <span class="fill-remaining-space"></span>
+<!--  status  -->
     <mat-select
       fxFlex="10"
       [(ngModel)]="itinerary$.status"
@@ -30,8 +36,9 @@
 
     <!-- buttons -->
     <span fxLayoutGap="10px">
-        <span class="fill-remaining-space"></span>
+      <span class="fill-remaining-space"></span>
 
+      <!-- duplicate itinerary button -->
       <button
         [ngClass]="data.getButtonStyle()"
         mat-button
@@ -39,7 +46,8 @@
         (click)="duplicateItinerary()">
         Duplicate
       </button>
-<!--   edit itinerary button   -->
+
+      <!-- edit itinerary button -->
         <button
           [ngClass]="data.getButtonStyle()"
           mat-button
@@ -47,7 +55,8 @@
           (click)="openEditItinerary()">
           Edit
         </button>
-<!-- delete itinerary button -->
+
+      <!-- delete itinerary button -->
         <button
           [ngClass]="data.getButtonStyle()"
           mat-button
@@ -56,7 +65,7 @@
           Delete
         </button>
 
-<!--   save as pdf menu   -->
+        <!--   save as pdf menu   -->
         <button
           mat-button
           mat-raised-button
@@ -65,30 +74,26 @@
           Save as PDF
         </button>
 
-      <!-- print pdf menu -->
+        <!-- print pdf menu -->
         <mat-menu #menu="matMenu">
           <button mat-menu-item (click)="saveAsPdfPartial()">Itinerary & Costs</button>
-          <button mat-menu-item (click)="saveAsPdf(1)">Full Itinerary</button>
-          <button mat-menu-item (click)="saveAsPdf(3)">Full Itinerary - No Costs</button>
+          <button mat-menu-item (click)="saveAsPdf(3)">Full Itinerary</button>
+          <button mat-menu-item (click)="saveAsPdf(2)">Full Itinerary - No Costs</button>
         </mat-menu>
   </span>
   </section>
 
 
   <!-- page -->
-  <mat-spinner
-    class="spinner-padding"
-    *ngIf="itinerary$ === null"></mat-spinner>
 
   <mat-card
     class="mat-elevation-z8"
     style="max-width: 800px !important;"
-    fxLayout="column"
-    *ngIf="itinerary$!== null">
+    fxLayout="column">
 
     <!-- header -->
     <div class="itin-page-header">
-      <h2>{{ getName(itinerary$.client, 'clients') }}</h2>
+      <h2 *ngIf="client">Client: {{ client.firstName }} {{ client.lastName }}</h2>
       <h1>{{ itinerary$.title}}</h1>
     </div>
 
@@ -98,33 +103,33 @@
         <tr>
           <td>
             <h5>Itinerary</h5>
-            <b>{{ itinerary$.invoice_number }}</b>
+            <b>{{ itinerary$.invoiceNumber }}</b>
           </td>
           <td>
             <h5>Safari Specialist</h5>
-            <b>{{ getName( itinerary$.agent,'users') }}</b>
+            <b *ngIf="agent">{{ agent.firstName }} {{ agent.lastName }}</b>
           </td>
           <td>
             <h5>Status</h5>
             <b>{{ itinerary$.status }}</b>
           </td>
-          <!-- <td>
-            <h5>Modified</h5>
-            <b>{{ (itinerary$.updatedAt }}</b>
-          </td> -->
+          <td>
+              <h5>Modified</h5>
+              <b>{{ updatedAt | date : 'MMM d, y, h:mm:ss a'  }}</b>
+          </td>
         </tr>
         <tr>
           <td>
             <h5>Adults</h5>
-            <b> {{ isArray(itinerary$.adults) ? itinerary$.adults.length : itinerary$.adults }} </b>
+            <b> {{ itinerary$.adults ? itinerary$.adults.length : 0 }} </b>
           </td>
           <td>
             <h5>Children</h5>
-            <b> {{ isArray(itinerary$.children) ? itinerary$.children.length : itinerary$.children }}</b>
+            <b> {{ itinerary$.children ? itinerary$.children.length : 0 }}</b>
           </td>
           <td>
             <h5>Travel dates</h5>
-            <b>{{itinerary$.startdate}} - {{itinerary$.enddate}}</b>
+            <b>{{itinerary$.startDate}} - {{itinerary$.endDate}}</b>
           </td>
         </tr>
       </table>
@@ -137,102 +142,10 @@
     </div>
 
     <!-- days come here -->
-<!--  todo: put back dragula  [dragula]="'days'" [dragulaModel]="_DAYS", populate days array  -->
-    <div *ngIf="days">
-      <div *ngFor="let day of _DAYS; let i=index">
-
-        <!-- editor-components items added from modal -->
-        <div
-          fxLayout="row"
-          fxFlexAlign="space-between base-line"
-          class="day">
-
-          <!-- left column -->
-          <span
-            fxLayout="column"
-            fxLayoutAlign="flex-flex-start center"
-            fxFlex="18"
-            fxLayoutGap="10px">
-            <mat-chip-list>
-              <!-- color hack: AM2 seems to be broken -->
-              <mat-chip fxLayoutAlign="center center" [selected]="true" [style.background-color]=color  style="padding: 5px; max-width: 18% !important; min-width: 90px !important; color: white; box-sizing: border-box;" >{{ getDayTitle('title', day) }}</mat-chip>
-            </mat-chip-list>
-            <span style="font-size:12px" >{{ getDayTitle('dates', day) }}</span>
-          </span>
-
-          <!-- middle column -->
-          <span fxFlex="80" fxFlexAlign="center flex-flex-start">
-            {{getItineraryDescriptions(day)}}
-          </span>
-
-          <!-- right column -->
-          <span
-            fxLayout="row"
-            fxLayoutAlign="space-between center"
-            fxFlex
-            fxLayout.xs="column"
-            fxLayout.sm="column">
-
-            <!-- edit button -->
-            <button mat-icon-button (click)="openDayDialog('edit', day)">
-              <svg-icon src="../assets/icons/edit.svg" [style.fill]=color></svg-icon>
-            </button>
-
-            <!-- drag handle -->
-            <button mat-icon-button style="cursor: move !important;">
-              <svg-icon  src="../assets/icons/move.svg" [style.fill]=color></svg-icon>
-            </button>
-
-            <!-- delete button -->
-            <button mat-icon-button (click)="removeDay(day.key)">
-                <svg-icon src="../assets/icons/trash.svg" [style.fill]=color></svg-icon>
-            </button>
-          </span>
-        </div>
-
-        <!-- comments added from modal -->
-        <div  *ngIf="_COMMENTS" fxLayout="column" fxFlexAlign="space-between base-line">
-
-          <!-- iterate comments array -->
-          <div *ngFor="let comment of _COMMENTS; let co=index; let last = last"
-               fxLayout="row"
-               class="day">
-            <!-- left column -->
-            <span
-              fxLayoutAlign="space-around center"
-              fxFlex="18"
-              fxLayoutGap="5px">
-
-              <img [src]="getCommentIcon(comment.type)" />
-
-            </span>
-
-            <!-- middle column -->
-            <span fxFlex="80" fxFlexAlign="flex-start">
-              <p> {{comment.comment}}</p>
-            </span>
-
-            <!-- right column -->
-            <span
-              fxLayout="row"
-              fxLayoutAlign="space-between center"
-              fxFlex
-              fxLayout.xs="column"
-              fxLayout.sm="column">
-              <span style="width:40px"></span>
-              <button mat-icon-button (click)="openCommentDialog('edit', comment)">
-                  <svg-icon src="../assets/icons/edit.svg" [style.fill]=color> </svg-icon>
-              </button>
-
-              <button mat-icon-button (click)="removeComment(comment.key)">
-                  <svg-icon src="../assets/icons/trash.svg" [style.fill]=color></svg-icon>
-              </button>
-          </span>
-          </div>
-
-        </div>
+    <div cdkDropList   [cdkDropListData]="days" (cdkDropListDropped)="drop($event)" *ngIf="days">
+      <!-- day component -->
+        <app-day cdkDrag *ngFor="let day of days; let i = index;" [day]="day" [comments]="comments" (openDayEditor)="openDayDialog('edit', $event)" (openCommentEditor)="openCommentDialog('edit', $event)" (deleteDay)="removeDay($event)" [itineraryId]="itineraryId"></app-day>
       </div>
-    </div>
 
     <!-- editor-components editor button -->
     <div
@@ -243,7 +156,7 @@
       <button
         [ngClass]="data.getButtonStyle()"
         mat-raised-button
-        [disabled]="_DAYS.length < 1"
+        [disabled]="days.length < 1"
         (click)="openCommentDialog('add', null)">
         Add Comment
       </button>
@@ -275,6 +188,22 @@
 
     <span class="spacer-vert"></span>
 
+    <!-- inclusions -->
+    <div  class="itin-border-top">
+      <h2>General Inclusions</h2>
+      <!-- inclusion -->
+      <div fxLayout="column">
+        <!-- inclusions input -->
+        <mat-form-field>
+          <label>
+            <textarea rows="4" matInput (keyup.enter)="onKeyUpSave('generalInclusions')" (blur)="onKeyUpSave('generalInclusions')" placeholder="General Inclusions" [(ngModel)]="itinerary$.generalInclusions"></textarea>
+          </label>
+        </mat-form-field>
+      </div>
+    </div>
+
+    <span class="spacer-vert"></span>
+
     <!-- exclusions -->
     <div *ngIf="inclusions?.length > 0">
       <h2>Exclusions</h2>
@@ -282,7 +211,7 @@
       <!-- exclusions input -->
       <mat-form-field>
         <label>
-          <textarea [(ngModel)]="exclusions" rows="4" type="text" matInput (keyup.enter)="onKeyUpQuote('exclusions')" (blur)="onKeyUpQuote('exclusions')" placeholder="Exclusions"></textarea>
+          <textarea [(ngModel)]="this.itinerary$.exclusions" rows="4" type="text" matInput (keyup.enter)="onKeyUpSave('exclusions')" (blur)="onKeyUpSave('exclusions')" placeholder="Exclusions"></textarea>
         </label>
       </mat-form-field>
     </div>
@@ -302,9 +231,9 @@
             <label>
               <input
                 currencyMask
-                [(ngModel)]="total"
-                (keyup.enter)="onKeyUpQuote('total')"
-                (blur)="onKeyUpQuote('total')"
+                [(ngModel)]="itinerary$.total"
+                (keyup.enter)="onKeyUpSave('total')"
+                (blur)="onKeyUpSave('total')"
                 matInput/>
             </label>
           </mat-form-field>
@@ -318,7 +247,7 @@
           <mat-form-field fxFlex="30" style="text-align:right !important;">
             <label>
               <input disabled matInput/>
-              {{ total/(itinerary$.children + itinerary$.adults) | number: '1.0-2'}}
+              {{ averageCost | number: '1.0-2'}}
             </label>
           </mat-form-field>
           <span fxFlex></span>
@@ -332,8 +261,9 @@
           <mat-form-field fxFlex="30" style="text-align:right !important;">
             <label>
               <input disabled matInput/>
-              {{ (total/(itinerary$.children + itinerary$.adults))/usedDays | number: '1.0-2' }}
+              {{ averageCost / usedDays | number: '1.0-2'}}
             </label>
+
           </mat-form-field>
           <span fxFlex></span>
         </div>
@@ -346,9 +276,9 @@
             <label>
               <input
                 currencyMask
-                [(ngModel)]="itinerary$.discount ? itinerary$.discount : discount"
-                (keyup.enter)="onKeyUpQuote('discount')"
-                (blur)="onKeyUpQuote('discount')"
+                [(ngModel)]="itinerary$.discount"
+                (keyup.enter)="onKeyUpSave('discount')"
+                (blur)="onKeyUpSave('discount')"
                 matInput/>
             </label>
           </mat-form-field>
@@ -363,9 +293,9 @@
             <label>
               <input
                 currencyMask
-                [(ngModel)]="itinerary$.deposit ? itinerary$.deposit : deposit"
-                (keyup.enter)="onKeyUpQuote('deposit')"
-                (blur)="onKeyUpQuote('deposit')"
+                [(ngModel)]="itinerary$.deposit"
+                (keyup.enter)="onKeyUpSave('deposit')"
+                (blur)="onKeyUpSave('deposit')"
                 matInput/>
             </label>
           </mat-form-field>
@@ -373,35 +303,36 @@
         </div>
 
         <!-- payments made -->
-        <div fxLayout="column" fxFill *ngIf="payments | async">
-          <div fxLayout="row" *ngFor="let p of ( payments | async )" fxLayoutAlign="flex-start center" fxLayoutGap="10px" class="quote-field">
-            <span fxFlex="50">Payment Received {{ p.date }}</span>
+        <div fxLayout="column" fxFill *ngIf="payments.length > 0">
+          <div fxLayout="row" *ngFor="let payment of payments" fxLayoutAlign="flex-start center" fxLayoutGap="10px" class="quote-field">
+            <span fxFlex="50">Payment Received {{ payment.date }}</span>
             <span>USD</span>
 
+            <!-- amount -->
             <mat-form-field fxFlex="30" style="text-align: right !important;">
               <label>
                 <input disabled matInput/>
-                {{p.amount | number: '1.0-2'}}
+                {{payment.amount | number: '1.0-2'}}
               </label>
-
             </mat-form-field>
 
+            <!--  edit button -->
             <span fxFlex>
-                    <!-- edit button -->
-                    <button mat-icon-button (click)="openPaymentDialog('edit', p)">
-                      <mat-icon src="../assets/icons/edit.svg"  [style.fill]=color></mat-icon>
-                    </button>
+              <!-- edit button -->
+              <button mat-icon-button (click)="openPaymentDialog('edit', payment)">
+                <svg-icon src="../assets/icons/edit.svg"  [style.fill]=color></svg-icon>
+              </button>
 
               <!-- delete button -->
-                    <button mat-icon-button (click)="removePayment(p.key)">
-                      <mat-icon src="../assets/icons/trash.svg" [style.fill]=color></mat-icon>
-                    </button>
-                  </span>
+              <button mat-icon-button (click)="removePayment(payment.key)">
+                <svg-icon src="../assets/icons/trash.svg" [style.fill]=color></svg-icon>
+              </button>
+            </span>
           </div>
         </div>
 
         <!-- add payment button -->
-        <div fxLayout="row" xLayoutAlign="flex-start center" fxLayoutGap="10px" style="height: 40px; margin-top: 10px">
+        <div fxLayout="row" FxLayoutAlign="flex-start center" fxLayoutGap="10px" style="height: 40px; margin-top: 10px">
           <span fxFlex="50"></span>
           <button
             mat-raised-button
@@ -430,28 +361,28 @@
     <h2>Contact Numbers</h2>
     <div fxLayout>
       <div fxFlex="50"></div>
-      <div *ngIf="_PHONE_NUMBERS" fxFlex fxLayout="Column">
-        <div *ngFor="let c of _PHONE_NUMBERS" fxLayoutAlign="flex-start center" fxLayoutGap="10px" class="quote-field">
+      <div fxFlex fxLayout="Column">
+        <div *ngFor="let country of contactDetails; let i = index;" fxLayoutAlign="flex-start center" fxLayoutGap="10px" class="quote-field">
           <mat-form-field fxFlex="72">
             <label>
               <input disabled matInput>
-              {{ countryService.getDestination(c.country_id).name }}
+              {{ country.countryName }}
             </label>
           </mat-form-field>
           <span fxFlex fxLayout>
               <!-- edit button -->
-              <button mat-icon-button (click)="openCountryDialog('edit', c)">
+              <button mat-icon-button (click)="openCountryDialog('edit', country)">
                 <svg-icon src="../assets/icons/edit.svg"  [style.fill]=color></svg-icon>
               </button>
 
             <!-- delete button -->
-              <button mat-icon-button (click)="removeCountry(c.key)">
+              <button mat-icon-button (click)="removeCountry(country.key)">
                 <svg-icon src="../assets/icons/trash.svg" [style.fill]=color></svg-icon>
               </button>
             </span>
         </div>
         <!--  add country phone number button -->
-        <div fxLayout="row" xLayoutAlign="flex-start center" fxLayoutGap="10px" style="height: 40px; margin-top: 10px; margin-left:10px">
+        <div fxLayout="row" fxLayoutAlign="flex-start center" fxLayoutGap="10px" style="height: 40px; margin-top: 10px; margin-left:10px">
           <button
             fxFlex="60"
             mat-raised-button
@@ -473,7 +404,7 @@
           <mat-grid-list cols="1" rowHeight="1:2">
             <mat-grid-tile
               [style.background]='tileColor'
-              (click)="openImageSelector(itinerary$.coverImageTile, 'coverImageTile')">
+              (click)="openImageSelector(itinerary$.coverImageTile, -1)">
               <mat-grid-tile-header>
                 <span class="fill-remaining-space"></span>
                 <img src="../assets/icons/edit-white.svg"  alt="edit icon"/>
@@ -492,15 +423,16 @@
           <h3>Grid Images</h3>
           <mat-grid-list cols="2" rowHeight="1.5:1">
             <mat-grid-tile
-              *ngFor="let tile of itinerary$.gridImageTiles; let i=index"
+              *ngFor="let tile of this.gridImageTiles; let i=index"
               [style.background]='tileColor'
               (click)="openImageSelector(gridImageTiles[i], i)">
               <mat-grid-tile-header>
                 <span class="fill-remaining-space"></span>
-                <img src="../assets/icons/edit-white.svg" alt="edit icon"/>
+                <img src="../assets/icons/edit-white.svg" />
               </mat-grid-tile-header>
-              <img *ngIf="tile.imageUrl" [src]="tile.imageUrl" height="100%" style="border-radius: 5px" alt="grid image"/>
-              <svg-icon *ngIf="!tile.imageUrl" src="../assets/icons/add.svg" [style.fill]="color"></svg-icon>
+              <img *ngIf="tile.imageUrl" [src]="tile.imageUrl" height="100%" style="border-radius: 5px"/>
+<!--              {{ tile | json }}-->
+              <svg-icon *ngIf="!tile.imageUrl" src="../assets/icons/add.svg" [style.fill]=color></svg-icon>
             </mat-grid-tile>
           </mat-grid-list>
 

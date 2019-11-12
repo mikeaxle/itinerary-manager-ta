@@ -1,10 +1,12 @@
+import {MediaItemTile} from './mediaItemTile';
+
 export class GridImageTiles {
   gridImageTiles = [
-    { imageUrl: null },
-    { imageUrl: null },
-    { imageUrl: null },
-    { imageUrl: null },
-    { imageUrl: null },
-    { imageUrl: null },
+    { imageUr: new MediaItemTile() },
+    { imageUrl: new MediaItemTile() },
+    { imageUrl: new MediaItemTile() },
+    { imageUrl: new MediaItemTile() },
+    { imageUrl: new MediaItemTile() },
+    { imageUrl: new MediaItemTile() },
   ];
 }

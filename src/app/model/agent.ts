@@ -1,11 +1,11 @@
 export class Agent {
-  firstname: string;
-  lastname: string;
+  firstName: string;
+  lastName: string;
   email: string;
   password: string;
   role: string;
 
   getFullName() {
-    return `${this.firstname} ${this.lastname}`;
+    return `${this.firstName} ${this.lastName}`;
   }
 }

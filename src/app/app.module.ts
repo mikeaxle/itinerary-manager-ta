@@ -5,7 +5,6 @@ import 'hammerjs';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { DragulaModule } from 'ng2-dragula';
 import { CurrencyMaskModule } from 'ng2-currency-mask';
 import { CurrencyMaskConfig } from 'ng2-currency-mask/src/currency-mask.config';
 import {
@@ -14,9 +13,6 @@ import {
   MatDatepickerModule,
   MatMenuModule,
   MatNativeDateModule,
-  DateAdapter,
-  NativeDateAdapter,
-  MAT_DATE_FORMATS,
   MatToolbarModule,
   MatInputModule,
   MatSelectModule,
@@ -31,7 +27,7 @@ import {
   MatGridListModule,
   MatListModule,
   MatRadioModule,
-  MatBottomSheetModule, MatProgressBarModule
+  MatBottomSheetModule, MatProgressBarModule, MatAutocompleteModule
 } from '@angular/material';
 import { InvalidTypeDirective } from './directives/invalid-type.directive';
 import { InvalidmessageDirective } from './directives/invalidmessage.directive';
@@ -47,12 +43,12 @@ import {ItinerariesComponent} from './itineraries/itineraries.component';
 import {MatPaginatorModule} from '@angular/material/paginator';
 import { EditorComponent } from './shared/editor/editor.component';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
-import { DayComponent } from './itineraries/itinerary-editor/day/day.component';
-import { CommentComponent } from './itineraries/itinerary-editor/comment/comment.component';
-import { PaymentComponent } from './itineraries/itinerary-editor/payment/payment.component';
+import { DayEditorComponent } from './itineraries/itinerary-editor/editors/day-editor/day-editor.component';
+import { CommentEditorComponent } from './itineraries/itinerary-editor/editors/comment-editor/comment-editor.component';
+import { PaymentEditorComponent } from './itineraries/itinerary-editor/editors/payment-editor/payment-editor.component';
 import { ImageSelectorComponent } from './itineraries/itinerary-editor/image-selector/image-selector.component';
-import { ItineraryDetailsEditorComponent } from './itineraries/itinerary-editor/itinerary-details-editor/itinerary-details-editor.component';
-import { AddCountryNumberComponent } from './itineraries/itinerary-editor/add-country-number/add-country-number.component';
+import { ItineraryDetailsEditorComponent } from './itineraries/itinerary-editor/editors/itinerary-details-editor/itinerary-details-editor.component';
+import { CountryEditorComponent } from './itineraries/itinerary-editor/editors/country-editor/country-editor.component';
 import { ConfirmComponent } from './shared/confirm/confirm.component';
 import {HttpClientModule} from '@angular/common/http';
 import { ItinerariesModule } from './itineraries/itineraries.module';
@@ -64,7 +60,6 @@ import { MediaComponent } from './media/media.component';
 import { AgentsComponent } from './agents/agents.component';
 import { FileUploaderComponent } from './shared/file-uploader/file-uploader.component';
 import { ItineraryItemFilterPipePipe } from './filter/itinerary.pipe';
-import { CommentsPipe } from './filter/comments.pipe';
 import { InclusionsPipe } from './filter/inclusions.pipe';
 import { MoneyPipe } from './filter/money.pipe';
 import { AgentPipe } from './filter/agent.pipe';
@@ -73,34 +68,40 @@ import { SearchPipe } from './filter/search.pipe';
 import { PdfDialogComponent } from './shared/pdf-dialog/pdf-dialog.component';
 import { LoginComponent } from './login/login.component';
 import { NgxAuthFirebaseUIModule } from 'ngx-auth-firebaseui';
+import { ToolbarComponent } from './shared/toolbar/toolbar.component';
+import { SearchComponent } from './shared/search/search.component';
+import { ProgressBarComponent } from './shared/progress-bar/progress-bar.component';
+import { SafeHtmlPipe } from './filter/safe-html.pipe';
+import {AngularFireAuthGuard} from '@angular/fire/auth-guard';
+import {DragDropModule} from '@angular/cdk/drag-drop';
+import { CountriesComponent } from './countries/countries.component';
 
 // currency Mask settings
 // @ts-ignore
-export const CustomCurrencyMaskConfig: CurrencyMaskConfig = {
-  align: 'right',
-  allowNegative: false,
-  // @ts-ignore
-  allowZero: true,
-  decimal: '.',
-  precision: 2,
-  prefix: '',
-  suffix: '',
-  thousands: ','
-};
+// export const CustomCurrencyMaskConfig: CurrencyMaskConfig = {
+//   align: 'right',
+//   allowNegative: false,
+//   // @ts-ignore
+//   allowZero: true,
+//   decimal: '.',
+//   precision: 2,
+//   prefix: '',
+//   suffix: '',
+//   thousands: ','
+// };
 
 @NgModule({
-  bootstrap: [AppComponent],
   declarations: [
     AppComponent,
     ItinerariesComponent,
     InvalidTypeDirective,
     InvalidmessageDirective,
     EditorComponent,
-    DayComponent,
-    CommentComponent,
-    PaymentComponent,
+    DayEditorComponent,
+    CommentEditorComponent,
+    PaymentEditorComponent,
     ImageSelectorComponent,
-    AddCountryNumberComponent,
+    CountryEditorComponent,
     ConfirmComponent,
     PageNotFoundComponent,
     ClientsComponent,
@@ -110,22 +111,26 @@ export const CustomCurrencyMaskConfig: CurrencyMaskConfig = {
     AgentsComponent,
     FileUploaderComponent,
     ItineraryItemFilterPipePipe,
-    CommentsPipe,
     InclusionsPipe,
     MoneyPipe,
     AgentPipe,
     StatusPipe,
     SearchPipe,
     PdfDialogComponent,
-    LoginComponent
+    LoginComponent,
+    ToolbarComponent,
+    SearchComponent,
+    ProgressBarComponent,
+    SafeHtmlPipe,
+    CountriesComponent
   ],
   entryComponents: [
-    DayComponent,
-    CommentComponent,
-    PaymentComponent,
+    DayEditorComponent,
+    CommentEditorComponent,
+    PaymentEditorComponent,
     ImageSelectorComponent,
     ItineraryDetailsEditorComponent,
-    AddCountryNumberComponent,
+    CountryEditorComponent,
     EditorComponent,
     ConfirmComponent,
     PermissionDeniedDialogComponent,
@@ -147,7 +152,6 @@ export const CustomCurrencyMaskConfig: CurrencyMaskConfig = {
     BrowserAnimationsModule,
     MatNativeDateModule,
     FlexLayoutModule,
-    DragulaModule,
     CdkTableModule,
     MatMenuModule,
     MatDatepickerModule,
@@ -173,14 +177,20 @@ export const CustomCurrencyMaskConfig: CurrencyMaskConfig = {
     MatBottomSheetModule,
     ReactiveFormsModule,
     MatSelectModule,
-    MatProgressBarModule
+    MatProgressBarModule,
+    MatAutocompleteModule,
+    DragDropModule
   ],
-  providers: [],
+  providers: [AngularFireAuthGuard],
+  bootstrap: [AppComponent],
+  exports: [
+    ProgressBarComponent
+  ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class AppModule {
   constructor(overlayContainer: OverlayContainer) {
-    if (localStorage.getItem('currentCompany') === 'Planet Africa') {
+    if (localStorage.getItem('company') === 'Planet Africa') {
       overlayContainer.getContainerElement().classList.add('planet-africa-theme');
     }
   }

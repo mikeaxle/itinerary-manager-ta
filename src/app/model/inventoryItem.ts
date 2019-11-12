@@ -6,5 +6,5 @@ export class InventoryItem {
   description = '';
   longDescription = '';
   inclusions = '';
-  image: File;
+  image: any;
 }

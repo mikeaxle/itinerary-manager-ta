@@ -1,62 +1,11 @@
 <ngx-auth-firebaseui-login
+  *ngIf="!data.user"
   (onError)="onLoginError($event)"
-  [messageOnAuthError]="'Welcome to ' + data.currentCompany + ' Itinerary Manager'"
+  [messageOnAuthError]="'Welcome to ' + data.company + ' Itinerary Manager'"
   [logoUrl]="logo"
   (onSuccess)="onLoginSuccess($event)"
   [providers]="providers.EmailAndPassword"
   [registrationEnabled]="false">
 </ngx-auth-firebaseui-login>
 
-
-
-
-
-
-
-
-<!--<mat-card fxLayout="column" class="editor">-->
-<!--  <mat-card-title fxLayout="column" fxLayoutAlign="center center">-->
-<!--    <mat-icon style="font-size: 30px">lock_outline</mat-icon>-->
-<!--    Itinerary Management Login-->
-<!--  </mat-card-title>-->
-<!--  <form #formData='ngForm' (ngSubmit)="onSubmit(formData)" fxLayout="column">-->
-
-<!--    &lt;!&ndash; email address &ndash;&gt;-->
-<!--    <mat-form-field >-->
-<!--      <label>-->
-<!--        <input-->
-<!--          type="text"-->
-<!--          placeholder="Email address"-->
-<!--          [(ngModel)]="email"-->
-<!--          name="email"-->
-<!--          required-->
-<!--          matInput>-->
-<!--      </label>-->
-<!--      <mat-icon matSuffix color="primary">-->
-<!--        email-->
-<!--      </mat-icon>-->
-<!--    </mat-form-field >-->
-
-<!--    &lt;!&ndash; password &ndash;&gt;-->
-<!--    <mat-form-field >-->
-<!--      <label>-->
-<!--        <input-->
-<!--          type="password"-->
-<!--          placeholder="Password"-->
-<!--          [(ngModel)]="password"-->
-<!--          name="password"-->
-<!--          required-->
-<!--          matInput>-->
-<!--      </label>-->
-<!--      <mat-icon matSuffix color="primary">-->
-<!--        vpn_key-->
-<!--      </mat-icon>-->
-<!--    </mat-form-field >-->
-
-<!--    <span class="spacer"></span>-->
-<!--    <button mat-raised-button type="submit" color="primary" [disabled]="!formData.valid">Log in</button>-->
-
-<!--  </form>-->
-<!--  <span class="spacer"></span>-->
-<!--  <p *ngIf="error">{{error}}</p>-->
-<!--</mat-card>-->
+<mat-progress-bar *ngIf="data.user"  mode="query" color="primary" class="example-margin progress-bar"></mat-progress-bar>

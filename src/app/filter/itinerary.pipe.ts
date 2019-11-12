@@ -9,15 +9,15 @@ export class ItineraryItemFilterPipePipe implements PipeTransform {
     try {
       if (args === 'Service') {
         return value.filter((e) => {
-          return e.type === 'Service' && e.destination === args2 && e.region === args3;
+          return e.type === 'Service' && e.destination.id === args2 && e.region === args3;
         });
       } else if (args === 'Accommodation') {
         return value.filter((e) => {
-          return e.type === 'Accommodation' && e.destination === args2 && e.region === args3;
+          return e.type === 'Accommodation' && e.destination.id === args2 && e.region === args3;
         });
       } else if (args === 'Activity') {
         return value.filter((e) => {
-          return e.type === 'Activity' && e.destination === args2 && e.region === args3;
+          return e.type === 'Activity' && e.destination.id === args2 && e.region === args3;
         });
       }
     } catch (error) {

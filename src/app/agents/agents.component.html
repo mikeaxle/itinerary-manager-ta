@@ -3,7 +3,8 @@
   <h1>Agents</h1>
   <button mat-raised-button color="primary"  (click)="addNew()">Add New Agent</button>
 </div>
-<span style="padding: 20px"></span>
+
+<span class="spacer-vert"></span>
 
 
 <!-- table -->
@@ -16,16 +17,18 @@
 
 <!--  </div>-->
 
-<!-- spinner -->
-<div class="spacer-vert-100" *ngIf="agents.length === 0" fxLayout="row" fxLayoutAlign="center center">
-  <mat-spinner></mat-spinner>
-</div>
+<!-- search-->
+<app-search [dataSource]="dataSource" caller="agents"></app-search>
 
-  <mat-table *ngIf="agents.length > 0" #table [dataSource]="dataSource" class="example-container mat-elevation-z8" #matSort>
+<!-- progress bar -->
+<app-progress-bar [listLength]="agents.length"></app-progress-bar>
+
+<!-- table -->
+  <mat-table *ngIf="agents.length > 0" #table [dataSource]="dataSource" class="example-container mat-elevation-z4" #matSort>
     <!-- Name Column -->
     <ng-container matColumnDef="Name">
       <mat-header-cell *matHeaderCellDef fxFlex> Name</mat-header-cell>
-      <mat-cell *matCellDef="let row" fxFlex (click)="editAgent(row)"> {{ row.firstname + ' ' + row.lastname }}</mat-cell>
+      <mat-cell *matCellDef="let row" fxFlex (click)="editAgent(row)"> {{ row.firstName + ' ' + row.lastName }}</mat-cell>
     </ng-container>
 
     <!-- Email Column -->
@@ -49,7 +52,7 @@
           <svg-icon src="../assets/icons/edit.svg" [style.fill]=this.data.color></svg-icon>
         </button>
 
-        <button mat-icon-button (click)="openDelete(row.$key)">
+        <button mat-icon-button (click)="openDelete(row.key)">
           <svg-icon src="../assets/icons/trash.svg" [style.fill]=this.data.color></svg-icon>
         </button>
 

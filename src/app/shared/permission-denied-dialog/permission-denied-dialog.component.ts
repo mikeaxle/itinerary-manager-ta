@@ -9,14 +9,10 @@ import {DataService} from '../../services/data.service';
 })
 export class PermissionDeniedDialogComponent implements OnInit {
 
-  color: any;
   message: any;
-  constructor(public dialogReference: MatDialogRef<PermissionDeniedDialogComponent>, @Inject(MAT_DIALOG_DATA) public params: any, public data: DataService) {
-
-  }
+  constructor(public dialogReference: MatDialogRef<PermissionDeniedDialogComponent>, @Inject(MAT_DIALOG_DATA) public params: any, public data: DataService) {}
 
   ngOnInit() {
-    this.color = localStorage.getItem('color');
     this.message = this.params;
   }
 

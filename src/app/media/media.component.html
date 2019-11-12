@@ -3,11 +3,15 @@
   <h1>Media</h1>
   <button mat-raised-button color="primary" (click)="addNew()">Add New</button>
 </div>
+<!-- search filter -->
+<mat-form-field>
+  <label>
+    <input matInput (keyup)="applyFilter($event.target.value)" placeholder="search media">
+  </label>
+</mat-form-field>
 
 <!-- spinner -->
-<div class="spacer-vert-100" *ngIf="MEDIA_LIST.length === 0" fxLayout="row" fxLayoutAlign="center center">
-  <mat-spinner></mat-spinner>
-</div>
+<app-progress-bar [listLength]="mediaList.length" ></app-progress-bar>
 
 <!-- grid list -->
 <mat-paginator [length]="mediaList.length"
@@ -16,7 +20,8 @@
                [pageSizeOptions]="[15, 30, 60, mediaList.length]"
                (page)="getData($event)">
 </mat-paginator>
-<mat-grid-list *ngIf="MEDIA_LIST.length > 0" cols="4" rowHeight="250px">
+
+<mat-grid-list  cols="4" rowHeight="250px">
   <mat-grid-tile
     *ngFor="let media of MEDIA_LIST" [style.background]="tileBackground">
     <mat-grid-tile-header>
