@@ -4,7 +4,7 @@ import { DataService } from '../../services/data.service';
 import { CountryService } from '../../services/country.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { FormBuilder } from '@angular/forms';
-import {MatDialog, MatMenuTrigger, MatSnackBar} from '@angular/material';
+import { MatDialog, MatMenuTrigger, MatSnackBar } from '@angular/material';
 import { SavePdfService } from '../../services/save-pdf.service';
 import { DayEditorComponent } from './editors/day-editor/day-editor.component';
 import { CommentEditorComponent } from './editors/comment-editor/comment-editor.component';
@@ -88,8 +88,8 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
   contactDetails = [];
 
   constructor(public router: Router, private route: ActivatedRoute, public data: DataService, public formBuilder: FormBuilder,
-              public dialog: MatDialog, public savePdfService: SavePdfService, public snackBar: MatSnackBar,
-              public http: HttpClient, public countryService: CountryService) {
+    public dialog: MatDialog, public savePdfService: SavePdfService, public snackBar: MatSnackBar,
+    public http: HttpClient, public countryService: CountryService) {
 
   }
 
@@ -211,7 +211,7 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
       .snapshotChanges()
       .subscribe(_ => {
         // reset payments
-        if (_.length > 0) {
+        // if (_.length > 0) {
           //
           this.payments = [];
           this.totalPayments = 0;
@@ -220,6 +220,8 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
           _.forEach(snapshot => {
             const payment = snapshot.payload.doc.data();
             payment.key = snapshot.payload.doc.id;
+
+            payment.itinerary = payment.itinerary.id;
 
             // increment total payments
             this.totalPayments += parseFloat(payment.amount);
@@ -230,7 +232,7 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
 
           // calculate average
           this.averageCost = itinerary.total / parseFloat(itinerary.children.length + itinerary.adults.length);
-        }
+        // }
       });
   }
 
