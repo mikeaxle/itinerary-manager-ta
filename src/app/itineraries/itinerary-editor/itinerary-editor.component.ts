@@ -305,8 +305,26 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
   }
 
   // function to remove editor-components
-  removeDay(key) {
-    this.data.deleteObjectFromFirebase(`days/${key}`, 'day');
+  removeDay(day) {
+    // iterate days and move positions up
+    this.days.forEach(d => {
+      if (day.position < d.position) {
+        this.data.updateFirebaseObject(`days/${d.key}`, {
+          position: d.position - 1
+        }, 'days', false);
+      }
+    });
+
+    // delete day
+    this.data.firestore.doc(`days/${day[`key`]}`)
+      .delete()
+      .then(_ => {
+        console.log('day deleted')
+      })
+      .catch(err => {
+        console.log(err)
+        Swal.fire('day editor', err.message, 'error')
+      })
   }
 
   // function to remove comment
