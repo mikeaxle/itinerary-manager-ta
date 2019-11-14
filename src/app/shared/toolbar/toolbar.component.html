@@ -1,44 +1,47 @@
 <!-- toolbar -->
-<mat-toolbar [class.planet-africa-theme]="isPlanetAfrica" *ngIf="data.user" class="mat-elevation-z3" color="primary">
-  <!-- home button -->
-  <button mat-button [routerLink]="['itineraries']">
-    <mat-icon>home</mat-icon>
-  </button>
-
-  <!-- normal menu -->
-  <div>
-    <button mat-button [routerLink]="['itineraries']">ITINERARIES</button>
-    <button mat-button [routerLink]="['clients']">CLIENTS</button>
-    <button mat-button [routerLink]="['inventory']">INVENTORY</button>
-    <button *ngIf="data.user.role === 'admin'" mat-button  [routerLink]="['agents']">AGENTS</button>
-    <button mat-button [routerLink]="['media']">MEDIA</button>
-    <button mat-button [routerLink]="['countries']">REGIONS</button>
-  </div>
-
-  <!-- spacer -->
-  <span class="fill-remaining-space"></span>
-
-  <!-- first name + last name -->
-  <sub>{{ data.user.firstName }} {{ data.user.lastName }}</sub>
-  <div class="spacer"></div>
-
-  <!-- logo button -->
-  <button mat-icon-button [matMenuTriggerFor]="menu">
-    <!-- logo -->
-    <img *ngIf="data.logo"   class="avatar-image" [src]="data.logo">
-  </button>
-
-  <!-- collapsible menu -->
-  <mat-menu xPosition="before" #menu="matMenu">
-    <button mat-menu-item (click)="data.switchCompany()">
-      <mat-icon>person_outline</mat-icon>
-      <span>Switch to {{ data.company.name === 'True Africa' ? 'Planet Africa' : 'True Africa' }}</span>
+<div [class.planetAfricaTheme]="data.company.name === 'Planet Africa'">
+  <mat-toolbar *ngIf="data.user" class="mat-elevation-z3" color="primary">
+    <!-- home button -->
+    <button mat-button [routerLink]="['itineraries']">
+      <mat-icon>home</mat-icon>
     </button>
 
-    <!-- logout -->
-    <button mat-menu-item (click)="logout()">
-      <mat-icon>lock_open</mat-icon>
-      Logout
+    <!-- normal menu -->
+    <div>
+      <button mat-button [routerLink]="['itineraries']">ITINERARIES</button>
+      <button mat-button [routerLink]="['clients']">CLIENTS</button>
+      <button mat-button [routerLink]="['inventory']">INVENTORY</button>
+      <button *ngIf="data.user.role === 'admin'" mat-button  [routerLink]="['agents']">AGENTS</button>
+      <button mat-button [routerLink]="['media']">MEDIA</button>
+      <button mat-button [routerLink]="['countries']">REGIONS</button>
+    </div>
+
+    <!-- spacer -->
+    <span class="fill-remaining-space"></span>
+
+    <!-- first name + last name -->
+    <sub>{{ data.user.firstName }} {{ data.user.lastName }}</sub>
+    <div class="spacer"></div>
+
+    <!-- logo button -->
+    <button mat-icon-button [matMenuTriggerFor]="menu">
+      <!-- logo -->
+      <img *ngIf="data.logo"   class="avatar-image" [src]="data.logo">
     </button>
-  </mat-menu>
-</mat-toolbar>
+
+    <!-- collapsible menu -->
+    <mat-menu xPosition="before" #menu="matMenu">
+      <button mat-menu-item (click)="data.switchCompany()">
+        <mat-icon>person_outline</mat-icon>
+        <span>Switch to {{ data.company.name === 'True Africa' ? 'Planet Africa' : 'True Africa' }}</span>
+      </button>
+
+      <!-- logout -->
+      <button mat-menu-item (click)="logout()">
+        <mat-icon>lock_open</mat-icon>
+        Logout
+      </button>
+    </mat-menu>
+  </mat-toolbar>
+</div>
+

@@ -9,12 +9,7 @@ import Swal from 'sweetalert2';
   templateUrl: './toolbar.component.html'
 })
 export class ToolbarComponent {
-
   constructor(public router: Router, public data: DataService) {}
-
-  isPlanetAfrica()  {
-    return this.data.company.name === 'Planet Africa';
-  }
 
   // function to logout
   logout() {

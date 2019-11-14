@@ -16,6 +16,7 @@ $brand: (
   A200 : #ffcd96,
   A400 : #ffb563,
   A700 : #ffa94a,
+  P100: #AC452F,
   contrast: (
     50 : #000000,
     100 : #000000,
@@ -44,11 +45,11 @@ $my-app-theme: mat-light-theme($my-app-primary, $my-app-accent, $my-app-warn);
 @include angular-material-theme($my-app-theme);
 
 // planet africa styles
-$app-dark-primary: mat-palette($brand, 50);
-$app-dark-accent: mat-palette($brand, 50);
+$app-dark-primary: mat-palette($brand, P100);
+$app-dark-accent: mat-palette($mat-amber, A200, A100, A400);
 $app-dark-warn: mat-palette($mat-deep-orange);
-$app-light-theme: mat-light-theme($app-dark-primary, $app-dark-accent, $app-dark-warn);
+$app-dark-theme: mat-dark-theme($app-dark-primary, $app-dark-accent, $app-dark-warn);
 
-.planet-africa-theme {
-  @include angular-material-theme($app-light-theme);
+.planetAfricaTheme {
+  @include angular-material-theme($app-dark-theme);
 }
