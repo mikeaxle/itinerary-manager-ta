@@ -197,22 +197,43 @@ export class DataService {
 
   // function to switch between companies
   switchCompany() {
-    if (this.company === 'Planet Africa') {
-      localStorage.setItem('company', 'True Africa');
-      localStorage.setItem('color', '#B18C51');
-      localStorage.setItem('logo', '../assets/logos/avatar-trueafrica.png');
-    } else if (this.company === 'True Africa') {
-      localStorage.setItem('company', 'Planet Africa');
-      localStorage.setItem('color', '#AC452F');
-      localStorage.setItem('logo', '../assets/logos/avatar-planetafrica.png');
+
+    if (this.company.name === 'Planet Africa') {
+      // set planet africa
+      this.firestore.doc(`companies/YbSudQRjCglvvffyujaf`).snapshotChanges()
+        .subscribe(_ => {
+          // console.log({..._.payload.data(), key: _.payload.id })
+          localStorage.setItem('company', JSON.stringify({..._.payload.data(), key: _.payload.id }));
+          localStorage.setItem('color', '#B18C51');
+          localStorage.setItem('logo', '../assets/logos/avatar-trueafrica.png');
+
+          // navigate back to itinerary list
+          this.router.navigate(['login'])
+            .then(() => {
+              // reload page
+              location.reload();
+            });
+        });
+
+    } else if (this.company.name === 'True Africa') {
+      // set planet africa
+      this.firestore.doc(`companies/9MZBVwEmR28enTGLIi1p`).snapshotChanges()
+        .subscribe(_ => {
+          // console.log({..._.payload.data(), key: _.payload.id })
+          localStorage.setItem('company', JSON.stringify({..._.payload.data(), key: _.payload.id }));
+          localStorage.setItem('color', '#AC452F');
+          localStorage.setItem('logo', '../assets/logos/avatar-planetafrica.png');
+
+          // navigate back to itinerary list
+          this.router.navigate(['login'])
+            .then(() => {
+              // reload page
+              location.reload();
+            });
+        });
     }
 
-    // navigate back to itinerary list
-    this.router.navigate(['itineraries'])
-      .then(() => {
-        // reload page
-        location.reload();
-      });
+
 
   }
 

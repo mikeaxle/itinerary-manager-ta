@@ -344,6 +344,7 @@ mat-input-container, mat-select {
   height: 40px;
   width: 40px;
   border-radius: 50%;
+  background-color: white;
 }
 
 .object-fit_fill { object-fit: fill }

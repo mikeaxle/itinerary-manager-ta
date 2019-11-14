@@ -9,20 +9,7 @@ import Swal from 'sweetalert2';
   templateUrl: './toolbar.component.html'
 })
 export class ToolbarComponent {
-
-  constructor(public router: Router, public data: DataService) {
-    console.log(this.router.url);
-  }
-
-  isPlanetAfrica()  {
-    return this.data.company === 'Planet Africa';
-  }
-
-  // getter
-  getItem(key: string): any {
-    return key === 'company' ? localStorage.getItem(key) : JSON.parse(localStorage.getItem(key));
-  }
-
+  constructor(public router: Router, public data: DataService) {}
 
   // function to logout
   logout() {

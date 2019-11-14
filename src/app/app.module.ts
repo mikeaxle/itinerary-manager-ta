@@ -192,8 +192,12 @@ import { LiveUrlDialogComponent } from './live-url-dialog/live-url-dialog.compon
 })
 export class AppModule {
   constructor(overlayContainer: OverlayContainer) {
-    if (localStorage.getItem('company') === 'Planet Africa') {
-      overlayContainer.getContainerElement().classList.add('planet-africa-theme');
+    if (localStorage.getItem('company')) {
+      const company = JSON.parse(localStorage.getItem('company'));
+      if (company.name === 'Planet Africa') {
+        overlayContainer.getContainerElement().classList.add('planet-africa-theme');
+        console.log('theme added')
+      }
     }
   }
 }
