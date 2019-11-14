@@ -44,7 +44,7 @@ export class MediaComponent implements OnInit, OnDestroy {
         });
 
         // copy array
-        this.MEDIA_LIST = [...this.mediaList]; // .slice(this.mediaList.length - 15);
+        this.MEDIA_LIST = [...this.mediaList.reverse()]; // .slice(this.mediaList.length - 15);
 
         // set pagination size
         this.size = this.mediaList.length;
