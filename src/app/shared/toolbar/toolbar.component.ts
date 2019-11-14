@@ -10,19 +10,11 @@ import Swal from 'sweetalert2';
 })
 export class ToolbarComponent {
 
-  constructor(public router: Router, public data: DataService) {
-    console.log(this.router.url);
-  }
+  constructor(public router: Router, public data: DataService) {}
 
   isPlanetAfrica()  {
-    return this.data.company === 'Planet Africa';
+    return this.data.company.name === 'Planet Africa';
   }
-
-  // getter
-  getItem(key: string): any {
-    return key === 'company' ? localStorage.getItem(key) : JSON.parse(localStorage.getItem(key));
-  }
-
 
   // function to logout
   logout() {

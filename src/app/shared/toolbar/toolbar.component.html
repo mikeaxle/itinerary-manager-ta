@@ -32,7 +32,7 @@
   <mat-menu xPosition="before" #menu="matMenu">
     <button mat-menu-item (click)="data.switchCompany()">
       <mat-icon>person_outline</mat-icon>
-      <span *ngIf="data.company">Switch to {{ data.company.name }}</span>
+      <span>Switch to {{ data.company.name === 'True Africa' ? 'Planet Africa' : 'True Africa' }}</span>
     </button>
 
     <!-- logout -->
