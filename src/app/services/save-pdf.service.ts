@@ -165,6 +165,9 @@ export class SavePdfService {
 
   // function to save pdf
   savePDF(itineraryData: any, mode: number, type: number, usedDays: any) {
+
+    // console.log(itineraryData)
+    
     // get itinerary
     this.itinerary = itineraryData.itinerary;
 

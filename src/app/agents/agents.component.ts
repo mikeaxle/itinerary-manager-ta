@@ -48,7 +48,7 @@ export class AgentsComponent implements OnInit, OnDestroy {
        this.agents.push(agent);
 
        // init data source
-       this.dataSource = new MatTableDataSource(this.agents);
+       this.dataSource = new MatTableDataSource(this.agents.reverse());
 
        // init data source
        this.dataSource.paginator = this.paginator;
