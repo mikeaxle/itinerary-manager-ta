@@ -274,6 +274,7 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
           // add key
           day[`key`] = data.payload.doc.id;
 
+
           // add title
           day[`title`] = this.getDayTitle('title', day);
 
@@ -841,7 +842,7 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
       .then(newItinerary => {
         // update new itinerary invoice number
         newItinerary.update({
-          invoiceNumber: ++this.itinerary$.invoiceNumber
+          invoiceNumber: typeof this.itinerary$.invoiceNumber === 'string' ? this.itinerary$.invoiceNumber + 'D' : ++this.itinerary$.invoiceNumber
         });
 
         //  get new itinerary Ref
