@@ -155,8 +155,8 @@ export class DayEditorComponent implements OnInit, OnDestroy {
       this.dayForm = this.formBuilder.group({
         // title: [''],
         days: [null, Validators.required],
-        country: [this.params.lastUsedParams.country, Validators.required],
-        region: [this.params.lastUsedParams.region, Validators.required],
+        country: [null, Validators.required],
+        region: [null, Validators.required],
         services: this.formBuilder.array([]),
         activities: this.formBuilder.array([]),
         accommodation: this.formBuilder.array([])

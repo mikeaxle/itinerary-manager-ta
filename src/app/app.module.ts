@@ -195,7 +195,7 @@ export class AppModule {
     if (localStorage.getItem('company')) {
       const company = JSON.parse(localStorage.getItem('company'));
       if (company.name === 'Planet Africa') {
-        overlayContainer.getContainerElement().classList.add('planet-africa-theme');
+        overlayContainer.getContainerElement().classList.add('planetAfricaTheme');
         console.log('theme added')
       }
     }

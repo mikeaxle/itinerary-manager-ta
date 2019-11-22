@@ -426,7 +426,7 @@ mat-grid-tile  {
 .mat-table {
   overflow: auto;
 }
-.planet-africa-theme .mat-row:hover {
+.planetAfricaTheme .mat-row:hover {
   background-color: rgba(172, 70, 47, 0.39);
 }
 .mat-row:hover {
@@ -477,12 +477,12 @@ mat-cell {
 
 /******* Theme styles ******/
 
-.planet-africa-theme .mat-toolbar.mat-primary {
+.planetAfricaTheme .mat-toolbar.mat-primary {
   background: #ac452f !important;
   color: white !important;
 }
 
-.planet-africa-theme .mat-raised-button.mat-primary, .planet-africa-theme .mat-fab.mat-primary, .planet-africa-theme .mat-mini-fab.mat-primary {
+.planetAfricaTheme .mat-raised-button.mat-primary, .planetAfricaTheme .mat-fab.mat-primary, .planetAfricaTheme .mat-mini-fab.mat-primary {
   color: white !important;
 }
 
@@ -525,12 +525,12 @@ ngx-auth-firebaseui-login #login-form-wrapper #login-form img {
 
 /******* Theme styles ******/
 
-.planet-africa-theme .mat-toolbar.mat-primary {
+.planetAfricaTheme .mat-toolbar.mat-primary {
   background: #ac452f !important;
   color: white !important;
 }
 
-.planet-africa-theme .mat-raised-button.mat-primary, .planet-africa-theme .mat-fab.mat-primary, .planet-africa-theme .mat-mini-fab.mat-primary {
+.planetAfricaTheme .mat-raised-button.mat-primary, .planetAfricaTheme .mat-fab.mat-primary, .planetAfricaTheme .mat-mini-fab.mat-primary {
   color: white !important;
 }
 

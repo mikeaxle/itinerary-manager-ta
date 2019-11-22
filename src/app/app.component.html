@@ -2,7 +2,7 @@
 <app-toolbar></app-toolbar>
 
   <!-- router outlet -->
-<div class="router-wrapper">
+<div class="router-wrapper" [class.planetAfricaTheme]="data.company.name === 'Planet Africa'">
   <router-outlet ></router-outlet>
 </div>
 

@@ -13,6 +13,7 @@ import Swal from 'sweetalert2';
 })
 export class SavePdfService {
   private averageCost = 0;
+  private updatedAt: any;
   constructor(private data: DataService, private http: HttpClient, public dialog: MatDialog) {
     // get countries
     this.data.firestore.collection('countries')
@@ -21,15 +22,15 @@ export class SavePdfService {
         this.countries = [];
         this.regions = [];
         res.forEach(doc => {
-          const country = doc.payload.doc.data()
+          const country = doc.payload.doc.data();
           country[`key`] = doc.payload.doc.id;
-          this.countries.push(country)
+          this.countries.push(country);
 
           country[`regions`].forEach(region => {
-            this.regions.push(region)
-          })
-        })
-      })
+            this.regions.push(region);
+          });
+        });
+      });
 
   }
 
@@ -108,9 +109,9 @@ export class SavePdfService {
       })
         .then(result => {
           if (result.value) {
-            window.open(res)
+            window.open(res);
           }
-        })
+        });
     }
       , (err) => {
         console.log(err);
@@ -167,12 +168,15 @@ export class SavePdfService {
   savePDF(itineraryData: any, mode: number, type: number, usedDays: any) {
 
     // console.log(itineraryData)
-    
+
     // get itinerary
     this.itinerary = itineraryData.itinerary;
 
     // get averages
     this.averageCost = itineraryData.averageCost;
+
+    // get updated at
+    this.updatedAt = itineraryData.updatedAt;
 
     // get days
     this.days = itineraryData.days;
@@ -459,6 +463,10 @@ footer p:last-of-type{
         <li>
           <p class="title">Status</p>
           <p class="field">${this.itinerary.status}</p>
+        </li>
+        <li>
+          <p class="title">Modified</p>
+          <p class="field">${this.updatedAt.toLocaleString()}</p>
         </li>
       </ul>
 
@@ -855,6 +863,10 @@ footer p:last-of-type{
         <p class="title">Status</p>
         <p class="field">${this.itinerary.status}</p>
       </li>
+              <li>
+          <p class="title">Modified</p>
+          <p class="field">${this.updatedAt.toLocaleString()}</p>
+        </li>
     </ul>
 
     <!-- ITENERARY ITEMS -->
@@ -1192,6 +1204,10 @@ if (lastIteneraryItemsHeight + quotHeight > quoteThreshold) {
             <p class="title">Status</p>
             <p class="field">${this.itinerary.status}</p>
           </li>
+                  <li>
+          <p class="title">Modified</p>
+          <p class="field">${this.updatedAt.toLocaleString()}</p>
+        </li>
         </ul>
 
         <!-- ITENERARY ITEMS -->
@@ -1619,7 +1635,7 @@ if (lastIteneraryItemsHeight + quotHeight > quoteThreshold) {
   showDestination(ref) {
     // return destination name
     const d = this.countries.find((item) => {
-      return item.key === ref.id
+      return item.key === ref.id;
     });
 
     return d.name;

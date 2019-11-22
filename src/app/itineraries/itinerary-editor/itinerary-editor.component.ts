@@ -274,6 +274,7 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
           // add key
           day[`key`] = data.payload.doc.id;
 
+
           // add title
           day[`title`] = this.getDayTitle('title', day);
 
@@ -475,7 +476,7 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
           position,
           remainingDays: this.totalDays - this.usedDays,            // pass remaining days
         },
-        width: '60vw',
+        width: '700px',
         maxHeight: '80vh'
       });
 
@@ -489,7 +490,7 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
           mode,
           remainingDays: this.remainingDays,            // pass remaining days
         },
-        width: '60vw',
+        width: '700px',
         maxHeight: '80vh'
       });
     }
@@ -841,7 +842,7 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
       .then(newItinerary => {
         // update new itinerary invoice number
         newItinerary.update({
-          invoiceNumber: ++this.itinerary$.invoiceNumber
+          invoiceNumber: typeof this.itinerary$.invoiceNumber === 'string' ? this.itinerary$.invoiceNumber + 'D' : ++this.itinerary$.invoiceNumber
         });
 
         //  get new itinerary Ref
@@ -931,7 +932,8 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
           days: this.days,
           itinerary: this.itinerary$,
           payments: this.payments,
-          totalPayments: this.totalPayments
+          totalPayments: this.totalPayments,
+          updatedAt: this.updatedAt
         }, mode, type, this.usedDays);
       } else {
         Swal.fire('Generate PDF', 'Please add all 7 images in order to print the full pdf', 'error');
@@ -945,7 +947,8 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
         days: this.days,
         itinerary: this.itinerary$,
         payments: this.payments,
-        totalPayments: this.totalPayments
+        totalPayments: this.totalPayments,
+        updatedAt: this.updatedAt
       }, mode, type, this.usedDays);
     }
   }
