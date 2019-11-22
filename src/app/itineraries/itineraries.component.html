@@ -1,7 +1,7 @@
 <!-- title + add new button -->
-<div class="page-title">
+<div class="page-title" fxLayoutGap="10px">
   <h1>Itineraries</h1>
-
+  <span class="fill-remaining-space"></span>
   <mat-select [(value)]="status" placeholder="filter by status" style="width: 10vw"  (selectionChange)="onFilterChange($event)">
     <mat-option *ngFor="let status of STATUS" [value]="status">
       {{ status }}
