@@ -932,7 +932,8 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
           days: this.days,
           itinerary: this.itinerary$,
           payments: this.payments,
-          totalPayments: this.totalPayments
+          totalPayments: this.totalPayments,
+          updatedAt: this.updatedAt
         }, mode, type, this.usedDays);
       } else {
         Swal.fire('Generate PDF', 'Please add all 7 images in order to print the full pdf', 'error');
@@ -946,7 +947,8 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
         days: this.days,
         itinerary: this.itinerary$,
         payments: this.payments,
-        totalPayments: this.totalPayments
+        totalPayments: this.totalPayments,
+        updatedAt: this.updatedAt
       }, mode, type, this.usedDays);
     }
   }
