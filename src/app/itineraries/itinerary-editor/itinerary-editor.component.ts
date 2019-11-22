@@ -476,7 +476,7 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
           position,
           remainingDays: this.totalDays - this.usedDays,            // pass remaining days
         },
-        width: '60vw',
+        width: '700px',
         maxHeight: '80vh'
       });
 
@@ -490,7 +490,7 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
           mode,
           remainingDays: this.remainingDays,            // pass remaining days
         },
-        width: '60vw',
+        width: '700px',
         maxHeight: '80vh'
       });
     }
