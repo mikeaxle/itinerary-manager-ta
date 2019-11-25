@@ -88,8 +88,8 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
   contactDetails = [];
 
   constructor(public router: Router, private route: ActivatedRoute, public data: DataService, public formBuilder: FormBuilder,
-    public dialog: MatDialog, public savePdfService: SavePdfService, public snackBar: MatSnackBar,
-    public http: HttpClient, public countryService: CountryService) {
+              public dialog: MatDialog, public savePdfService: SavePdfService, public snackBar: MatSnackBar,
+              public http: HttpClient, public countryService: CountryService) {
 
   }
 
@@ -322,12 +322,12 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
     this.data.firestore.doc(`days/${day[`key`]}`)
       .delete()
       .then(_ => {
-        console.log('day deleted')
+        console.log('day deleted');
       })
       .catch(err => {
-        console.log(err)
-        Swal.fire('day editor', err.message, 'error')
-      })
+        console.log(err);
+        Swal.fire('day editor', err.message, 'error');
+      });
   }
 
   // function to remove comment
@@ -833,17 +833,43 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
     // copy data to duplicate
     duplicate = this.itinerary$;
 
-    // add the word duplicate to title of duplicate
-    duplicate.title += '(duplicate)';
-
     // write duplicate itinerary to
     this.data.firestore.collection(`itineraries`)
       .add(duplicate)
       .then(newItinerary => {
-        // update new itinerary invoice number
-        newItinerary.update({
-          invoiceNumber: typeof this.itinerary$.invoiceNumber === 'string' ? this.itinerary$.invoiceNumber + 'D' : ++this.itinerary$.invoiceNumber
-        });
+        // get current company
+        let subscription = this.data.firestore.collection('companies').doc(this.data.company.key)
+          .snapshotChanges()
+          .subscribe(snapshot => {
+            const company = {...snapshot.payload.data()};
+            // update invoice number
+            ++company[`invoiceNumber`];
+
+            // update duplicated itinerary invoice number
+            newItinerary.update({
+              invoiceNumber: company[`invoiceNumber`],
+              title: this.itinerary$.title + '(Duplicate)',
+            })
+              .then(_ => {
+                console.log('invoice number updated: ' + company[`invoiceNumber`]);
+
+                // write to company
+                snapshot.payload.ref.update({
+                  invoiceNumber: company[`invoiceNumber`]
+                })
+                  .then(() => {
+                    console.log('invoice number updated for ' + this.data.company.name);
+                  })
+                  .catch(err => {
+                    console.log(err);
+                  });
+              })
+              .catch(err => {
+                console.log(err);
+              });
+          });
+
+
 
         //  get new itinerary Ref
         const newItineraryRef = this.data.firestore.doc(`itineraries/${newItinerary.id}`).ref;
@@ -881,18 +907,14 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
           this.data.firestore.collection(`payments`).add(payment);
         });
 
-        // update invoice number
-        this.data.firestore.doc(`companies/${this.data.company.key}`)
-          .update({
-            invoiceNumber: ++this.itinerary$.invoiceNumber
-          });
-
-
 
         Swal.fire('Duplicate Itinerary', 'Itinerary copied successfully', 'success')
           .then(fire => {
+
+            subscription.unsubscribe();
+
             // go to new itinerary
-            this.router.navigate(['/itinerary-editor', newItinerary.id]);
+            this.router.navigate(['/itineraries']);
           });
       })
       .catch(err => {

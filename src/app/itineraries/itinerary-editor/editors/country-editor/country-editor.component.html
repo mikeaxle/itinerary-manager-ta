@@ -1,56 +1,56 @@
 <h2 mat-dialog-title>Add Country Contact Number</h2>
-<form [formGroup]="addNumberForm" fxLayout="column">
+<mat-dialog-content>
+  <form [formGroup]="addNumberForm" fxLayout="column">
 
-  <!-- country drop down -->
-  <mat-select placeholder="Country" formControlName="country"(ngModelChange)="onCountrySelected($event)" required>
-    <mat-option *ngFor="let destination of destinations" [value]="destination.key">
-      {{ destination.name }}
-    </mat-option>
-  </mat-select>
+    <!-- country drop down -->
+    <mat-select placeholder="Country" formControlName="country"(ngModelChange)="onCountrySelected($event)" required>
+      <mat-option *ngFor="let destination of destinations" [value]="destination.key">
+        {{ destination.name }}
+      </mat-option>
+    </mat-select>
 
-  <!-- office hours number -->
-  <div *ngIf="addNumberForm.controls.country.value !== null" fxLayout="row" fxLayoutAlign="space-between center" fxLayoutGap="10px">
-    <mat-form-field fxFlex="30">
-      <label>
-        <input matInput type="text" formControlName="officeHours" placeholder="Office Hours">
-      </label>
-    </mat-form-field>
+    <!-- office hours number -->
+    <div *ngIf="addNumberForm.controls.country.value !== null" fxLayout="row" fxLayoutAlign="space-between center" fxLayoutGap="10px">
+      <mat-form-field fxFlex="30">
+        <label>
+          <input matInput type="text" formControlName="officeHours" placeholder="Office Hours">
+        </label>
+      </mat-form-field>
 
-    <!-- after hours number -->
-    <mat-form-field fxFlex="30">
-      <label>
-        <input matInput type="text" formControlName="afterHours" placeholder="After Hours">
-      </label>
-    </mat-form-field>
+      <!-- after hours number -->
+      <mat-form-field fxFlex="30">
+        <label>
+          <input matInput type="text" formControlName="afterHours" placeholder="After Hours">
+        </label>
+      </mat-form-field>
 
-    <!-- alt after hours number -->
-    <mat-form-field fxFlex="30">
-      <label>
-        <input matInput type="text" formControlName="altAfterHours" placeholder="Alternative After Hours">
-      </label>
-    </mat-form-field>
-  </div>
+      <!-- alt after hours number -->
+      <mat-form-field fxFlex="30">
+        <label>
+          <input matInput type="text" formControlName="altAfterHours" placeholder="Alternative After Hours">
+        </label>
+      </mat-form-field>
+    </div>
 
 
 
-  <!--save and cancel buttons-->
-  <mat-dialog-actions>
-    <button
-      [ngClass]="data.getButtonStyleMain()"
-      [disabled]="!addNumberForm.valid"
-      (click)="onCloseConfirm()"
-      mat-raised-button>
-      SAVE
-    </button>
+    <!--save and cancel buttons-->
+    <mat-dialog-actions>
+      <button
+        [ngClass]="data.getButtonStyleMain()"
+        [disabled]="!addNumberForm.valid"
+        (click)="onCloseConfirm()"
+        mat-raised-button>
+        SAVE
+      </button>
 
-    <button
-      [ngClass]="data.getButtonStyle()"
-      (click)="onCloseCancel()"
-      mat-raised-button>
-      CANCEL
-    </button>
-  </mat-dialog-actions>
+      <button
+        [ngClass]="data.getButtonStyle()"
+        (click)="onCloseCancel()"
+        mat-raised-button>
+        CANCEL
+      </button>
+    </mat-dialog-actions>
 
-</form>
-<br>
-<br>
+  </form>
+</mat-dialog-content>

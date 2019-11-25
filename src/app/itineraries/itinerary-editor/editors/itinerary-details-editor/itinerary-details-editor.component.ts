@@ -3,10 +3,8 @@ import {FormArray, FormBuilder, FormControl, FormGroup, Validators} from '@angul
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
 import {DataService} from '../../../../services/data.service';
 import Swal from 'sweetalert2';
-import { snapshotChanges } from '@angular/fire/database';
 import {Passenger} from '../../../../model/passenger';
 import {Observable} from 'rxjs';
-import {map, startWith} from 'rxjs/operators';
 
 // assign day-editor in milliseconds
 const DAY_IN_MILLISECONDS = 1000 * 60 * 60 * 24;
