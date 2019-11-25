@@ -10,18 +10,18 @@ export class CountryService {
   // function to generate countries array
   getCountries() {
     return [
-      new Country(1, 'Tanzania', [{time: 'Office Hours', number: '+255 784 999 736'}, {time: 'After Hours', number: '+255 784 666 510'}, {time: 'Alternate After Hours', number: '+27 72 710 4045'} ]),
-      new Country(2, 'Rwanda', [{time: 'Office Hours', number: '+250 280 301 000'}, {time: 'After Hours', number: '+250 788 351 000'}, {time: 'Alternate After Hours', number: ''} ]),
-      new Country(3, 'Botswana', [{time: 'Office Hours', number: '+27 82 873 0791'}, {time: 'Alternate After Hours', number: '+27 82 601 7046'}, {time: 'After Hours', number: '' } ]),
-      new Country(4, 'Zambia', [{time: 'Office Hours', number: '+260 211 262061'}, {time: 'After Hours', number: '+260 211 262061' }, {time: 'Alternate After Hours', number: '' }]),
-      new Country(5, 'Zimbabwe', [{time: 'Office Hours', number: '+27 82 873 0791'}, {time: 'After Hours', number: '+27 82 601 7046'}, {time: 'After Hours', number: '' } ]),
-      new Country(6, 'South Africa', [{time: 'Office Hours', number: '+27 82 873 0791'}, {time: 'After Hours', number: '+27 82 601 7046'}, {time: 'After Hours', number: '' } ]),
-      new Country(7, 'Zanzibar', [{time: 'Office Hours', number: '+255 784 999 736'}, {time: 'After Hours', number: '+255 784 666 510'}, {time: 'Alternate After Hours', number: '+27 72 710 4045'} ]),
-      new Country(8, 'Malawi', [{time: 'Office Hours', number: '+27214181515'}, {time: 'After Hours', number: '+27214181515'}, {time: 'Alternate After Hours', number: '+27214181515'} ]),
-      new Country(9, 'Mozambique', [{time: 'Office Hours', number: '+27214181515'}, {time: 'After Hours', number: '+27214181515'}, {time: 'Alternate After Hours', number: '+27214181515'} ]),
-      new Country(10, 'Kenya', [{time: 'Office Hours', number: '+254 790 406 230'}, {time: 'After Hours', number: '+254 713 399 018'}, {time: 'Alternate After Hours', number: '+27 72 710 4045'} ]),
-      new Country(11, 'Namibia', [{time: 'Office Hours', number: '+264 67 303 200'}, {time: 'After Hours', number: '+264 81 269 7271'}, {time: 'After Hours', number: '' } ]),
-      new Country(12, 'Uganda', [{time: 'Office Hours', number: '+256 777 284 831'}, {time: 'After Hours', number: '+250 788 351 000'}, {time: 'Alternate After Hours', number: ''} ])
+      new Country(1, 'Tanzania', [{time: 'Office Hours', number: '+255 784 999 736'}, {time: 'After Hours', number: '+255 784 666 510'}, {time: 'Alternate After Hours', number: '+27 72 710 4045'}], 'B0gBaqoW4NP7eIdjUcFx'),
+      new Country(2, 'Rwanda', [{time: 'Office Hours', number: '+250 280 301 000'}, {time: 'After Hours', number: '+250 788 351 000'}, {time: 'Alternate After Hours', number: ''} ], 'gxMxwsXRzxD5Dt5WWQdA'),
+      new Country(3, 'Botswana', [{time: 'Office Hours', number: '+27 82 873 0791'}, {time: 'Alternate After Hours', number: '+27 82 601 7046'}, {time: 'After Hours', number: '' }], 'TS3XxWxfce0YsXcxC2ln'),
+      new Country(4, 'Zambia', [{time: 'Office Hours', number: '+260 211 262061'}, {time: 'After Hours', number: '+260 211 262061' }, {time: 'Alternate After Hours', number: '' }], 'inZZCMwVrnoCg0Fkd3iB'),
+      new Country(5, 'Zimbabwe', [{time: 'Office Hours', number: '+27 82 873 0791'}, {time: 'After Hours', number: '+27 82 601 7046'}, {time: 'After Hours', number: '' }], 'bhg9V8hILzbDeeO149x1'),
+      new Country(6, 'South Africa', [{time: 'Office Hours', number: '+27 82 873 0791'}, {time: 'After Hours', number: '+27 82 601 7046'}, {time: 'After Hours', number: '' }], 'hN8EEHsmXjGd19fxQzjl'),
+      new Country(7, 'Zanzibar', [{time: 'Office Hours', number: '+255 784 999 736'}, {time: 'After Hours', number: '+255 784 666 510'}, {time: 'Alternate After Hours', number: '+27 72 710 4045'} ], 'p0sF2J7Kw7sDbwGbqVPk'),
+      new Country(8, 'Malawi', [{time: 'Office Hours', number: '+27214181515'}, {time: 'After Hours', number: '+27214181515'}, {time: 'Alternate After Hours', number: '+27214181515'}], 'XxVoITmdlZ9IuxGK4DpE'),
+      new Country(9, 'Mozambique', [{time: 'Office Hours', number: '+27214181515'}, {time: 'After Hours', number: '+27214181515'}, {time: 'Alternate After Hours', number: '+27214181515'}], '4M8vRsDYERuLeO7kDrks'),
+      new Country(10, 'Kenya', [{time: 'Office Hours', number: '+254 790 406 230'}, {time: 'After Hours', number: '+254 713 399 018'}, {time: 'Alternate After Hours', number: '+27 72 710 4045'}], 'KVTe1tNXpheRRtpNuh7o'),
+      new Country(11, 'Namibia', [{time: 'Office Hours', number: '+264 67 303 200'}, {time: 'After Hours', number: '+264 81 269 7271'}, {time: 'After Hours', number: '' }], 'YHhDH610LOcb7XEZPDN3'),
+      new Country(12, 'Uganda', [{time: 'Office Hours', number: '+256 777 284 831'}, {time: 'After Hours', number: '+250 788 351 000'}, {time: 'Alternate After Hours', number: ''}], '4yv0jdVTuK59BoNot6tz')
     ];
   }
 
@@ -117,13 +117,20 @@ export class CountryService {
     ];
   }
 
-  // function to diplay destination names
-  getDestination(id: string) {
+  // function to display destination names
+  getDestination(id) {
     // return destination name
     const d = this.getCountries().find((item) => {
       return item.id === parseInt(id, 10);
     });
-    return d;
+    return d
+  }
+  getRegionName(id) {
+    // return destination name
+    const r = this.getRegions().find((item) => {
+      return item.id === parseInt(id, 10);
+    });
+    return r.name;
   }
 
   constructor() {

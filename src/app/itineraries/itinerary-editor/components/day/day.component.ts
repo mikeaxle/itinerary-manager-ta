@@ -24,9 +24,9 @@ export class DayComponent implements OnInit {
   ngOnInit() {
   }
 
-  removeDay(key) {
+  removeDay(day) {
    // emit event
-    this.deleteDay.emit(key);
+    this.deleteDay.emit(day);
   }
 
   // function to open dialog

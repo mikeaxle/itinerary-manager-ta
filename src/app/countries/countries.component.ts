@@ -57,7 +57,7 @@ export class CountriesComponent implements OnInit, OnDestroy {
         });
 
         // init data source
-        this.dataSource = new MatTableDataSource(this.countries);
+        this.dataSource = new MatTableDataSource(this.countries.reverse());
 
         // init data source
         this.dataSource.paginator = this.paginator;

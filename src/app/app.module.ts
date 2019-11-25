@@ -75,6 +75,8 @@ import { SafeHtmlPipe } from './filter/safe-html.pipe';
 import {AngularFireAuthGuard} from '@angular/fire/auth-guard';
 import {DragDropModule} from '@angular/cdk/drag-drop';
 import { CountriesComponent } from './countries/countries.component';
+import { LiveUrlDialogComponent } from './live-url-dialog/live-url-dialog.component';
+import { ApiComponent } from './shared/api/api.component';
 
 // currency Mask settings
 // @ts-ignore
@@ -122,7 +124,9 @@ import { CountriesComponent } from './countries/countries.component';
     SearchComponent,
     ProgressBarComponent,
     SafeHtmlPipe,
-    CountriesComponent
+    CountriesComponent,
+    LiveUrlDialogComponent,
+    ApiComponent
   ],
   entryComponents: [
     DayEditorComponent,
@@ -190,8 +194,12 @@ import { CountriesComponent } from './countries/countries.component';
 })
 export class AppModule {
   constructor(overlayContainer: OverlayContainer) {
-    if (localStorage.getItem('company') === 'Planet Africa') {
-      overlayContainer.getContainerElement().classList.add('planet-africa-theme');
+    if (localStorage.getItem('company')) {
+      const company = JSON.parse(localStorage.getItem('company'));
+      if (company.name === 'Planet Africa') {
+        overlayContainer.getContainerElement().classList.add('planetAfricaTheme');
+        console.log('theme added')
+      }
     }
   }
 }

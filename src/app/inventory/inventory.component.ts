@@ -49,7 +49,7 @@ export class InventoryComponent implements OnInit, OnDestroy {
         });
 
         // init data source
-        this.dataSource = new MatTableDataSource(this.inventory);
+        this.dataSource = new MatTableDataSource(this.inventory.reverse());
 
         // init data source
         this.dataSource.paginator = this.paginator;

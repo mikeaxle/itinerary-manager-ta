@@ -15,7 +15,7 @@ import {switchMap} from 'rxjs/operators';
   selector: 'app-itineraries',
   styleUrls: ['./itineraries.component.scss'],
   templateUrl: './itineraries.component.html',
-  encapsulation: ViewEncapsulation.None 
+  encapsulation: ViewEncapsulation.None
 
 })
 export class ItinerariesComponent implements OnInit, OnDestroy {
@@ -37,11 +37,12 @@ export class ItinerariesComponent implements OnInit, OnDestroy {
 
     // get company ref
     this.companyRef$ = this.data.firestore.doc(`companies/${this.data.company.key}`).ref;
-    
+
     // get itineraries ref
     this.itinerariesRef$ = this.status$.pipe(
       switchMap(status =>
-        this.data.firestore.collection(`itineraries`, ref => status ? ref.where('company', '==', this.companyRef$).where('status', '==', status) : ref
+        this.data.firestore.collection(`itineraries`, ref => status ? ref.where('company', '==', this.companyRef$).where('status', '==', status) :
+          ref.where('company', '==', this.companyRef$)
         ).snapshotChanges()
       )
     );
@@ -65,7 +66,7 @@ export class ItinerariesComponent implements OnInit, OnDestroy {
           // todo: get client details and add to itinerary info
           itinerary[`client`].get()
             .then(res => {
-              const client = res.data()
+              const client = res.data();
               itinerary[`clientFullName`] = `${client.firstName} ${client.lastName}`;
             });
 
@@ -119,7 +120,7 @@ export class ItinerariesComponent implements OnInit, OnDestroy {
 
     // perform next query
     this.status$.next(event.source.value);
-    
+
     // Swal
     event.source.value === undefined ? Swal.fire('Reloading Itineraries', 'Getting all itineraries', 'info') :
     Swal.fire('Reloading Itineraries', `Filtering by status: "${event.source.value}"`, 'info');

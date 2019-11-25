@@ -44,7 +44,7 @@
   <!-- flag  Column -->
   <ng-container matColumnDef="Flag">
     <mat-header-cell *matHeaderCellDef> Flag</mat-header-cell>
-    <mat-cell *matCellDef="let row"> &nbsp; <img [src]="row.flag" style="height: 40px"/></mat-cell>
+    <mat-cell *matCellDef="let row"> &nbsp; <img *ngIf="row.flag" [src]="row.flag" style="height: 40px"/></mat-cell>
   </ng-container>
 
   <!-- country code  Column -->

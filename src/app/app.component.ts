@@ -1,4 +1,5 @@
 import {Component, Injectable} from '@angular/core';
+import {DataService} from './services/data.service';
 
 @Injectable()
 @Component({
@@ -8,4 +9,5 @@ import {Component, Injectable} from '@angular/core';
 })
 export class AppComponent {
   title = 'itinerary-manager-ta';
+  constructor(public data: DataService) {}
 }
