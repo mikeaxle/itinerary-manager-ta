@@ -76,6 +76,7 @@ import {AngularFireAuthGuard} from '@angular/fire/auth-guard';
 import {DragDropModule} from '@angular/cdk/drag-drop';
 import { CountriesComponent } from './countries/countries.component';
 import { LiveUrlDialogComponent } from './live-url-dialog/live-url-dialog.component';
+import { ApiComponent } from './shared/api/api.component';
 
 // currency Mask settings
 // @ts-ignore
@@ -124,7 +125,8 @@ import { LiveUrlDialogComponent } from './live-url-dialog/live-url-dialog.compon
     ProgressBarComponent,
     SafeHtmlPipe,
     CountriesComponent,
-    LiveUrlDialogComponent
+    LiveUrlDialogComponent,
+    ApiComponent
   ],
   entryComponents: [
     DayEditorComponent,

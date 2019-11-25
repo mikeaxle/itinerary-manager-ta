@@ -8,11 +8,16 @@ import {AgentsComponent} from './agents/agents.component';
 import {LoginComponent} from './login/login.component';
 import {AngularFireAuthGuard, redirectUnauthorizedTo} from '@angular/fire/auth-guard';
 import {CountriesComponent} from './countries/countries.component';
+import {ApiComponent} from './shared/api/api.component';
 
 const redirectUnauthorizedToLogin = () => redirectUnauthorizedTo(['login']);
 
 const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
+  {
+    component: ApiComponent,
+    path: 'api'
+  },
   {
     component: LoginComponent,
     path: 'login'

@@ -1,16 +1,13 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-
 import { AngularFireDatabase } from '@angular/fire/database';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { AngularFireStorage } from '@angular/fire/storage';
-import { finalize } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import 'rxjs-compat/add/observable/of';
 import Swal from 'sweetalert2';
 import {AngularFirestore} from '@angular/fire/firestore';
 import * as firebase from 'firebase';
-import {error} from 'util';
 
 
 @Injectable({
@@ -25,7 +22,7 @@ export class DataService {
     databaseURL: 'https://true-africa-itinerary.firebaseio.com'
   };
   secondaryApp: any;
-  constructor(public afAuth: AngularFireAuth, public firestore: AngularFirestore, public storage: AngularFireStorage, private router: Router) {}
+  constructor(public afAuth: AngularFireAuth, public database: AngularFireDatabase, public firestore: AngularFirestore, public storage: AngularFireStorage, private router: Router) {}
 
   // getter for user
   get user(): any {
@@ -270,11 +267,11 @@ export class DataService {
       .delete()
       .then(_ => {
         console.log(`${type} deleted.`);
-        Swal.fire(`${type} editor`, `existing ${type} deleted.`, 'success');
+        // Swal.fire(`${type} editor`, `existing ${type} deleted.`, 'success');
       })
       .catch(err => {
         console.log(err);
-        Swal.fire(`${type} editor`, err.message, 'error');
+        // Swal.fire(`${type} editor`, err.message, 'error');
       });
   }
 
