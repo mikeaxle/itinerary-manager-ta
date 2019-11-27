@@ -1,7 +1,8 @@
 <ngx-auth-firebaseui-login
   *ngIf="!data.user"
   (onError)="onLoginError($event)"
-  [messageOnAuthError]="'Welcome to ' + data.company + ' Itinerary Manager'"
+  messageOnAuthSuccess="Logged in!"
+  messageOnAuthError="Oop! Something went wrong! Please retry again!"
   [logoUrl]="logo"
   (onSuccess)="onLoginSuccess($event)"
   [providers]="providers.EmailAndPassword"

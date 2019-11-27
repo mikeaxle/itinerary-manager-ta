@@ -221,19 +221,10 @@ export class ItineraryDetailsEditorComponent implements OnInit, OnDestroy {
     // add client ref
     this.itineraryForm.value.client = this.data.firestore.doc(`clients/${this.itineraryForm.value.client}`).ref;
 
-    console.log(this.itineraryForm.value)
+    // console.log(this.itineraryForm.value)
     // push to firebase
-    this.data.firestore.doc(`itineraries/${this.itinerary.key}`)
-      .update(this.itineraryForm.value)
-      .then(() => {
-        this.itineraryForm.reset()
-        Swal.fire('Itinerary Editor', 'Itinerary details updated', 'success');
-        this.dialogRef.close();
-      })
-      .catch((error) => {
-        Swal.fire('Itinerary Editor', error.message, 'error');
-        console.log(error);
-      });
+    this.data.updateFirebaseObject(`itineraries/${this.itinerary.key}`, this.itineraryForm.value, 'itinerary details', true);
+    this.dialogRef.close();
   }
 
   // function to cancel dialog
