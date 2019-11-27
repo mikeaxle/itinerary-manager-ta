@@ -18,7 +18,7 @@
       </button>
 
       <!-- invoice number -->
-      <h2>Itinerary {{ itinerary$.invoiceNumber }}</h2>
+      <h2>Itinerary {{data.company.prefix}}-{{ itinerary$.invoiceNumber }}</h2>
     </span>
 
 
@@ -121,7 +121,7 @@
         <tr>
           <td>
             <h5>Itinerary</h5>
-            <b>{{ itinerary$.invoiceNumber }}</b>
+            <b>{{data.company.prefix}}-{{ itinerary$.invoiceNumber }}</b>
           </td>
           <td>
             <h5>Safari Specialist</h5>

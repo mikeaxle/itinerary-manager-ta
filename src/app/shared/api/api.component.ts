@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import {DataService} from '../../services/data.service';
 import {CountryService} from '../../services/country.service';
+import {isNegativeNumberLiteral} from 'tslint';
 
 @Component({
   selector: 'app-api',
@@ -13,11 +14,35 @@ export class ApiComponent implements OnInit {
   constructor(public data: DataService, public countryService: CountryService) {}
 
   ngOnInit() {
-    this.data.firestore.collection('itineraries', ref => ref.where('invoiceNumber', '==', NaN))
-      .snapshotChanges()
-      .subscribe(_ => {
-        console.log(_.length);
-      })
+    // const companyRef = this.data.firestore.collection('companies').doc(this.data.company.key).ref;
+    // const filter = 'Cancelled';
+    //
+    // this.data.firestore.collection('itineraries', ref => ref.where('status', '==', filter).where('company', '==', companyRef))
+    //   .snapshotChanges()
+    //   .subscribe(_ => {
+    //     console.log(filter + ' is max: ' + _.length);
+    //     _.forEach(__ => {
+    //       const itinerary = {...__.payload.doc.data(), key: __.payload.doc.id};
+    //
+    //       if (typeof itinerary[`invoiceNumber`] === 'string') {
+    //         let newInvoiceNumber = Number(itinerary[`invoiceNumber`].substring(3));
+    //
+    //         if (newInvoiceNumber < 0) {
+    //           newInvoiceNumber = (newInvoiceNumber * -1);
+    //         }
+    //         // console.log(newInvoiceNumber);
+    //
+    //         __.payload.doc.ref.update({
+    //           invoiceNumber: newInvoiceNumber
+    //         }).then(res => {
+    //           console.log('invoiceNumber updated');
+    //         })
+    //           .catch(err => {
+    //             console.log(err.message);
+    //           });
+    //       }
+    //     });
+    //   });
     // const countryRef = this.data.firestore.collection('countries').doc('hN8EEHsmXjGd19fxQzjl');
     // this.data.firestore.collection('inventory', ref => ref.where('region', '==', 41))
     // .snapshotChanges()

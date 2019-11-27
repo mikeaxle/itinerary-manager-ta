@@ -28,7 +28,7 @@
   <!-- Invoice Number Column -->
   <ng-container matColumnDef="#">
     <th mat-header-cell *matHeaderCellDef> #</th>
-    <td mat-cell *matCellDef="let row"> {{ row.invoiceNumber }}</td>
+    <td mat-cell *matCellDef="let row"> {{ data.company.prefix }}-{{ row.invoiceNumber }}</td>
   </ng-container>
 
   <!-- Date Column -->
