@@ -63,12 +63,17 @@ export class ItinerariesComponent implements OnInit, OnDestroy {
           // get key
           itinerary[`key`] = snapshot.payload.doc.id;
 
-          // todo: get client details and add to itinerary info
-          itinerary[`client`].get()
-            .then(res => {
-              const client = res.data();
-              itinerary[`clientFullName`] = `${client.firstName} ${client.lastName}`;
-            });
+          // get client details and add to itinerary info
+          try {
+            itinerary[`client`].get()
+              .then(res => {
+                const client = res.data();
+                itinerary[`clientFullName`] = `${client.firstName} ${client.lastName}`;
+              });
+
+          } catch (e) {
+            console.log(itinerary);
+          }
 
           // push to itineraries array
           this.itineraries.push(itinerary);

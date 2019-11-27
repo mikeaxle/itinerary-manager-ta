@@ -84,8 +84,6 @@ export class ItineraryDetailsEditorComponent implements OnInit, OnDestroy {
         }
       });
 
-    // set agent
-    this.itinerary.agent = this.itinerary.agent.id;
 
     // get clients
     const companyRef$ = this.data.firestore.doc(`companies/${this.data.company.key}`).ref;
@@ -101,10 +99,6 @@ export class ItineraryDetailsEditorComponent implements OnInit, OnDestroy {
           });
         }
       });
-
-    // set client
-    this.itinerary.client = this.itinerary.client.id;
-
     //  get from params
     this.client = this.params.client;
 
@@ -153,8 +147,8 @@ export class ItineraryDetailsEditorComponent implements OnInit, OnDestroy {
     }
 
     this.itineraryForm.patchValue({
-      agent: this.itinerary.agent,
-      client: this.itinerary.client,
+      agent: this.itinerary.agent.id,
+      client: this.itinerary.client.id,
       endDate: this.endDate,
       startDate: this.startDate,
       title: this.itinerary.title

@@ -180,14 +180,14 @@ export class DataService {
 
   // function to get button styles
   getButtonStyle() {
-    if (this.company === 'Planet Africa') {
+    if (this.company.name === 'Planet Africa') {
       return 'lesser-button-pa';
-    } else if (this.company === 'True Africa') {
+    } else if (this.company.name === 'True Africa') {
       return 'lesser-button-ta';
     }
   }
   getButtonStyleMain() {
-    if (this.company === 'Planet Africa') {
+    if (this.company.name === 'Planet Africa') {
       return 'greater-button-pa';
     } else if (this.company === 'True Africa') {
       return 'greater-button-ta';
