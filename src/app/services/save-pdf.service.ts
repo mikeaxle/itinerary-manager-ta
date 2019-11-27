@@ -1842,7 +1842,7 @@ if (lastIteneraryItemsHeight + quotHeight > quoteThreshold) {
     let deets = '';
 
     this.itinerary[type].forEach((passenger) => {
-      deets += `${passenger.firstName} ${passenger.lastName} - ${passenger.age}<br>`;
+      deets += `${passenger.firstName} ${passenger.lastName} ${passenger.age === 0 ? '' : '-' + passenger.age }<br>`;
     });
 
     return deets;
