@@ -4,8 +4,8 @@ import {CountryService} from '../../services/country.service';
 
 @Component({
   selector: 'app-api',
-  templateUrl: './api.component.html',
-  styleUrls: ['./api.component.css']
+  styleUrls: ['./api.component.css'],
+  templateUrl: './api.component.html'
 })
 export class ApiComponent implements OnInit {
   list = [];
@@ -13,24 +13,29 @@ export class ApiComponent implements OnInit {
   constructor(public data: DataService, public countryService: CountryService) {}
 
   ngOnInit() {
+    this.data.firestore.collection('itineraries', ref => ref.where('invoiceNumber', '==', NaN))
+      .snapshotChanges()
+      .subscribe(_ => {
+        console.log(_.length);
+      })
     // const countryRef = this.data.firestore.collection('countries').doc('hN8EEHsmXjGd19fxQzjl');
-    this.data.firestore.collection('inventory', ref => ref.where('region', '==', 41))
-    .snapshotChanges()
-    .subscribe(_ => {
-      _.forEach(element => {
-        const item = {...element.payload.doc.data(), key: element.payload.doc.id}
-
-        element.payload.doc.ref.update({
-          region: 'Winelands'
-        })
-        .then(res => {
-          console.log('item updated')
-        })
-        .catch(err => {
-          console.log(err.message)
-        })
-      });
-    });
+    // this.data.firestore.collection('inventory', ref => ref.where('region', '==', 41))
+    // .snapshotChanges()
+    // .subscribe(_ => {
+    //   _.forEach(element => {
+    //     const item = {...element.payload.doc.data(), key: element.payload.doc.id}
+    //
+    //     element.payload.doc.ref.update({
+    //       region: 'Winelands'
+    //     })
+    //     .then(res => {
+    //       console.log('item updated')
+    //     })
+    //     .catch(err => {
+    //       console.log(err.message)
+    //     })
+    //   });
+    // });
 
     // migrate days
     // this.daysCollection = this.data.firestore.collection('days');
