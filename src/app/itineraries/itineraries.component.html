@@ -24,7 +24,7 @@
 </ng-template>
 
 <!-- data table-->
-<table *ngIf="itineraries.length > 0; else loading" mat-table [dataSource]="dataSource" class="mat-elevation-z4" matSort>
+<table *ngIf="itineraries.length > 0; else loading" mat-table [dataSource]="dataSource" class="example-container">
   <!-- Invoice Number Column -->
   <ng-container matColumnDef="#">
     <th mat-header-cell *matHeaderCellDef> #</th>

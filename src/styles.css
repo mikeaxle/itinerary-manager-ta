@@ -405,8 +405,9 @@ mat-grid-tile  {
   display: flex;
   flex-direction: column;
   min-width: 300px;
-  margin: 10px;
   cursor:pointer;
+  border: 1px #f8f8f8 solid;
+  border-radius: 10px;
 }
 
 .example-header {
