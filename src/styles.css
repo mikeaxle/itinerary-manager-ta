@@ -368,7 +368,8 @@ mat-grid-tile  {
 }
 
 .chip {
-  padding: 5px; max-width: 18% !important; min-width: 90px !important; color: white;
+  padding: 5px; width: 110px !important;
+  color: white;
   box-sizing: border-box;
 }
 
