@@ -30,9 +30,9 @@ export class DayEditorComponent implements OnInit, OnDestroy {
   countriesSubscrption$;
 
   constructor(private formBuilder: FormBuilder,
-    public data: DataService,
-    public dialogRef: MatDialogRef<DayEditorComponent>,
-    @Inject(MAT_DIALOG_DATA) public params: any) { }
+              public data: DataService,
+              public dialogRef: MatDialogRef<DayEditorComponent>,
+              @Inject(MAT_DIALOG_DATA) public params: any) { }
 
   ngOnInit() {
 
@@ -204,7 +204,7 @@ export class DayEditorComponent implements OnInit, OnDestroy {
         services: this.formBuilder.array(_services),
         activities: this.formBuilder.array(_activities),
         accommodation: this.formBuilder.array(_accommodation)
-      })
+      });
 
 
     }
