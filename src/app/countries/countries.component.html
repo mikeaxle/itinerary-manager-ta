@@ -12,7 +12,7 @@
 <!-- progress bar -->
 <app-progress-bar [listLength]="countries.length"></app-progress-bar>
 
-<mat-table *ngIf="countries.length > 0" #table [dataSource]="dataSource" #sort class="example-container mat-elevation-z4" >
+<mat-table *ngIf="countries.length > 0" #table [dataSource]="dataSource" class="example-container">
 
   <!--- Note that these columns can be defined in any order.
   The actual rendered columns are set as a property on the row definition" -->

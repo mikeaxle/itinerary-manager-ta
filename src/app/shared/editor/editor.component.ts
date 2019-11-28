@@ -208,7 +208,7 @@ export class EditorComponent implements OnInit {
 
     // get client list
     const companyRef$ = this.data.firestore.doc(`companies/${this.data.company.key}`).ref;
-    this.data.firestore.collection(`clients`, ref => ref.where('company', '==', companyRef$))
+    this.data.firestore.collection(`clients`, ref => ref.where('company', '==', companyRef$).orderBy('firstName'))
       .snapshotChanges()
       .subscribe(_ => {
         _.forEach(snapshot => {
@@ -261,8 +261,8 @@ export class EditorComponent implements OnInit {
       description: [null, Validators.required],
       destination: [null, Validators.required],
       // image: [null, Validators.required],
-      inclusions: [null, Validators.required],
-      longDescription: [null, Validators.required],
+      inclusions: [null],
+      longDescription: [null],
       name: [null, Validators.required],
       region: [null, Validators.required],
       type: [null, Validators.required],
@@ -582,7 +582,7 @@ export class EditorComponent implements OnInit {
         };
 
        // write to firebase
-       this.data.updateFirebaseObject(`clients/${this.client.key}`, dataToUpdate, 'client');
+       this.data.updateFirebaseObject(`clients/${this.client.key}`, dataToUpdate, 'client', true);
     }
 
     // close dialog
@@ -602,7 +602,7 @@ export class EditorComponent implements OnInit {
         };
 
       // update firebase object
-      this.data.updateFirebaseObject(`users/${this.agent.key}`, dataToUpdate, 'agent');
+      this.data.updateFirebaseObject(`users/${this.agent.key}`, dataToUpdate, 'agent', true);
     } else {
       // add new agent
       this.data.saveFirebaseObject('users', agent, 'agent');

@@ -103,16 +103,7 @@ export class ClientsComponent implements OnInit, OnDestroy {
     // todo: check if user has itineraries
 
     // delete client
-    this.data.firestore.doc(`clients/${id}`)
-      .delete()
-      .then(() => {
-        console.log('client deleted');
-        Swal.fire('Client Editor', 'client deleted', 'success');
-      })
-      .catch((err) => {
-        this.error = err;
-        Swal.fire('Client Editor', err.message, 'error');
-      });
+    this.data.deleteObjectFromFirebase(`clients/${id}`, 'client');
   }
 
   // function to add client

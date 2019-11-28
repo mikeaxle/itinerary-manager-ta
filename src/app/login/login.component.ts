@@ -35,11 +35,8 @@ export class LoginComponent implements OnDestroy  {
 
         // if (this.data.user) {
           // if user is logged in, redirect to dashboard
-          this.router.navigate(['itineraries'])
-            .then(() => {
-              Swal.fire('Authentication', 'You are logged in!', 'success');
-            });
-        // }
+        this.router.navigate(['itineraries']);
+
 
       }
     });

@@ -320,15 +320,7 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
     });
 
     // delete day
-    this.data.firestore.doc(`days/${day[`key`]}`)
-      .delete()
-      .then(_ => {
-        console.log('day deleted');
-      })
-      .catch(err => {
-        console.log(err);
-        Swal.fire('day editor', err.message, 'error');
-      });
+    this.data.deleteObjectFromFirebase(`days/${day[`key`]}`, 'day');
   }
 
   // function to remove comment
@@ -344,15 +336,15 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
   // function to delete country
   removeCountry(key) {
 
-    this.data.firestore.doc(`itineraries/${this.itineraryId}/contactDetails/${key}`)
-      .delete()
-      .then(_ => {
-        console.log('contact detail deleted');
-      })
-      .catch(err => {
-        console.log(err);
-        Swal.fire('contact details editor', err.message, 'error');
-      });
+    this.data.deleteObjectFromFirebase(`itineraries/${this.itineraryId}/contactDetails/${key}`, 'contact details');
+      // .delete()
+      // .then(_ => {
+      //   console.log('contact detail deleted');
+      // })
+      // .catch(err => {
+      //   console.log(err);
+      //   Swal.fire('contact details editor', err.message, 'error');
+      // });
     // this.data.deleteObjectFromFirebase(`itineraries/${this.itineraryId}/contactDetails/${key}`, 'contact details');
   }
 

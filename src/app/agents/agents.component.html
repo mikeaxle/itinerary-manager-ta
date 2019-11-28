@@ -24,7 +24,7 @@
 <app-progress-bar [listLength]="agents.length"></app-progress-bar>
 
 <!-- table -->
-  <mat-table *ngIf="agents.length > 0" #table [dataSource]="dataSource" class="example-container mat-elevation-z4" #matSort>
+  <mat-table *ngIf="agents.length > 0" #table [dataSource]="dataSource" class="example-container">
     <!-- Name Column -->
     <ng-container matColumnDef="Name">
       <mat-header-cell *matHeaderCellDef fxFlex> Name</mat-header-cell>

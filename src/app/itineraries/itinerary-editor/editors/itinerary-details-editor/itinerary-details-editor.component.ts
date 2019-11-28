@@ -84,12 +84,10 @@ export class ItineraryDetailsEditorComponent implements OnInit, OnDestroy {
         }
       });
 
-    // set agent
-    this.itinerary.agent = this.itinerary.agent.id;
 
     // get clients
     const companyRef$ = this.data.firestore.doc(`companies/${this.data.company.key}`).ref;
-    this.clientsSubscription$ = this.data.firestore.collection(`clients`, ref => ref.where('company', '==', companyRef$))
+    this.clientsSubscription$ = this.data.firestore.collection(`clients`, ref => ref.where('company', '==', companyRef$).orderBy('firstName'))
       .snapshotChanges()
       .subscribe(_ => {
         if (_.length > 0) {
@@ -101,10 +99,6 @@ export class ItineraryDetailsEditorComponent implements OnInit, OnDestroy {
           });
         }
       });
-
-    // set client
-    this.itinerary.client = this.itinerary.client.id;
-
     //  get from params
     this.client = this.params.client;
 
@@ -153,8 +147,8 @@ export class ItineraryDetailsEditorComponent implements OnInit, OnDestroy {
     }
 
     this.itineraryForm.patchValue({
-      agent: this.itinerary.agent,
-      client: this.itinerary.client,
+      agent: this.itinerary.agent.id,
+      client: this.itinerary.client.id,
       endDate: this.endDate,
       startDate: this.startDate,
       title: this.itinerary.title
@@ -221,19 +215,10 @@ export class ItineraryDetailsEditorComponent implements OnInit, OnDestroy {
     // add client ref
     this.itineraryForm.value.client = this.data.firestore.doc(`clients/${this.itineraryForm.value.client}`).ref;
 
-    console.log(this.itineraryForm.value)
+    // console.log(this.itineraryForm.value)
     // push to firebase
-    this.data.firestore.doc(`itineraries/${this.itinerary.key}`)
-      .update(this.itineraryForm.value)
-      .then(() => {
-        this.itineraryForm.reset()
-        Swal.fire('Itinerary Editor', 'Itinerary details updated', 'success');
-        this.dialogRef.close();
-      })
-      .catch((error) => {
-        Swal.fire('Itinerary Editor', error.message, 'error');
-        console.log(error);
-      });
+    this.data.updateFirebaseObject(`itineraries/${this.itinerary.key}`, this.itineraryForm.value, 'itinerary details', true);
+    this.dialogRef.close();
   }
 
   // function to cancel dialog

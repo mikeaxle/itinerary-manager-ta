@@ -33,7 +33,7 @@
 <app-progress-bar [listLength]="clients.length"></app-progress-bar>
 
 <!-- data table -->
-  <table mat-table *ngIf="clients.length > 0" [dataSource]="dataSource" class="mat-elevation-z4">
+  <mat-table *ngIf="clients.length > 0" #table [dataSource]="dataSource" class="example-container">
     <!-- Name Column -->
     <ng-container matColumnDef="Name">
       <mat-header-cell *matHeaderCellDef fxFlex="45"> Name</mat-header-cell>
@@ -64,5 +64,5 @@
 
     <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
     <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
-  </table>
+  </mat-table>
 <mat-paginator [pageSizeOptions]="[15, 30, 60]"></mat-paginator>

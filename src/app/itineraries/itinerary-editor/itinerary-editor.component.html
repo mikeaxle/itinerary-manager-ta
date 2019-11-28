@@ -18,7 +18,7 @@
       </button>
 
       <!-- invoice number -->
-      <h2>Itinerary {{ itinerary$.invoiceNumber }}</h2>
+      <h2>Itinerary {{data.company.prefix}}-{{ itinerary$.invoiceNumber }}</h2>
     </span>
 
 
@@ -121,7 +121,7 @@
         <tr>
           <td>
             <h5>Itinerary</h5>
-            <b>{{ itinerary$.invoiceNumber }}</b>
+            <b>{{data.company.prefix}}-{{ itinerary$.invoiceNumber }}</b>
           </td>
           <td>
             <h5>Safari Specialist</h5>
@@ -229,7 +229,7 @@
       <!-- exclusions input -->
       <mat-form-field>
         <label>
-          <textarea [(ngModel)]="this.itinerary$.exclusions" rows="4" type="text" matInput (keyup.enter)="onKeyUpSave('exclusions')" (blur)="onKeyUpSave('exclusions')" placeholder="Exclusions"></textarea>
+          <textarea [(ngModel)]="this.itinerary$.exclusions" rows="4" type="text" matInput (keyup.enter)="onKeyUpSave('exclusions')" (blur)="onKeyUpSave('exclusions')"></textarea>
         </label>
       </mat-form-field>
     </div>

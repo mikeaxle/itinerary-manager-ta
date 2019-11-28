@@ -8,6 +8,7 @@ import 'rxjs-compat/add/observable/of';
 import Swal from 'sweetalert2';
 import {AngularFirestore} from '@angular/fire/firestore';
 import * as firebase from 'firebase';
+import {MatSnackBar} from '@angular/material';
 
 
 @Injectable({
@@ -22,7 +23,8 @@ export class DataService {
     databaseURL: 'https://true-africa-itinerary.firebaseio.com'
   };
   secondaryApp: any;
-  constructor(public afAuth: AngularFireAuth, public database: AngularFireDatabase, public firestore: AngularFirestore, public storage: AngularFireStorage, private router: Router) {}
+  constructor(public afAuth: AngularFireAuth, public database: AngularFireDatabase, public firestore: AngularFirestore,
+              public storage: AngularFireStorage, private router: Router, public snackBar: MatSnackBar) {}
 
   // getter for user
   get user(): any {
@@ -178,14 +180,14 @@ export class DataService {
 
   // function to get button styles
   getButtonStyle() {
-    if (this.company === 'Planet Africa') {
+    if (this.company.name === 'Planet Africa') {
       return 'lesser-button-pa';
-    } else if (this.company === 'True Africa') {
+    } else if (this.company.name === 'True Africa') {
       return 'lesser-button-ta';
     }
   }
   getButtonStyleMain() {
-    if (this.company === 'Planet Africa') {
+    if (this.company.name === 'Planet Africa') {
       return 'greater-button-pa';
     } else if (this.company === 'True Africa') {
       return 'greater-button-ta';
@@ -253,7 +255,9 @@ export class DataService {
       .add(dataToSave)
       .then(_ => {
         console.log(`new ${caller} added`);
-        Swal.fire(`${caller} editor`, `new ${caller} added.`, 'success');
+        this.snackBar.open(`${caller} added`, 'success', {
+          duration: 2000
+        });
       })
       .catch(err => {
         console.log(err);
@@ -267,11 +271,13 @@ export class DataService {
       .delete()
       .then(_ => {
         console.log(`${type} deleted.`);
-        // Swal.fire(`${type} editor`, `existing ${type} deleted.`, 'success');
+        this.snackBar.open(`existing ${type} deleted.`, 'success', {
+          duration: 2000
+        });
       })
       .catch(err => {
         console.log(err);
-        // Swal.fire(`${type} editor`, err.message, 'error');
+        Swal.fire(`${type} editor`, err.message, 'error');
       });
   }
 
@@ -281,7 +287,7 @@ export class DataService {
     this.firestore.doc(path)
       .update(dataToUpdate)
       .then(_ => {
-        notify ? Swal.fire(`${caller} editor`, `${caller} updated.`, 'success') :  console.log(`updated ${caller}`);
+        notify ? this.snackBar.open(`${caller} updated.`, 'success', { duration: 2000 }) :  console.log(`updated ${caller}`);
       })
       .catch(err => {
         console.log(err);
