@@ -173,7 +173,7 @@ export class SavePdfService {
     this.itinerary = itineraryData.itinerary;
 
     // get averages
-    this.averageCost = itineraryData.averageCost;
+    this.averageCost = (itineraryData.averageCost).toFixed(2);
 
     // get updated at
     this.updatedAt = itineraryData.updatedAt;
@@ -885,7 +885,7 @@ footer p:last-of-type{
         <tr>
           <td class="description">Average price per person, per day of service</td>
           <td class="currency">USD</td>
-          <td class="amount"/>${this.averageCost / this.usedDays}</td>
+          <td class="amount"/>${(this.averageCost / this.usedDays).toFixed(2)}</td>
         </tr>
         <tr>
           <td class="description">Average price per person</td>
@@ -1226,7 +1226,7 @@ if (lastIteneraryItemsHeight + quotHeight > quoteThreshold) {
             <tr>
               <td class="description">Average price per person, per day of service</td>
               <td class="currency">USD</td>
-              <td class="amount"/>${this.averageCost / this.usedDays}</td>
+              <td class="amount"/>${(this.averageCost / this.usedDays).toFixed(2)}</td>
             </tr>
             <tr>
               <td class="description">Average price per person</td>
