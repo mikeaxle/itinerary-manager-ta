@@ -1,6 +1,6 @@
 import {Component, OnDestroy, OnInit, ViewChild, ViewEncapsulation} from '@angular/core';
 import {DataService} from '../services/data.service';
-import {MatBottomSheet, MatBottomSheetRef, MatDialog} from '@angular/material';
+import { MatBottomSheet, MatBottomSheetRef, MatDialog, MatSnackBar } from '@angular/material';
 import {MatPaginator} from '@angular/material/paginator';
 import {MatSort} from '@angular/material/sort';
 import {MatTableDataSource} from '@angular/material/table';
@@ -31,7 +31,7 @@ export class ItinerariesComponent implements OnInit, OnDestroy {
   itinerariesSubscription$: any;
   STATUS = STATUS;
 
-  constructor(public data: DataService, private matDialog: MatDialog, public router: Router) {
+  constructor(public data: DataService, private matDialog: MatDialog, public router: Router, public snackBar: MatSnackBar) {
     // init status fitler
     this.status$ = new BehaviorSubject('Provisional');
 
@@ -128,7 +128,9 @@ export class ItinerariesComponent implements OnInit, OnDestroy {
 
     // Swal
     event.source.value === undefined ? Swal.fire('Reloading Itineraries', 'Getting all itineraries', 'info') :
-    Swal.fire('Reloading Itineraries', `Filtering by status: "${event.source.value}"`, 'info');
+    this.snackBar.open('Reloading Itineraries', `Filtering by status: "${event.source.value}"`, {
+      duration: 3000
+    });
   }
 
   ngOnDestroy(): void {
