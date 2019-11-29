@@ -455,11 +455,7 @@ footer p:last-of-type{
           <p class="title">Adults</p>
           <p class="field">${ this.itinerary.adults.length > 0 ? this.getAdultDetails('adults') : this.itinerary.adults.length}</p>
         </li>
-        <li>
-        <p class="title">Children</p>
-        <p class="field">${ this.itinerary.children.length > 0 ? this.getAdultDetails('children') : this.itinerary.children.length}</p>
-        </li>
-
+        ${this.getChildrenDetails()}
         <li>
           <p class="title">Status</p>
           <p class="field">${this.itinerary.status}</p>
@@ -851,14 +847,7 @@ footer p:last-of-type{
         <p class="title">Adults</p>
         <p class="field">${ this.itinerary.adults.length > 0 ? this.getAdultDetails('adults') : this.itinerary.adults.length}</p>
       </li>
-      <li>
-      <li>
-      <p class="title">Children</p>
-      <p class="field">${ this.itinerary.children.length > 0 ? this.getAdultDetails('children') : this.itinerary.children.length}</p>
-      </li>
-
-      </li>
-
+      ${this.getChildrenDetails()}
       <li>
         <p class="title">Status</p>
         <p class="field">${this.itinerary.status}</p>
@@ -1194,12 +1183,7 @@ if (lastIteneraryItemsHeight + quotHeight > quoteThreshold) {
             <p class="title">Adults</p>
             <p class="field">${ this.itinerary.adults.length > 0 ? this.getAdultDetails('adults') : this.itinerary.adults.length}</p>
           </li>
-          <li>
-          <p class="title">Children</p>
-          <p class="field">${ this.itinerary.children.length > 0 ? this.getAdultDetails('children') : this.itinerary.children.length}</p>
-          </li>
-
-          </li>
+          ${this.getChildrenDetails()}
           <li>
             <p class="title">Status</p>
             <p class="field">${this.itinerary.status}</p>
@@ -1846,6 +1830,13 @@ if (lastIteneraryItemsHeight + quotHeight > quoteThreshold) {
     });
 
     return deets;
+  }
+
+  getChildrenDetails() {
+    return this.itinerary.children.length === 0 ? `` : `<li>
+      <p class="title">Children</p>
+      <p class="field">${this.getAdultDetails('children')}</p>
+    </li>`;
   }
 }
 
