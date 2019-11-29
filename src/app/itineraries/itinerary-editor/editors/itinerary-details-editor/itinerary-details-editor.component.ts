@@ -87,7 +87,7 @@ export class ItineraryDetailsEditorComponent implements OnInit, OnDestroy {
 
     // get clients
     const companyRef$ = this.data.firestore.doc(`companies/${this.data.company.key}`).ref;
-    this.clientsSubscription$ = this.data.firestore.collection(`clients`, ref => ref.where('company', '==', companyRef$).orderBy('firstName'))
+    this.clientsSubscription$ = this.data.firestore.collection(`clients`, ref => ref.orderBy('firstName'))
       .snapshotChanges()
       .subscribe(_ => {
         if (_.length > 0) {
