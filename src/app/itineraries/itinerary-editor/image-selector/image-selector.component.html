@@ -1,31 +1,25 @@
 <h2 mat-dialog-title>Select Image</h2>
 
-<!-- search filter -->
-<mat-form-field>
-  <label>
-    <input matInput (keyup)="applyFilter($event.target.value)" placeholder="search media">
-  </label>
-</mat-form-field>
+<mat-dialog-content>
+  <!-- search filter -->
+  <mat-form-field>
+    <label>
+      <input matInput (keyup)="applyFilter($event.target.value)" placeholder="search media">
+    </label>
+  </mat-form-field>
 
-<app-progress-bar [listLength]="MEDIA_LIST.length"></app-progress-bar>
+  <app-progress-bar [listLength]="MEDIA_LIST.length"></app-progress-bar>
 
-<!-- image gridlist -->
-<mat-grid-list cols="3" rowHeight="150px" *ngIf="MEDIA_LIST.length > 0">
-  <mat-grid-tile
-    *ngFor="let media of MEDIA_LIST"
-    [style.background]="tileBackground"
-    (click)="onCloseConfirm(media)">
+  <!-- image gridlist -->
+  <mat-grid-list cols="3" rowHeight="150px" *ngIf="MEDIA_LIST.length > 0">
+    <mat-grid-tile *ngFor="let media of MEDIA_LIST" [style.background]="tileBackground" (click)="onCloseConfirm(media)">
 
-    <img height="100%" [src]="media.imageUrl" alt={{media.title}}>
+      <img height="100%" [src]="media.imageUrl" alt={{media.title}}>
 
-    <!-- caption + title footer -->
-    <mat-grid-tile-footer>
-      {{media.caption}}
-    </mat-grid-tile-footer>
-  </mat-grid-tile>
-</mat-grid-list>
-
-
-
-
-
+      <!-- caption + title footer -->
+      <mat-grid-tile-footer>
+        {{media.caption}}
+      </mat-grid-tile-footer>
+    </mat-grid-tile>
+  </mat-grid-list>
+</mat-dialog-content>
