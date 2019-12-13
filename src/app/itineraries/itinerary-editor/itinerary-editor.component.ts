@@ -624,12 +624,11 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
 
     // function to run after dialog is close
     dialogRef.afterClosed().subscribe(commentRes => {
-      // add itinerary ref
-      commentRes.itinerary = this.itineraryRef$.ref;
+
       // check for comment-editor
       if (commentRes) {
-        // add day ref
-        // commentRes.day = this.data.firestore.doc(`days/${commentRes.day}`).ref;
+        // add itinerary ref
+        commentRes.itinerary = this.itineraryRef$.ref;
         // save to firebase comments list
         if (mode === 'add') {
           this.commentsRef$.add(commentRes);

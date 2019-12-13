@@ -941,6 +941,7 @@ footer p:last-of-type{
     <div class="container">
     ${this.getContacts()}
 
+    <!-- travel insurance box -->
     ${this.getTravelInsuranceBox()}
 
       <div class="info-block">
@@ -1696,7 +1697,7 @@ if (lastIteneraryItemsHeight + quotHeight > quoteThreshold) {
     return `<div class="contact-block" style="margin-top: 15px; !important;">
       <p class="heading">24/7 Medical Hotline and Emergency Air Evacuation Insurance</p>
       <p class="normal-text">Medical Emergency Number: +27 31 100 2370</p>
-      <p class="normal-text">It is essential that you organise comprehensive travel insurance prior to departure. This should cover any medical situation such as hospitalisation, as well as cancellation, curtailment of arrangements and loss/delay of baggage. When you travel with TrueAfrica/Planet Africa Safaris, you are automatically covered by our emergency evacuation insurance. This guarantees emergency evacuation to the nearest hospital should you suffer either severe illness or injury. This does not cover the cost of treatment once in hospital and in no way replaces your normal travel insurance. Please contact us for further details.</p>
+      <p class="normal-text">It is essential that you organise comprehensive travel insurance prior to departure. This should cover any medical situation such as hospitalisation, as well as cancellation, curtailment of arrangements and loss/delay of baggage. When you travel with ${this.data.company.name === 'Planet Africa' ? `${this.data.company.name} Safaris` : this.data.company.name}, you are automatically covered by our emergency evacuation insurance. This guarantees emergency evacuation to the nearest hospital should you suffer either severe illness or injury. This does not cover the cost of treatment once in hospital and in no way replaces your normal travel insurance. Please contact us for further details.</p>
     </div>
     `;
 
