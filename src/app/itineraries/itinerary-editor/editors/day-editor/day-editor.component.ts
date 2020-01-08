@@ -197,7 +197,8 @@ export class DayEditorComponent implements OnInit, OnDestroy {
       // console.log(`days ${this.day-editor.days} \n country ${this.day-editor.country} \n region ${this.day-editor.region}`)
       this.dayForm = this.formBuilder.group({
         // title: [''],
-        days: this.day.days,
+        days: [this.day.days, Validators.compose([
+          Validators.required, nonZero ])],
         country: this.day.country.id,
         region: this.day.region,
         services: this.formBuilder.array(_services),
