@@ -1,10 +1,8 @@
 import { Component, Inject, OnInit, OnDestroy } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
-import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { CountryService } from '../../../../services/country.service';
-import { Country } from '../../../../model/country';
-import { Region } from '../../../../model/region';
+import { FormArray, FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
 import { DataService } from '../../../../services/data.service';
+import { nonZero } from '../../../../validators/custom.validators';
 
 @Component({
   selector: 'app-day',
@@ -154,7 +152,8 @@ export class DayEditorComponent implements OnInit, OnDestroy {
     if (this.params.mode === 'add') {
       this.dayForm = this.formBuilder.group({
         // title: [''],
-        days: [null, Validators.required],
+        days: [null, Validators.compose([
+          Validators.required, nonZero ])],
         country: [null, Validators.required],
         region: [null, Validators.required],
         services: this.formBuilder.array([]),

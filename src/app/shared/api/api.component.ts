@@ -14,41 +14,41 @@ export class ApiComponent implements OnInit {
   constructor(public data: DataService, public countryService: CountryService) {}
 
   ngOnInit() {
-    const companyRef = this.data.firestore.collection('companies').doc(this.data.company.key).ref;
-    const filter = 'Provisional';
+    // const companyRef = this.data.firestore.collection('companies').doc(this.data.company.key).ref;
+    // const filter = 'Provisional';
 
-    this.data.firestore.collection('itineraries', ref => ref.where('status', '==', filter).where('company', '==', companyRef))
-      .snapshotChanges()
-      .subscribe(_ => {
-        console.log(filter + ' is max: ' + _.length);
-        _.forEach(__ => {
-          const itinerary = {...__.payload.doc.data(), key: __.payload.doc.id};
+    // this.data.firestore.collection('itineraries', ref => ref.where('status', '==', filter).where('company', '==', companyRef))
+    //   .snapshotChanges()
+    //   .subscribe(_ => {
+    //     console.log(filter + ' is max: ' + _.length);
+    //     _.forEach(__ => {
+    //       const itinerary = {...__.payload.doc.data(), key: __.payload.doc.id};
 
-          if (typeof itinerary[`client`] === 'string') {
-            console.log(itinerary[`client`])
-            // let newInvoiceNumber = Number(itinerary[`invoiceNumber`].substring(3));
+    //       if (typeof itinerary[`client`] === 'string') {
+    //         console.log(itinerary[`client`])
+    //         // let newInvoiceNumber = Number(itinerary[`invoiceNumber`].substring(3));
 
 
-            // __.payload.doc.ref.update({
-            //   invoiceNumber: newInvoiceNumber
-            // }).then(res => {
-            //   console.log('invoiceNumber updated');
-            // })
-            //   .catch(err => {
-            //     console.log(err.message);
-            //   });
-          }
-        });
-      });
-    // const countryRef = this.data.firestore.collection('countries').doc('hN8EEHsmXjGd19fxQzjl');
-    // this.data.firestore.collection('inventory', ref => ref.where('region', '==', 41))
+    //         // __.payload.doc.ref.update({
+    //         //   invoiceNumber: newInvoiceNumber
+    //         // }).then(res => {
+    //         //   console.log('invoiceNumber updated');
+    //         // })
+    //         //   .catch(err => {
+    //         //     console.log(err.message);
+    //         //   });
+    //       }
+    //     });
+    //   });
+    // const countryRef = this.data.firestore.collection('countries').doc('B0gBaqoW4NP7eIdjUcFx');
+    // this.data.firestore.collection('inventory', ref => ref.where('region', '==', 'Ashura + Kilimanjaro'))
     // .snapshotChanges()
     // .subscribe(_ => {
     //   _.forEach(element => {
     //     const item = {...element.payload.doc.data(), key: element.payload.doc.id}
-    //
+    
     //     element.payload.doc.ref.update({
-    //       region: 'Winelands'
+    //       region: 'Arusha + Kilimanjaro'
     //     })
     //     .then(res => {
     //       console.log('item updated')
