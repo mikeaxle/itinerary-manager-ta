@@ -28,7 +28,7 @@ export class ClientsComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     // get company ref
-    this.companyRef$ = this.data.firestore.doc(`companies/YbSudQRjCglvvffyujaf`).ref;
+    this.companyRef$ = this.data.firestore.doc(`companies/${this.data.company.key}`).ref;
 
     // get clients
     this.clientRef$ = this.data.firestore.collection(`clients`, ref => ref.where('company', '==', this.companyRef$))
