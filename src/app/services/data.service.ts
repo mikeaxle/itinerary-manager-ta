@@ -6,9 +6,9 @@ import { AngularFireStorage } from '@angular/fire/storage';
 import { Observable } from 'rxjs';
 import 'rxjs-compat/add/observable/of';
 import Swal from 'sweetalert2';
-import {AngularFirestore} from '@angular/fire/firestore';
+import { AngularFirestore } from '@angular/fire/firestore';
 import * as firebase from 'firebase';
-import {MatSnackBar} from '@angular/material';
+import { MatSnackBar } from '@angular/material';
 
 
 @Injectable({
@@ -24,7 +24,7 @@ export class DataService {
   };
   secondaryApp: any;
   constructor(public afAuth: AngularFireAuth, public database: AngularFireDatabase, public firestore: AngularFirestore,
-              public storage: AngularFireStorage, private router: Router, public snackBar: MatSnackBar) {}
+    public storage: AngularFireStorage, private router: Router, public snackBar: MatSnackBar) { }
 
   // getter for user
   get user(): any {
@@ -99,50 +99,60 @@ export class DataService {
   // save object with image
   updateItemWithImage(id: string, folder: string, data: any, image: File, type: string) {
     // show info swal
-    Swal.fire(`${type} editor`, `adding new ${type}...`, 'info');
+    // Swal.fire(`${type} editor`, `adding new ${type}...`, 'info');
 
-    // remove double and single quotes from file name
-    const imageName = this.getImageName(image);
+    let imageName;
+    let path;
 
-    // init path
-    const path = this.getFilePath(folder, imageName);
+    console.log(image)
 
-    // init storage item reference
-    const ref = this.storage.ref(path);
 
-    // init task
-    // save file
-    ref.put(image)
-      .then((snapshot) => {
+    // check if image is a string & update image first
+    if (typeof image !== 'string') {
+      // remove double and single quotes from file name
+      imageName = this.getImageName(image);
 
-        // set image url
-        data.image = path;
+      // set path
+      path = this.getFilePath(folder, imageName);
 
-        ref.getDownloadURL()
-          .toPromise()
-          .then(url => {
-            // close swal
-            Swal.close();
+      // init storage item reference
+      const ref = this.storage.ref(path);
 
-            // get image download url
-            data[`imageUrl`] = url;
+      // init task
+      // save file
+      ref.put(image)
+        .then((snapshot) => {
 
-            // save to firebase
-            this.updateFirebaseObject(`media/${id}`, data, 'media', true);
-            // this.saveFirebaseObject('media', data, 'media');
+          // set image url
+          data.image = path;
 
-          })
-          .catch(err => {
-            Swal.close();
-            console.log(err);
-            Swal.fire(`${type} editor`, err.message, 'error');
-          });
-      })
-      .catch(errorNo => {
-        console.log(errorNo);
-        Swal.close();
-        Swal.fire(`${type} editor`, errorNo.message, 'error');
-      });
+          ref.getDownloadURL()
+            .toPromise()
+            .then(url => {
+              // close swal
+              Swal.close();
+
+              // get image download url
+              data[`imageUrl`] = url;
+
+
+
+            })
+            .catch(err => {
+              Swal.close();
+              console.log(err);
+              Swal.fire(`${type} editor`, err.message, 'error');
+            });
+        })
+        .catch(errorNo => {
+          console.log(errorNo);
+          Swal.close();
+          Swal.fire(`${type} editor`, errorNo.message, 'error');
+        });
+    } else {
+      // save to firebase
+      this.updateFirebaseObject(`media/${id}`, data, 'media', true);
+    }
   }
 
 
@@ -159,7 +169,7 @@ export class DataService {
 
         this.firestore.doc(`users/${_[`uid`]}`)
           .set({
-           email: data.email,
+            email: data.email,
             firstName: data.firstName,
             lastName: data.lastName,
             role: data.role
@@ -202,7 +212,7 @@ export class DataService {
       this.firestore.doc(`companies/YbSudQRjCglvvffyujaf`).snapshotChanges()
         .subscribe(_ => {
           // console.log({..._.payload.data(), key: _.payload.id })
-          localStorage.setItem('company', JSON.stringify({..._.payload.data(), key: _.payload.id }));
+          localStorage.setItem('company', JSON.stringify({ ..._.payload.data(), key: _.payload.id }));
           localStorage.setItem('color', '#B18C51');
           localStorage.setItem('logo', '../assets/logos/avatar-trueafrica.png');
 
@@ -219,7 +229,7 @@ export class DataService {
       this.firestore.doc(`companies/9MZBVwEmR28enTGLIi1p`).snapshotChanges()
         .subscribe(_ => {
           // console.log({..._.payload.data(), key: _.payload.id })
-          localStorage.setItem('company', JSON.stringify({..._.payload.data(), key: _.payload.id }));
+          localStorage.setItem('company', JSON.stringify({ ..._.payload.data(), key: _.payload.id }));
           localStorage.setItem('color', '#AC452F');
           localStorage.setItem('logo', '../assets/logos/avatar-planetafrica.png');
 
@@ -266,7 +276,7 @@ export class DataService {
   }
 
   // function to delete firebase objects
-   deleteObjectFromFirebase(path: string, type: string) {
+  deleteObjectFromFirebase(path: string, type: string) {
     this.firestore.doc(path)
       .delete()
       .then(_ => {
@@ -281,13 +291,13 @@ export class DataService {
       });
   }
 
-   updateFirebaseObject(path: any, dataToUpdate, caller: string, notify?) {
+  updateFirebaseObject(path: any, dataToUpdate, caller: string, notify?) {
     // add updated time stamp
     dataToUpdate[`updated`] = firebase.firestore.Timestamp.now();
     this.firestore.doc(path)
       .update(dataToUpdate)
       .then(_ => {
-        notify ? this.snackBar.open(`${caller} updated.`, 'success', { duration: 2000 }) :  console.log(`updated ${caller}`);
+        notify ? this.snackBar.open(`${caller} updated.`, 'success', { duration: 2000 }) : console.log(`updated ${caller}`);
       })
       .catch(err => {
         console.log(err);
@@ -295,9 +305,9 @@ export class DataService {
       });
   }
 
-   async saveImage(image: any) {
+  async saveImage(image: any) {
     const imageRef$ = this.storage.ref('inventory-images/' + image.name.trim());
     await imageRef$.put(image);
-    return  imageRef$.getDownloadURL();
+    return imageRef$.getDownloadURL();
   }
 }
