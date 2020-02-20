@@ -49,6 +49,11 @@ export class DayEditorComponent implements OnInit, OnDestroy {
             if (this.params.day.country.id === country[`key`]) {
               this.regions = country[`regions`];
             }
+          } else {
+            // if last used params country is equal to country key
+            if (this.params.lastUsedParams.country === country[`key`]) {
+              this.regions = country[`regions`];
+            }
           }
         });
       });
@@ -89,12 +94,14 @@ export class DayEditorComponent implements OnInit, OnDestroy {
       }
     }
 
+    // init previously used country and region params
+    this.lastUsedParams = this.params.lastUsedParams;
+
 
     // init editor-components form
     this.initDay();
 
-    // init previously used country and region params
-    this.lastUsedParams = this.params.lastUsedParams;
+
 
     // check if last used params are default, then null
     // if (this.lastUsedParams.country === 0) {
@@ -150,12 +157,13 @@ export class DayEditorComponent implements OnInit, OnDestroy {
   // function to init editor-components method
   initDay() {
     if (this.params.mode === 'add') {
+
       this.dayForm = this.formBuilder.group({
         // title: [''],
         days: [null, Validators.compose([
           Validators.required, nonZero ])],
-        country: [null, Validators.required],
-        region: [null, Validators.required],
+        country: [this.lastUsedParams.country, Validators.required],
+        region: [this.lastUsedParams.region, Validators.required],
         services: this.formBuilder.array([]),
         activities: this.formBuilder.array([]),
         accommodation: this.formBuilder.array([])
@@ -285,7 +293,9 @@ export class DayEditorComponent implements OnInit, OnDestroy {
 
   // function to deal with region select
   onSelectRegion(regionId) {
-    // console.log(regionId)
+    // console.log(regionId)	
+ 
+
   }
 
   // function to validate
