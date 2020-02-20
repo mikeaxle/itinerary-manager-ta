@@ -189,7 +189,7 @@ export class DataService {
   getButtonStyleMain() {
     if (this.company.name === 'Planet Africa') {
       return 'greater-button-pa';
-    } else if (this.company === 'True Africa') {
+    } else if (this.company.name === 'True Africa') {
       return 'greater-button-ta';
     }
   }

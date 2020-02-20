@@ -1,5 +1,5 @@
 <h2 mat-dialog-title>{{params.mode}} day</h2>
-<mat-dialog-content>
+<!-- <mat-dialog-content> -->
   <form [formGroup]="dayForm" fxLayout="column">
 
     <!-- days -->
@@ -244,6 +244,13 @@
       fxLayoutGap="10px">
 
       <button
+      [ngClass]="data.getButtonStyle()"
+      (click)="onCloseCancel()"
+      mat-raised-button>
+      CANCEL
+    </button>
+
+      <button
         [ngClass]="data.getButtonStyleMain()"
         [disabled]="validateForm(dayForm)"
         (click)="onCloseConfirm()"
@@ -251,16 +258,11 @@
         SAVE
       </button>
 
-      <button
-        [ngClass]="data.getButtonStyle()"
-        (click)="onCloseCancel()"
-        mat-raised-button>
-        CANCEL
-      </button>
+
     </mat-dialog-actions>
 
   </form>
-</mat-dialog-content>
+<!-- </mat-dialog-content> -->
 
 
 <!--

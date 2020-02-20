@@ -48,6 +48,13 @@
     <!-- save and cancel buttons -->
     <mat-dialog-actions>
       <button
+      [ngClass]="data.getButtonStyle()"
+      (click)="onCloseCancel()"
+      mat-raised-button>
+      CANCEL
+    </button>
+    
+      <button
         [ngClass]="data.getButtonStyleMain()"
         [disabled]="!commentForm.valid"
         (click)="onCloseConfirm()"
@@ -55,12 +62,7 @@
         SAVE
       </button>
 
-      <button
-        [ngClass]="data.getButtonStyle()"
-        (click)="onCloseCancel()"
-        mat-raised-button>
-        CANCEL
-      </button>
+
     </mat-dialog-actions>
 
   </form>

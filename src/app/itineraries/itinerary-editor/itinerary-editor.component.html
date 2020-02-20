@@ -354,7 +354,7 @@
           <span fxFlex="50"></span>
           <button
             mat-raised-button
-            [ngClass]="data.getButtonStyle()"
+            [ngClass]="data.getButtonStyleMain()"
             fxFlex="30"
             (click)="openPaymentDialog('add', null)">Add Payment
           </button>
@@ -404,7 +404,7 @@
           <button
             fxFlex="60"
             mat-raised-button
-            [ngClass]="data.getButtonStyle()"
+            [ngClass]="data.getButtonStyleMain()"
             (click)="openCountryDialog('add', null)">Add Country
           </button>
         </div>
