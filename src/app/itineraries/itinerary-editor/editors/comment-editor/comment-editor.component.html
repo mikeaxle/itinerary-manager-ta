@@ -1,68 +1,38 @@
 <h2 mat-dialog-title>Add Comment</h2>
-
+<div mat-dialog-content>
   <form name="commentForm" #commentForm="ngForm" fxLayout="column">
 
     <!-- days -->
-    <mat-select
-      placeholder="Day"
-      [(ngModel)]="day"
-      (selectionChange)="onSelect()"
-      name="day"
-      required>
-      <mat-option
-        *ngFor="let d of days"
-        [value]="d.key">
+    <mat-select placeholder="Day" [(ngModel)]="day" (selectionChange)="onSelect()" name="day" required>
+      <mat-option *ngFor="let d of days" [value]="d.key">
         {{ d.title}}
       </mat-option>
     </mat-select>
 
 
     <!-- types -->
-    <mat-select
-      placeholder="Type"
-      [(ngModel)]="comment.type"
-      name="type"
-      required>
-      <mat-option
-        *ngFor="let t of types"
-        [value]="t">{{t}}
+    <mat-select placeholder="Type" [(ngModel)]="comment.type" name="type" required>
+      <mat-option *ngFor="let t of types" [value]="t">{{t}}
       </mat-option>
     </mat-select>
 
     <!-- comment-editor -->
     <mat-form-field>
       <label>
-<textarea
-  placeholder="Put your comment here"
-  [(ngModel)]="comment.comment"
-  name="comment"
-  rows="2"
-  cols="50"
-  matInput
-  required>
-</textarea>
+        <textarea placeholder="Put your comment here" [(ngModel)]="comment.comment" name="comment" rows="2" cols="50" matInput required></textarea>
       </label>
     </mat-form-field>
-
-    <span class="spacer"></span>
-    <!-- save and cancel buttons -->
-    <mat-dialog-actions>
-      <button
-      [ngClass]="data.getButtonStyle()"
-      (click)="onCloseCancel()"
-      mat-raised-button>
-      CANCEL
-    </button>
-    
-      <button
-        [ngClass]="data.getButtonStyleMain()"
-        [disabled]="!commentForm.valid"
-        (click)="onCloseConfirm()"
-        mat-raised-button>
-        SAVE
-      </button>
-
-
-    </mat-dialog-actions>
-
   </form>
+</div>
+
+<!-- save and cancel buttons -->
+<div mat-dialog-actions>
+  <button [ngClass]="data.getButtonStyle()" (click)="onCloseCancel()" mat-raised-button>
+    CANCEL
+  </button>
+
+  <button [ngClass]="data.getButtonStyleMain()" [disabled]="!commentForm.valid" (click)="onCloseConfirm()"
+    mat-raised-button>
+    SAVE
+  </button>
+</div>

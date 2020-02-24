@@ -1,5 +1,5 @@
 <h2 mat-dialog-title>{{params.mode}} day</h2>
-<!-- <mat-dialog-content> -->
+<div mat-dialog-content>
   <form [formGroup]="dayForm" fxLayout="column">
 
     <!-- days -->
@@ -24,62 +24,39 @@
     <!--    </mat-option>-->
     <!--  </mat-select>-->
 
-    <mat-select
-      placeholder="Country"
-      formControlName="country"
-      (selectionChange)="onSelect($event)"
-      required>
+    <mat-select placeholder="Country" formControlName="country" (selectionChange)="onSelect($event)" required>
       <mat-option *ngFor="let destination of destinations" [value]="destination.key">
         {{destination.name}}
       </mat-option>
     </mat-select>
 
     <!-- region -->
-    <mat-select
-      placeholder="Region"
-      formControlName="region"
-      required>
+    <mat-select placeholder="Region" formControlName="region" required>
       <mat-option *ngFor="let region of regions" [value]="region.name">{{region.name}}</mat-option>
     </mat-select>
 
-    <div fxLayout="column"
-         fxLayoutGap="10px"
-         *ngIf="dayForm.controls.country.value !== null && dayForm.controls.region.value !== null">
+    <div fxLayout="column" fxLayoutGap="10px"
+      *ngIf="dayForm.controls.country.value !== null && dayForm.controls.region.value !== null">
       <!-- TODO: fix itinerary mat-select values to reduce http requests -->
 
       <!-- service items  form array -->
-      <div
-        fxLayout="row"
-        fxFill
-        formArrayName="services"
+      <div fxLayout="row" fxFill formArrayName="services"
         *ngFor="let service of getServices(dayForm,'services'); let s=index">
 
         <!-- item edit -->
-        <div
-          fxLayout="row"
-          fxFill
-          fxLayoutAlign="space-around center"
-          [formGroupName]="s">
+        <div fxLayout="row" fxFill fxLayoutAlign="space-around center" [formGroupName]="s">
 
           <!-- text area -->
           <mat-form-field fxFlex="90">
             <label>
-<textarea
-  style="line-height: 1.3em !important;"
-  rows="3"
-  cols="50"
-  matInput
-  placeholder="Service"
-  formControlName="service">
+              <textarea style="line-height: 1.3em !important;" rows="3" cols="50" matInput placeholder="Service"
+                formControlName="service">
 </textarea>
             </label>
           </mat-form-field>
 
           <!-- delete button -->
-          <button
-            fxFlex
-            mat-icon-button
-            (click)="removeItineraryItem('services',s)">
+          <button fxFlex mat-icon-button (click)="removeItineraryItem('services',s)">
             <svg-icon src="../assets/icons/trash.svg" [style.fill]=this.data.color></svg-icon>
           </button>
 
@@ -88,37 +65,22 @@
 
 
       <!-- activity items  form array -->
-      <div
-        fxLayout="row"
-        fxFill
-        formArrayName="activities"
+      <div fxLayout="row" fxFill formArrayName="activities"
         *ngFor="let activity of getServices(dayForm,'activities'); let a=index">
 
         <!-- item edit -->
-        <div
-          fxLayout="row"
-          fxFill
-          fxLayoutAlign="space-around center"
-          [formGroupName]="a">
+        <div fxLayout="row" fxFill fxLayoutAlign="space-around center" [formGroupName]="a">
 
           <!-- text area -->
           <mat-form-field fxFlex="90">
             <label>
-<textarea
-  rows="2"
-  cols="50"
-  matInput
-  placeholder="Activity"
-  formControlName="activity">
+              <textarea rows="2" cols="50" matInput placeholder="Activity" formControlName="activity">
 </textarea>
             </label>
           </mat-form-field>
 
           <!-- delete button -->
-          <button
-            fxFlex
-            mat-icon-button
-            (click)="removeItineraryItem('activities',a)">
+          <button fxFlex mat-icon-button (click)="removeItineraryItem('activities',a)">
             <svg-icon src="../assets/icons/trash.svg" [style.fill]=this.data.color></svg-icon>
           </button>
 
@@ -126,37 +88,22 @@
       </div>
 
       <!-- accommodation items  form array -->
-      <div
-        fxLayout="row"
-        fxFill
-        formArrayName="accommodation"
+      <div fxLayout="row" fxFill formArrayName="accommodation"
         *ngFor="let accommodation of getServices(dayForm,'accommodation'); let ac=index">
 
         <!-- item edit -->
-        <div
-          fxLayout="row"
-          fxFill
-          fxLayoutAlign="space-around center"
-          [formGroupName]="ac">
+        <div fxLayout="row" fxFill fxLayoutAlign="space-around center" [formGroupName]="ac">
 
           <!-- text area -->
           <mat-form-field fxFlex="90">
             <label>
-<textarea
-  rows="2"
-  cols="50"
-  matInput
-  placeholder="Accommodation"
-  formControlName="description">
+              <textarea rows="2" cols="50" matInput placeholder="Accommodation" formControlName="description">
 </textarea>
             </label>
           </mat-form-field>
 
           <!-- delete button -->
-          <button
-            fxFlex
-            mat-icon-button
-            (click)="removeItineraryItem('accommodation',ac)">
+          <button fxFlex mat-icon-button (click)="removeItineraryItem('accommodation',ac)">
             <svg-icon src="../assets/icons/trash.svg" [style.fill]=this.data.color></svg-icon>
           </button>
 
@@ -168,13 +115,8 @@
     <!-- add drop downs -->
     <div fxLayout="row" fxLayoutGap="10px" *ngIf="inventory.length > 0">
       <!-- add services drop down -->
-      <mat-select
-        *ngIf="inventory"
-        placeholder="Add Service"
-        fxFlex
-        [(ngModel)]="selectedService"
-        (ngModelChange)="addItineraryItem('services', selectedService)"
-        [ngModelOptions]="{standalone: true}"
+      <mat-select *ngIf="inventory" placeholder="Add Service" fxFlex [(ngModel)]="selectedService"
+        (ngModelChange)="addItineraryItem('services', selectedService)" [ngModelOptions]="{standalone: true}"
         [disabled]="dayForm.controls.country.value == null && dayForm.controls.region.value == null">
 
         <mat-option
@@ -187,13 +129,8 @@
 
 
       <!-- add activities drop down -->
-      <mat-select
-        *ngIf="inventory"
-        placeholder="Add Activity"
-        fxFlex
-        [(ngModel)]="selectedActivity"
-        (ngModelChange)="addItineraryItem('activities', selectedActivity)"
-        [ngModelOptions]="{standalone: true}"
+      <mat-select *ngIf="inventory" placeholder="Add Activity" fxFlex [(ngModel)]="selectedActivity"
+        (ngModelChange)="addItineraryItem('activities', selectedActivity)" [ngModelOptions]="{standalone: true}"
         [disabled]="dayForm.controls.country.value == null && dayForm.controls.region.value == null">
 
         <mat-option
@@ -206,13 +143,8 @@
 
 
       <!-- add accommodation button -->
-      <mat-select
-        *ngIf="inventory"
-        placeholder="Add Accomodation"
-        fxFlex
-        [(ngModel)]="selectedAccommodation"
-        (ngModelChange)="addItineraryItem('accommodation', selectedAccommodation)"
-        [ngModelOptions]="{standalone: true}"
+      <mat-select *ngIf="inventory" placeholder="Add Accomodation" fxFlex [(ngModel)]="selectedAccommodation"
+        (ngModelChange)="addItineraryItem('accommodation', selectedAccommodation)" [ngModelOptions]="{standalone: true}"
         [disabled]="dayForm.controls.country.value == null && dayForm.controls.region.value == null">
 
         <mat-option
@@ -231,38 +163,25 @@
     <span class="spacer"></span>
 
     <!-- editor-components preview -->
-    <div
-      fxFlex
-      class="day-preview">
+    <div fxFlex class="day-preview">
       {{ services }} {{ activities }} {{ accommodation }}
     </div>
-
-    <span class="spacer"></span>
-    <!-- save and cancel buttons -->
-    <mat-dialog-actions
-      fxLayout fxLayoutAlign="start center"
-      fxLayoutGap="10px">
-
-      <button
-      [ngClass]="data.getButtonStyle()"
-      (click)="onCloseCancel()"
-      mat-raised-button>
-      CANCEL
-    </button>
-
-      <button
-        [ngClass]="data.getButtonStyleMain()"
-        [disabled]="validateForm(dayForm)"
-        (click)="onCloseConfirm()"
-        mat-raised-button>
-        SAVE
-      </button>
-
-
-    </mat-dialog-actions>
-
+    <div class="spacer"></div>
   </form>
-<!-- </mat-dialog-content> -->
+</div>
+
+<!-- save and cancel buttons -->
+<div mat-dialog-actions fxLayout fxLayoutAlign="start center" fxLayoutGap="10px">
+
+  <button [ngClass]="data.getButtonStyle()" (click)="onCloseCancel()" mat-raised-button>
+    CANCEL
+  </button>
+
+  <button [ngClass]="data.getButtonStyleMain()" [disabled]="validateForm(dayForm)" (click)="onCloseConfirm()"
+    mat-raised-button>
+    SAVE
+  </button>
+</div>
 
 
 <!--
@@ -271,5 +190,3 @@
 </p>
 
 -->
-
-

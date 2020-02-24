@@ -542,7 +542,7 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
           remainingDays: this.totalDays - this.usedDays,            // pass remaining days
         },
         width: '700px',
-        maxHeight: '80vh'
+        // maxHeight: '80vh'
       });
 
     } else if (mode === 'edit') {
@@ -556,7 +556,7 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
           remainingDays: this.remainingDays,            // pass remaining days
         },
         width: '700px',
-        maxHeight: '80vh'
+        // maxHeight: '80vh'
       });
     }
 
@@ -785,7 +785,8 @@ export class ItineraryEditorComponent implements OnInit, OnDestroy {
         client: this.client,
         itinerary: this.itinerary$,
         usedDays: this.usedDays
-      }
+      },
+      width: '700px'
     });
   }
 

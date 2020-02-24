@@ -1,27 +1,16 @@
-
 <h2 mat-dialog-title>Edit Itinerary Details</h2>
-<!-- <mat-dialog-content> -->
+<div mat-dialog-content>
   <form [formGroup]="itineraryForm" fxLayout="column">
     <!-- agent -->
-    <mat-select
-      placeholder="Agent"
-      formControlName="agent"
-      required>
-      <mat-option
-        *ngFor="let agent of agents"
-        [value]="agent.key">
+    <mat-select placeholder="Agent" formControlName="agent" required>
+      <mat-option *ngFor="let agent of agents" [value]="agent.key">
         {{agent.firstName }} {{agent.lastName}}
       </mat-option>
     </mat-select>
 
     <!-- client -->
-    <mat-select
-      placeholder="Client"
-      formControlName="client"
-      required>
-      <mat-option
-        *ngFor="let client of clients"
-        [value]="client.key">
+    <mat-select placeholder="Client" formControlName="client" required>
+      <mat-option *ngFor="let client of clients" [value]="client.key">
         {{client.firstName }} {{client.lastName}}
       </mat-option>
     </mat-select>
@@ -36,26 +25,15 @@
 
     <!-- Adults and Children -->
     <div class="double-items">
-      <mat-select
-        placeholder="Number of Adults"
-        [(ngModel)]="adults"
-        [ngModelOptions]="{standalone: true}"
-        (selectionChange)="onChangePassengers($event, true)"
-        class="half-input"
-        required>
+      <mat-select placeholder="Number of Adults" [(ngModel)]="adults" [ngModelOptions]="{standalone: true}"
+        (selectionChange)="onChangePassengers($event, true)" class="half-input" required>
         <mat-option *ngFor="let number of numbers" [value]="number">
           {{ number }}
         </mat-option>
       </mat-select>
 
-      <mat-select
-        placeholder="Number of Children"
-        [(ngModel)]="children"
-        [ngModelOptions]="{standalone: true}"
-        (selectionChange)="onChangePassengers($event, false)"
-        class="half-input"
-        required
-      >
+      <mat-select placeholder="Number of Children" [(ngModel)]="children" [ngModelOptions]="{standalone: true}"
+        (selectionChange)="onChangePassengers($event, false)" class="half-input" required>
         <mat-option *ngFor="let number of numbers" [value]="number">
           {{ number }}
         </mat-option>
@@ -68,37 +46,19 @@
         <div [formGroup]="passenger" fxLayout="row" fxLayoutAlign="space-between center">
           <mat-form-field>
             <label>
-              <input
-                matInput
-                name="firstName"
-                type="text"
-                formControlName="firstName"
-                placeholder="First Name"
-              />
+              <input matInput name="firstName" type="text" formControlName="firstName" placeholder="First Name" />
             </label>
           </mat-form-field>
           <span class="spacer"></span>
           <mat-form-field>
             <label>
-              <input
-                matInput
-                name="lastName"
-                type="text"
-                formControlName="lastName"
-                placeholder="Surname"
-              />
+              <input matInput name="lastName" type="text" formControlName="lastName" placeholder="Surname" />
             </label>
           </mat-form-field>
           <span class="spacer"></span>
           <mat-form-field>
             <label>
-              <input
-                matInput
-                name="age"
-                type="number"
-                formControlName="age"
-                placeholder="Age"
-              />
+              <input matInput name="age" type="number" formControlName="age" placeholder="Age" />
             </label>
           </mat-form-field>
         </div>
@@ -111,40 +71,21 @@
         <div [formGroup]="passenger" fxLayout="row">
           <mat-form-field>
             <label>
-              <input
-                matInput
-                name="firstName"
-                type="text"
-                formControlName="firstName"
-                placeholder="First Name"
-                fxFlex="30"
-              />
+              <input matInput name="firstName" type="text" formControlName="firstName" placeholder="First Name"
+                fxFlex="30" />
             </label>
           </mat-form-field>
           <span class="spacer"></span>
           <mat-form-field>
             <label>
-              <input
-                matInput
-                name="lastName"
-                type="text"
-                formControlName="lastName"
-                placeholder="Surname"
-                fxFlex="30"
-              />
+              <input matInput name="lastName" type="text" formControlName="lastName" placeholder="Surname"
+                fxFlex="30" />
             </label>
           </mat-form-field>
           <span class="spacer"></span>
           <mat-form-field>
             <label>
-              <input
-                matInput
-                name="age"
-                type="number"
-                formControlName="age"
-                placeholder="Age"
-                fxFlex="30"
-              />
+              <input matInput name="age" type="number" formControlName="age" placeholder="Age" fxFlex="30" />
             </label>
           </mat-form-field>
         </div>
@@ -154,29 +95,16 @@
     <!-- name of itinerary  -->
     <mat-form-field>
       <label>
-        <input
-          type="text"
-          placeholder="Name of itinerary"
-          formControlName="title"
-          matInput
-          required/>
+        <input type="text" placeholder="Name of itinerary" formControlName="title" matInput required />
       </label>
     </mat-form-field>
 
-    <div
-      fxLayout="row"
-      fxLayoutGap="10px"
-      fxLayoutAlign="space-between center">
+    <div fxLayout="row" fxLayoutGap="10px" fxLayoutAlign="space-between center">
 
       <!-- start date -->
       <mat-form-field class="half-input">
         <label>
-          <input
-            matInput
-            [matDatepicker]="picker"
-            placeholder="Start Date"
-            formControlName="startDate"
-            required>
+          <input matInput [matDatepicker]="picker" placeholder="Start Date" formControlName="startDate" required>
         </label>
         <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
         <!--<button matSuffix [matDatepickerToggle]="picker"></button>-->
@@ -186,37 +114,25 @@
       <!-- end date -->
       <mat-form-field class="half-input">
         <label>
-          <input
-            matInput
-            [matDatepicker]="picker2"
-            placeholder="End Date"
-            formControlName="endDate"
-            required>
+          <input matInput [matDatepicker]="picker2" placeholder="End Date" formControlName="endDate" required>
         </label>
         <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
         <!--<button matSuffix [matDatepickerToggle]="picker2"></button>-->
       </mat-form-field>
       <mat-datepicker touchUi="true" #picker2></mat-datepicker>
     </div>
-    <span class="spacer"></span>
-    <!-- save and cancel buttons -->
-    <mat-dialog-actions>
-      <button
-      [ngClass]="data.getButtonStyle()"
-      (click)="onCloseCancel()"
-      mat-raised-button>
-      CANCEL
-    </button>
-    
-    <button
-        [ngClass]="data.getButtonStyleMain()"
-        [disabled]="!itineraryForm.valid"
-        (click)="onCloseConfirm()"
-        mat-raised-button>
-        SAVE
-      </button>
-    </mat-dialog-actions>
-
+    <!-- <span class="spacer"></span> -->
   </form>
-<!-- </mat-dialog-content> -->
+</div>
 
+<!-- save and cancel buttons -->
+<div mat-dialog-actions>
+  <button [ngClass]="data.getButtonStyle()" (click)="onCloseCancel()" mat-raised-button>
+    CANCEL
+  </button>
+
+  <button [ngClass]="data.getButtonStyleMain()" [disabled]="!itineraryForm.valid" (click)="onCloseConfirm()"
+    mat-raised-button>
+    SAVE
+  </button>
+</div>
