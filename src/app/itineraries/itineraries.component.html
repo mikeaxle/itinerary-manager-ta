@@ -1,9 +1,26 @@
 <!-- title + add new button -->
 <div class="page-title" fxLayoutGap="10px">
   <h1>Itineraries</h1>
+
+  <!-- spacer -->
   <span class="fill-remaining-space"></span>
-  <mat-select [(value)]="status" placeholder="filter by status" style="width: 10vw"  (selectionChange)="onFilterChange($event)">
-    <mat-option [value]="undefined">
+
+  <!-- agent filter -->
+  <mat-select [(value)]="agent" placeholder="filter by agent" style="width: 20vw"
+    (selectionChange)="filterByAgent($event)">
+    <mat-option [value]="null">
+      All
+    </mat-option>
+    <mat-option *ngFor="let agent of agents" [value]="agent.key">
+      {{ agent.firstName + ' ' + agent.lastName }}  
+    </mat-option>
+  </mat-select>
+
+
+  <!-- status filter -->
+  <mat-select [(value)]="status" placeholder="filter by status" style="width: 10vw"
+    (selectionChange)="filterByStatus($event)">
+    <mat-option [value]="null">
       All
     </mat-option>
     <mat-option *ngFor="let status of STATUS" [value]="status">
@@ -14,13 +31,12 @@
   <button mat-raised-button color="primary" (click)="addNew()">Add New Itinerary</button>
 </div>
 
-
-  <!-- all in one filter -->
-  <app-search [dataSource]="dataSource" caller="itineraries" class="half-input"></app-search>
+<!-- all in one filter -->
+<app-search [dataSource]="dataSource" caller="itineraries" class="half-input"></app-search>
 
 <!-- progress bar -->
 <ng-template #loading>
-  <mat-progress-bar  mode="query" color="primary" class="example-margin progress-bar"></mat-progress-bar>
+  <mat-progress-bar mode="query" color="primary" class="example-margin progress-bar"></mat-progress-bar>
 </ng-template>
 
 <!-- data table-->
