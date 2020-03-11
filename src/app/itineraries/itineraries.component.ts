@@ -68,7 +68,9 @@ export class ItinerariesComponent implements OnInit, OnDestroy {
           // filter by status
           query = query.where('status', '==', status)
         }
-        return query;
+
+        query = query.where('company', '==', this.companyRef$);
+        return query
       }).snapshotChanges()
     );
   }
