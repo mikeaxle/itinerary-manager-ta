@@ -135,7 +135,7 @@ export class SavePdfService {
       disableClose: true,
       width: '300px',
     });
-    this.http.post('https://planet-africa-print-server-dev.herokuapp.com/print-pdf', {
+    this.http.post('https://planet-africa-print-server.herokuapp.com/print-pdf', {
       //  this.http.post('https://planet-africa-print-server.herokuapp.com/print-pdf', {
       //  this.http.post('http://localhost:8000/print-pdf', {
       html
