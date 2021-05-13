@@ -92,7 +92,7 @@ export class SavePdfService {
     });
 
     // this.http.post('http://localhost:8000/liveUrl', {
-    this.http.post('https://planet-africa-print-server-dev.herokuapp.com/liveUrl', {
+    this.http.post('https://planet-africa-print-server.herokuapp.com/liveUrl', {
       html,
       title: `${this.itinerary.key}-${mode}-${type}`
     }, {
